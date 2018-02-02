@@ -1,0 +1,18 @@
+# 
+
+# deb cdrom:[Debian GNU/Linux 8.2.0 _Jessie_ - Official i386 NETINST Binary-1 20150906-10:00]/ jessie main
+
+#deb cdrom:[Debian GNU/Linux 8.2.0 _Jessie_ - Official i386 NETINST Binary-1 20150906-10:00]/ jessie main
+
+deb http://mi.mirror.garr.it/mirrors/debian/ jessie main contrib non-free
+deb-src http://mi.mirror.garr.it/mirrors/debian/ jessie main contrib non-free
+
+deb http://security.debian.org/ jessie/updates main contrib non-free
+deb-src http://security.debian.org/ jessie/updates main contrib non-free
+
+# jessie-updates, previously known as 'volatile'
+deb http://mi.mirror.garr.it/mirrors/debian/ jessie-updates main contrib non-free
+deb-src http://mi.mirror.garr.it/mirrors/debian/ jessie-updates main contrib non-free
+
+#deb https://apt.dockerproject.org/repo debian-jessie main
+

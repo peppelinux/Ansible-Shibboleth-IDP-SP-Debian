@@ -1,0 +1,57 @@
+# CLEANUPS
+- name: Uninstall libapache2-mod-shib2
+  apt: name=libapache2-mod-shib2 state=absent purge=yes
+  when: cleanup is defined
+
+#~ - name: Remove /etc/shibboleth dir
+  #~ file: path=/etc/shibboleth state=absent
+  #~ when: cleanup is defined
+# END CLEANUP
+
+- name: Install libapache2-mod-shib2
+  apt: name=libapache2-mod-shib2 state=present
+
+- name: Create Shibboleth SP keys
+  shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth 
+  args:
+    creates: /etc/shibboleth/{{ sp_fqdn }}-key.pem
+
+- name: Create metadata directory for IdP metadata
+  file: name=/etc/shibboleth/metadata state=directory
+
+- name: Configure Shibboleth SP
+  template:
+    src: roles/mod-shib2/templates/shibboleth2.xml
+    dest: /etc/shibboleth/shibboleth2.xml
+    
+- name: Configure Shibboleth SP Attribute Map
+  copy:
+    src: roles/mod-shib2/files/attribute-map.xml
+    dest: /etc/shibboleth/attribute-map.xml
+
+- name: Cleanup old Shibboleth IdP metadata from SP
+  file: path="/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml" state=absent
+  when: cleanup is defined
+
+- name: Add IdP Metadata to Shibboleth SP
+  get_url:
+    url: https://{{ idp_fqdn }}/idp/shibboleth
+    dest: /etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml
+    validate_certs: no
+
+- name: Restart shibd
+  service: name=shibd state=restarted enabled=yes
+  
+- name: Add SP {{ sp_fqdn }} Metadata to Shibboleth IdP
+  get_url:
+    url: https://{{ sp_fqdn }}/Shibboleth.sso/Metadata
+    dest: "{{ idp_path }}/metadata/{{ sp_fqdn }}-metadata.xml"
+    validate_certs: no
+
+- name: Configure SP Metadata in Shibboleth IdP
+  template:
+    src: roles/shib3idp/templates/metadata-providers.xml
+    dest: "{{ idp_path }}/conf/metadata-providers.xml"
+ 
+- name: Restart tomcat
+  service: name="{{ tomcat_version }}" state=restarted enabled=yes

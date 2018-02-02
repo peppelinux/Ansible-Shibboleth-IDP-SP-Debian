@@ -1,0 +1,13 @@
+dn: cn=config
+changetype:modify
+replace: olcTLSCACertificateFile
+olcTLSCACertificateFile: /etc/ssl/certs/cacert.pem
+-
+replace: olcTLSCertificateFile
+olcTLSCertificateFile: /etc/ssl/certs/{{ idp_fqdn }}-cert.pem
+-
+replace: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /etc/ssl/private/{{ idp_fqdn }}-key.pem
+-
+replace: olcLogLevel
+olcLogLevel: 256

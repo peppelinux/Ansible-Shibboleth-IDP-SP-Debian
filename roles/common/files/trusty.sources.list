@@ -1,0 +1,19 @@
+deb http://it.archive.ubuntu.com/ubuntu/ {{ release }} main restricted
+deb-src http://it.archive.ubuntu.com/ubuntu/ {{ release }} main restricted
+deb http://it.archive.ubuntu.com/ubuntu/ {{ release }}-updates main restricted
+deb-src http://it.archive.ubuntu.com/ubuntu/ {{ release }}-updates main restricted
+deb http://it.archive.ubuntu.com/ubuntu/ {{ release }} universe
+deb-src http://it.archive.ubuntu.com/ubuntu/ {{ release }} universe
+deb http://it.archive.ubuntu.com/ubuntu/ {{ release }}-updates universe
+deb-src http://it.archive.ubuntu.com/ubuntu/ {{ release }}-updates universe
+deb http://it.archive.ubuntu.com/ubuntu/ {{ release }} multiverse
+deb-src http://it.archive.ubuntu.com/ubuntu/ {{ release }} multiverse
+deb http://it.archive.ubuntu.com/ubuntu/ {{ release }}-updates multiverse
+deb-src http://it.archive.ubuntu.com/ubuntu/ {{ release }}-updates multiverse
+
+deb http://security.ubuntu.com/ubuntu {{ release }}-security main restricted
+deb-src http://security.ubuntu.com/ubuntu {{ release }}-security main restricted
+deb http://security.ubuntu.com/ubuntu {{ release }}-security universe
+deb-src http://security.ubuntu.com/ubuntu {{ release }}-security universe
+deb http://security.ubuntu.com/ubuntu {{ release }}-security multiverse
+deb-src http://security.ubuntu.com/ubuntu {{ release }}-security multiverse
