@@ -11,36 +11,30 @@
     domain1: it
     domain: "{{ name }}.{{ domain1 }}"
     
-    idp_ip: "10.0.3.32"
-    sp_ip:  "10.0.4.32"
+    idp_ip: "10.0.7.1"
+    sp_ip:  "10.0.7.10"
     
     ldap_basedc: "dc={{ name }},dc={{ domain1 }}"
     ldap_basedn: "ou=people,dc={{ name }},dc={{ domain1 }}"
-    ldap_binddn: "cn=search,ou=system,dc={{ name }},dc={{ domain1 }}"
+    #ldap_binddn: "cn=search,ou=system,dc={{ name }},dc={{ domain1 }}"
     ldap_pw: password
     # ldap_bind: localhost
-    cert_path: /etc/ssl/certs
-    idp_dl_url: https://shibboleth.net/downloads/identity-provider/3.3.1/shibboleth-identity-provider-3.3.1.tar.gz
+    cert_path: /etc/ssl/certs/shibboleth
+    
+    idp_dl_url: https://shibboleth.net/downloads/identity-provider/3.3.2/shibboleth-identity-provider-3.3.2.tar.gz
     idp_fqdn: "idp.{{ domain }}"
     idp_path: /opt/shibboleth-idp
-    # generate with: openssl rand -base64 36
-    # ansible-playbook playbook.yml -i hosts --extra-vars "persId_salt=xlbB06G6P6Omt7f5RCopfBvF8Sx1+frf99kSHdb8EEfSB4yt user=starbuck"
-    # lascia commentato per la generazione in automatico
-    # decommenta se serve compatibilità con il pregresso
-    # persId_salt: xlbB06G6P6Omt7f5RCopfBvF8Sx1+frf99kSHdb8EEfSB4yt
-    sp_fqdn: "sp.{{ domain }}"
     idp_pw: password
-    mysql_pw: password
-    idpdb_user: shibboleth
-    idpdb_pw: password
+
+    sp_fqdn: "sp.{{ domain }}"
+    
+    # mysql_pw: password
+    # idpdb_user: shibboleth
+    # idpdb_pw: password
+    
     tomcat_admin_pw: password
     tomcat_manager_pw: password
-    
-    php_version: "5"
-    java_version: openjdk-7-jdk
-    tomcat_version: tomcat8
-    release: jessie
-    
+        
   roles:
     - { role: common, tags: ["common"] }
     - { role: tomcat, tags: ["tomcat"] }

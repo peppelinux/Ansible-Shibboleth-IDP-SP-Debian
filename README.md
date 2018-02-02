@@ -2,70 +2,29 @@
 ======================================
 
 Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2.
-IdP e SP sono in esecuzione sul medesimo server ma su interfacce di rete differenti.
 I servizi configurati da questo playbook sono:
 
-- tomcat7 o tomcat8
+- tomcat8
 - slapd
 - apache2
 - mod_shib2 (Service provider)
 - shibboleth (Identity provider)
 - mysql
 
-Requirements
-------------
+Requisiti
+---------
+
+Almeno due interfacce di rete
 
 ````    
-aptitude install python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev
-pip2 install ansible
+aptitude install python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev
+pip3 install ansible
 ````
 
 Comandi di deployment e cleanup
 ===============================
 
-Creazione delle chiavi firmate:
-    
-    # installa easy-rsa
-    aptitude install easy-rsa
-    cp -Rp /usr/share/easy-rsa/ .
-    cd easy-rsa
-
-    # personalizziamo attributi, lunghezza DH, percorso di salvataggio delle chiavi, sopratutto data di scadenza di queste
-    nano vars
-
-    # activate environment
-    source vars
-
-    # purge all the previous keys/dh/crts
-    ./clean-all
-
-    # creates: ca.crt	ca.key	index.txt serial
-    ./build-ca
-
-    # creates diffie hellman's 
-    # il tempo di creazione varia dalla lunghezza del dh, 4096bit prende qualche minuto in più
-    ./build-dh
-
-    # then creates client certificates
-    ./build-key idp.example.org
-    ./build-key sp.example.org
-    
-    # adesso nella directory "keys" troviamo le chiavi
-    # da convertire in formato pem
-    # e da spostare in $shibboleth-Idp3-ansible/roles/common/files/$nome_dominio
-    
-    # convertire da crt a pem
-    # openssl rsa -in server.key -text > private.pem
-    # openssl x509 -inform PEM -in server.crt > public.pem
-    
-    cp keys/cacert.pem $shibboleth-Idp3-ansible/roles/common/files/$nome_dominio/cacert.pem
-    cp keys/cakey.pem $shibboleth-Idp3-ansible/roles/common/files/$nome_dominio/cakey.pem
-    cp keys/idp.$nome_dominio-cert.pem $shibboleth-Idp3-ansible/roles/common/files/$nome_dominio/$nome_dominio-cert.pem
-    cp keys/idp.$nome_dominio-key.pem $shibboleth-Idp3-ansible/roles/common/files/$nome_dominio/$nome_dominio-key.pem    
-    cp keys/sp.$nome_dominio-key.pem $shibboleth-Idp3-ansible/roles/common/files/$nome_dominio/$nome_dominio-key.pem
-    cp keys/sp.$nome_dominio-cert.pem $shibboleth-Idp3-ansible/roles/common/files/$nome_dominio/$nome_dominio-cert.pem
-
-
+Puoi creare delle chiavi firmate di esempio con make_ca.sh.
 Edita le variabili nel playbook e il file hosts prima di fare l'esecuzione
     
     ansible-playbook playbook.yml -i hosts -v
