@@ -1,4 +1,4 @@
-[Ansible playbook] Shibboleth Debian 9 
+[NotYetUsable][Ansible playbook] Shibboleth Debian 9 
 ======================================
 
 Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2.
