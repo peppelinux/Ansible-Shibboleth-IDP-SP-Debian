@@ -84,7 +84,7 @@
               
         In all cases you should review the "idp.httpclient.*" properties defined in services.properties
     -->
-    
+
     <!--
     Otherwise by default we look at resources whose names are derived from %{idp.home}. Services not configured
     using native Spring syntax also need to load the property-placeholder file in order to pull settings from

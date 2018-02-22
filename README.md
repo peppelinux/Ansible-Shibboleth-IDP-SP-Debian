@@ -1,11 +1,16 @@
-[NotYetUsable][Ansible playbook] Shibboleth Debian 9 
+[NotUsableYET][Ansible playbook] Shibboleth Debian 9 
 ======================================
 
 Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2.
-I servizi configurati da questo playbook sono:
+Richiede una installazione di OpenLDAP, così come illustrata al seguente url:
+
+````
+https://github.com/peppelinux/ansible-slapd-eduperson2016
+````
+
+I servizi configurati in questo playbook sono:
 
 - tomcat8
-- slapd
 - apache2
 - mod_shib2 (Service provider)
 - shibboleth (Identity provider)
@@ -25,16 +30,20 @@ Comandi di deployment e cleanup
 ===============================
 
 Puoi creare delle chiavi firmate di esempio con make_ca.sh.
-Edita le variabili nel playbook e il file hosts prima di fare l'esecuzione
-    
-    ansible-playbook playbook.yml -i hosts -v
+Edita le variabili nel playbook e il file hosts prima di fare l'esecuzione.
+Il seguente esempio considera una esecuzione in locale.
+
+````
+    ansible-playbook -i "localhost," -c local playbook.yml -vvv
+````
 
 Se cambi parametri puoi fare un cleanup. 
 Questo è altamente sconsigliato in ambienti di produzione perchè disinstalla i software e rimuove brutalmente il contenuto delle directory di configurazione.
 
-    ansible-playbook playbook.yml -i hosts -v --limit idp -e '{ cleanup: true }'
+````
+    ansible-playbook -i "localhost," -c local playbook.yml -vvv -e '{ cleanup: true }'
+````
 
-Ricorda di aggiungere gli hostname di idp e sp nel tuo /etc/hosts
 
 Risultato
 ========================
@@ -51,14 +60,6 @@ Note
 ========================
 
 La VM bisogna che abbia almeno due interfacce di rete, una per l'idp e un'altra per l'sp. Puoi usare configurazioni Vagrant oppure configurarne una manualmente in virtualbox.
-
-Bisogna inoltre creare un utente, nella VM, che acceda in ssh tramite certificati (senza password) e ottenga privilegi di root tramite sudo senza password. Oppure, in mancanza di questo accesso privilegiato, si può sempre eseguire il playbook in locale ed eludere la connessione ssh.
-
-Per copiare i certificati ssh del tuo utente sulla VM puoi seguire il seguente di esempio:
-
-    ssh-keygen -t rsa
-    ssh-copy-id 10.0.3.32
-
 
 Crea nel tuo DNS o in /etc/hosts gli hostname idp ed sp se sei in testunical
 
@@ -113,21 +114,6 @@ opensaml::FatalProfileException
     probabilmente manca la chiave pubblica dell'SP presso l'IDP, oppure le chiavi presentano, localmente, permessi di 
     lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo errore si presenta e i certificati sono     stati adeguatamente definiti in shibboleth2.xml... Hai ricordato di riavviare shibd? :)
 
-slapd: (error:80)
-
-    restart slapd in debug mode
-    slapd -h ldapi:/// -u openldap -g openldap -d 65 -F /etc/ldap/slapd.d/ -d 65    
-    controllare che i file pem non siano vuoti e che i permessi di lettura consentano openldap+r
-    per forzare in caso di certificati problematici utilizzare "directory-config_nocert.ldif"
-    la connessione tra shibboleth e idp avviene in locale, in questo setup
-
-
-slapd: ldap_modify: No such object (32): 
-
-    probabilmente stai tentando di modificare qualcosa che non esiste
-    Probabilmente il tipo di database se hdb, mdb o altro (dpkg-reconfigure slapd per modificarlo).
-    Verificare la corrispondenza tra la configurazione di slapd e il file directory-config
-
 "Request failed: <urlopen error ('_ssl.c:565: The handshake operation timed out',)>"
 
     TASK [mod-shib2 : Add IdP Metadata to Shibboleth SP]
@@ -175,11 +161,5 @@ Setup di Shibboleth Idp3
 Todo
 ====
 
-- Scelta tra Apache e Nginx/FastCGI come webserver (per sp)
-- Scelta tra Tomcat7 e Jetty come contenitore servlet (per idp)
-- schema migrations per DB e LDAP
-- logrotate setup per le directory di logging
-- configurazione slapd per storage contenuti su RDBMS
 - Implementare multiple sources per attributi da RDBMS differenti
-
-    
+- ruolo per SP con nginx

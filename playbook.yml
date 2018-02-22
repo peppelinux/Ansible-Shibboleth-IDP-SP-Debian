@@ -3,44 +3,55 @@
 # ansible-playbook playbook.yml -i hosts -v --tag common
 
 ---
-- name: Install IdP Course VM
+- name: Install Shibboleth IDP and SP
   hosts: all
   become: yes
   vars:
-    name:   testunical
+    hostname: testunical
     domain1: it
-    domain: "{{ name }}.{{ domain1 }}"
+    domain: "{{ hostname }}.{{ domain1 }}"
     
     idp_ip: "10.0.7.1"
     sp_ip:  "10.0.7.10"
-    
+
+    # Commons
+    cert_path: "/etc/ssl/certs/{{ domain }}/shibboleth"
+    tmp_upload_dir: "/tmp/ansible-shibboleth-idp-sp-setup"
+
+    # LDAP configuration
     ldap_basedc: "dc={{ name }},dc={{ domain1 }}"
     ldap_basedn: "ou=people,dc={{ name }},dc={{ domain1 }}"
-    #ldap_binddn: "cn=search,ou=system,dc={{ name }},dc={{ domain1 }}"
-    ldap_pw: password
-    # ldap_bind: localhost
-    cert_path: /etc/ssl/certs/shibboleth
-    
-    idp_dl_url: https://shibboleth.net/downloads/identity-provider/3.3.2/shibboleth-identity-provider-3.3.2.tar.gz
-    idp_fqdn: "idp.{{ domain }}"
-    idp_path: /opt/shibboleth-idp
-    idp_pw: password
+    ldap_pw: slapdsecret
 
+    # Tomcat configuration
+    tomcat_version: tomcat8
+    tomcat_admin_pw: tomcatsecret
+    tomcat_manager_pw: tomcatsecret
+    tomcat_ram: 384m
+    
+    # Shibboleth IDP
+    shib_idp_version: "3.3.2"
+    shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
+    shib_dest_dir: "/opt"
+    idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
+    shib_setup_folder: "{{ idp_path }}-{{ shib_idp_version }}.tar.gz"
+    idp_dl_url: "https://shibboleth.net/downloads/identity-provider/{{ shib_idp_version }}/{{ shib_idp_package }}"
+    idp_entity_id: "https://{{ idp_fqdn }}/idp/shibboleth"
+    idp_fqdn: "idp.{{ domain }}"
+    idp_secret:   idpsecret
+
+    # Shibboleth IDP RDBMS per persistentID
+    idp_rdbms_dbname: shibboleth
+    idp_rdbms_user: "{{ idp_rdbms_dbname }}"
+    idp_rdbms_pw: "{{ idp_secret }}"
+
+    # Shibboleth SP
     sp_fqdn: "sp.{{ domain }}"
-    
-    # mysql_pw: password
-    # idpdb_user: shibboleth
-    # idpdb_pw: password
-    
-    tomcat_admin_pw: password
-    tomcat_manager_pw: password
         
   roles:
     - { role: common, tags: ["common"] }
     - { role: tomcat, tags: ["tomcat"] }
-    - { role: slapd, tags: ["slapd"] }
-    - { role: shib3idp, tags: ["shib3idp"] }
-    - { role: apache2, tags: ["apache2"] }
-    - { role: mod-shib2, tags: ["shib2"] }  
-    - { role: mysql, tags: ["mysql"] }      
-
+    - { role: mysql, tags: ["mysql"] }          
+    # - { role: shib3idp, tags: ["shib3idp"] }
+    # - { role: apache2, tags: ["apache2"] }
+    # - { role: mod-shib2, tags: ["shib2"] }  

@@ -1,28 +1,17 @@
-# CLEANUPS
-- name: Cleanup Shibboleth IdP Install
-  file: path=/opt/shibboleth-idp state=absent
-  when: cleanup is defined
-
-- name: Cleanup Shibboleth IdP Install source tree
-  file: path=/opt/shibboleth-identity-provider-3.3.1 state=absent
-  when: cleanup is defined
-
-# END CLEANUPS
-
 - name: Stat Shibboleth IdP tarball in /opt 
-  stat: path=/opt/shibboleth-identity-provider-3.3.1.tar.gz
+  stat: path="{{ shib_dest_dir }}/{{ shib_idp_package }}"
   register: shib_tarball
 
-- name: Download Shibboleth IdP
+- name: "Download Shibboleth {{ shib_idp_version }} IdP"
   get_url: url={{ idp_dl_url }} dest=/opt
   when: shib_tarball.stat.exists == False
 
 - name: Stat Shibboleth IdP source dir in /opt 
-  stat: path=/opt/shibboleth-identity-provider-3.3.1
+  stat: path="{{ idp_path }}"
   register: shib_dir_source
   
 - name: Unarchive Shibboleth IdP
-  unarchive: src=/opt/shibboleth-identity-provider-3.3.1.tar.gz dest=/opt copy=no
+  unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
   # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 
 
 # Esegui setup di shibboleth e rispondi al prompt di installazione
@@ -31,29 +20,27 @@
 - name: Prepare properties for Shibboleth IdP install
   template: 
     src: roles/shib3idp/templates/shib-install.properties 
-    dest: /tmp/shib-install.properties
-  #when: pre_t is defined and pre_t > 1 
+    dest: "{{ tmp_upload_dir }}/shib-install.properties"
 
 - name: get JAVA_HOME
   shell: readlink -f /usr/bin/java | sed "s:bin/java::"
   register: java_home
 
 - name: Stat Shibboleth IdP dest dir in /opt
-  stat: path=/opt/shibboleth-idp/metadata
+  stat: path="{{ idp_path }}/metadata"
   register: shib_dir_dest
 
 - name: Install Shibboleth Idp
   environment: 
     JAVA_HOME: "{{ java_home.stdout }}"
-  command: |
-    /opt/shibboleth-identity-provider-3.3.1/bin/install.sh \
-    -Didp.sealer.password={{ idp_pw }} \
-    -Didp.keystore.password={{ idp_pw }} \
-    -Didp.scope={{ domain }} \
-    -Didp.src.dir=/opt/shibboleth-identity-provider-3.3.1 \
-    -Didp.host.name={{ idp_fqdn }} \
-    -Didp.target.dir=/opt/shibboleth-idp \
-    -Didp.merge.properties=/tmp/shib-install.properties
+  command: "{{ shib_setup_folder }}/bin/install.sh" # \
+            # -Didp.sealer.password={{ idp_pw }} \
+            # -Didp.keystore.password={{ idp_pw }} \
+            # -Didp.scope={{ domain }} \
+            # -Didp.src.dir={{ shib_setup_folder }} \
+            # -Didp.host.name={{ idp_fqdn }} \
+            # -Didp.target.dir={{ idp_path }} \
+            # -Didp.merge.properties={{ tmp_upload_dir }}/shib-install.properties"
   when: shib_dir_dest.stat.exists == False 
 
 - name: Copy template configuration for ldap.properties
@@ -70,7 +57,7 @@
   copy: 
     src: roles/shib3idp/files/saml-nameid.properties-corso
     dest: "{{ idp_path }}/conf/saml-nameid.properties"
-  
+
 - name: Copy template configuration global.xml
   template: 
     src: roles/shib3idp/templates/global.xml
@@ -136,7 +123,7 @@
 
 - name: Add metadata providers
   template: 
-    src: roles/shib3idp/templates/metadata-providers.xml-1
+    src: roles/shib3idp/templates/metadata-providers.xml-no_sp
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
 
 # Malavolti docet
@@ -191,4 +178,3 @@
 
 - name: Restart Tomcat
   service: name="{{ tomcat_version }}" state=restarted
-

@@ -30,6 +30,7 @@
         </AttributeRule>
 	
 	<!--
+    Nel caso in cui alcuni attributi presenti su un DB rdmbs debbano comporre i ns attributi
 	<AttributeRule attributeID="VEDI id ATTRIBUTO DEFINITO in attribute-resolver-myRdbms.xml">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>

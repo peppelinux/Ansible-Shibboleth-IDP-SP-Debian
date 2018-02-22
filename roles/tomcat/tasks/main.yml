@@ -1,38 +1,14 @@
-# CLEANUPS
-- name: Stop {{ tomcat_version }}
-  service: name={{ tomcat_version }} state=stopped enabled=false
-  when: cleanup is defined
-  #~ ignore_errors: yes
- 
-#~ - name: Stop tomcat
-  #~ service: name=tomcat state=stopped enabled=false
-  #~ when: cleanup is defined
-  #~ ignore_errors: yes 
-
-- name: Uninstall {{ tomcat_version }}
-  apt: name={{ tomcat_version }} state=absent purge=yes
-  when: cleanup is defined
-  # END CLEANUP
-  
-# to improve security watch this: https://www.owasp.org/index.php/Securing_tomcat
-
-- name: Remove /etc/tomcat*
-  file: path=/etc/tomcat* state=absent
-  when: cleanup is defined
-
-# END CLEANUP
-
 - name: Install {{ tomcat_version }}
   apt: name={{ tomcat_version }} state=present
 
 - name: /etc/{{ tomcat_version }}/server.xml with AJP, NO 8080, and no autoDeploy
   template:
-    src: roles/tomcat/templates_{{ tomcat_version }}/server.xml
+    src: roles/tomcat/templates/server.xml
     dest: /etc/{{ tomcat_version }}/server.xml
 
 - name: /etc/default/{{ tomcat_version }} with urandom and 384m heap mem
   template:
-    src: roles/tomcat/templates_{{ tomcat_version }}/{{ tomcat_version }}
+    src: roles/tomcat/templates/{{ tomcat_version }}
     dest: /etc/default/{{ tomcat_version }}
 
 - name: Install JSTL-1.2 library

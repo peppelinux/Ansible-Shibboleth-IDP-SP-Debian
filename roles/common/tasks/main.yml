@@ -6,20 +6,15 @@
 - name: Install apt packages
   apt: name={{ item }} state=present
   with_items:
+    - libmysql-java #contains: /usr/share/java/mysql.jar
     - html2text
     - emacs24-nox
     - vim
     - ntp
     - apache2
     - openjdk-8-jre
-    # only works on ubuntu
-    # - libjstl1.1-java
-    - tomcat8
-    #- tomcat"{{ tomcat_version }}"-admin
-    # - libmysql-java
+    - "{{ tomcat_version }}"
     - libapache2-mod-shib2
-    #~ - shibboleth-sp2-common
-    #~ - shibboleth-sp2-utils
     - libapache2-mod-php7.0
   tags: online
 
@@ -35,20 +30,18 @@
 - name: Configure /etc/environment
   template: src=roles/common/templates/environment dest=/etc/environment
 
-- name: Install CA Certificate
-  copy: src=roles/common/files/{{ domain }}/cacert.pem dest={{ cert_path }}/cacert.pem
+- name: "Ensures {{ cert_path }} dir exists"
+  file: path="{{ cert_path }}" state=directory
 
-- name: Install CA Key
-  copy: src=roles/common/files/{{ domain }}/cakey.pem dest={{ cert_path }}/private mode=0600
+- name: Copy certs
+  copy: 
+    src: "{{ item }}"
+    dest: "{{ cert_path }}/"
+    owner: root
+    group: ssl-cert
+    mode: 640
+  with_fileglob:
+    - roles/common/files/certs/*
 
-- name: Install IdP Certificate
-  copy: src=roles/common/files/{{ domain }}/{{ idp_fqdn }}-cert.pem dest={{ cert_path }}/{{ idp_fqdn }}-cert.pem
-
-- name: Install IdP Key
-  copy: src=roles/common/files/{{ domain }}/{{ idp_fqdn }}-key.pem dest={{ cert_path }}/private/{{ idp_fqdn }}-key.pem group=ssl-cert mode=0640
-
-- name: Install SP Certificate
-  copy: src=roles/common/files/{{ domain }}/{{ sp_fqdn }}-cert.pem dest={{ cert_path }}/{{ sp_fqdn }}-cert.pem
-
-- name: Install SP Key
-  copy: src=roles/common/files/{{ domain }}/{{ sp_fqdn }}-key.pem dest={{ cert_path }}/private/{{ sp_fqdn }}-key.pem group=ssl-cert mode=0640
+- name: "Ensures {{ tmp_upload_dir }} dir exists"
+  file: path="{{ tmp_upload_dir }}" state=directory

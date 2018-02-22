@@ -1,0 +1,47 @@
+- name: Check debconf for mysql-server entries
+  shell: (debconf-get-selections | grep -q -s mysql-server); echo $?
+  register: debconf
+  ignore_errors: yes
+
+- name: Set debconf mysql root password
+  debconf: name=mysql-server question="mysql-server/root_password" value="{{ idp_rdbms_pw }}" vtype="password"
+  when: debconf.stdout == "1"
+    
+- name: Set debconf mysql root password again
+  debconf: name=mysql-server question="mysql-server/root_password_again" value="{{ idp_rdbms_pw }}" vtype="password"
+  when: debconf.stdout == "1"
+
+- name: Install Mysql
+  apt: name=mysql-server state=present
+
+- name: Run Mysql
+  service: name=mysql state=started enabled=yes
+
+- name: upload sql datatabse
+  template: 
+    src: roles/mysql/templates/shibboleth.sql
+    dest: "{{ tmp_upload_dir }}/shibboleth.sql"
+
+- name: Create Shibboleth Database
+  shell: "mysql -u root --password={{ idp_rdbms_pw }} < {{ tmp_upload_dir }}/shibboleth.sql"
+
+- name: Remove temporary SQL dump
+  file: path="{{ tmp_upload_dir }}/shibboleth.sql" state=absent
+
+- name: Check table RuoliOrganizzativi
+  shell: "echo 'SELECT * FROM RuoliOrganizzativi' | mysql -u {{ idp_rdbms_user }} --password={{ idp_rdbms_pw }} {{ idp_rdbms_dbname }}"
+  register: ruoli_org
+
+- name: Copy temporary insert-ruoliorganizzativi.sql
+  copy:
+    src: roles/mysql/files/insert-ruoliorganizzativi.sql
+    dest: "{{ tmp_upload_dir }}/insert-ruoliorganizzativi.sql"
+
+- name: Load table RuoliOrganizzativi
+  shell: "mysql -u root --password={{ idp_rdbms_pw }} {{ idp_rdbms_dbname }} < {{ tmp_upload_dir }}/insert-ruoliorganizzativi.sql"
+  when: ruoli_org.stdout == ""
+
+- name: Clean temporary insert-ruoliorganizzativi.sql
+  file:
+    state: absent
+    path: "{{ tmp_upload_dir }}/insert-ruoliorganizzativi.sql"
