@@ -1,20 +1,11 @@
-# CLEANUPS
-- name: Uninstall libapache2-mod-shib2
-  apt: name=libapache2-mod-shib2 state=absent purge=yes
-  when: cleanup is defined
-
-#~ - name: Remove /etc/shibboleth dir
-  #~ file: path=/etc/shibboleth state=absent
-  #~ when: cleanup is defined
-# END CLEANUP
-
 - name: Install libapache2-mod-shib2
   apt: name=libapache2-mod-shib2 state=present
 
-- name: Create Shibboleth SP keys
-  shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth 
-  args:
-    creates: /etc/shibboleth/{{ sp_fqdn }}-key.pem
+# da rimuovere
+# - name: Create Shibboleth SP keys
+  # shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth 
+  # args:
+    # creates: /etc/shibboleth/{{ sp_fqdn }}-key.pem
 
 - name: Create metadata directory for IdP metadata
   file: name=/etc/shibboleth/metadata state=directory

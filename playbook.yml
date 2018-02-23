@@ -11,8 +11,8 @@
     domain1: it
     domain: "{{ hostname }}.{{ domain1 }}"
 
-    idp_ip: "10.0.7.1"
-    sp_ip:  "10.0.7.10"
+    idp_ip: "192.168.27.72"
+    sp_ip:  "192.168.27.72"
 
     # Commons
     cert_path: "/etc/ssl/certs/{{ domain }}"
@@ -22,7 +22,9 @@
     ldap_basedc: "dc={{ hostname }},dc={{ domain1 }}"
     ldap_basedn: "ou=people,dc={{ hostname }},dc={{ domain1 }}"
     ldap_pw: slapdsecret
-
+    # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
+    ldap_cert: slapd-cert.pem
+    
     # Tomcat configuration
     tomcat_version: tomcat8
     tomcat_admin_pw: tomcatsecret
@@ -39,7 +41,8 @@
     idp_entity_id: "https://{{ idp_fqdn }}/idp/shibboleth"
     idp_fqdn: "idp.{{ domain }}"
     idp_secret:   idpsecret
-
+    idp_admin_email: "root@{{ idp_fqdn }}"
+    
     # Shibboleth IDP RDBMS per persistentID
     idp_rdbms_dbname: shibboleth
     idp_rdbms_user: "{{ idp_rdbms_dbname }}"
@@ -49,9 +52,9 @@
     sp_fqdn: "sp.{{ domain }}"
 
   roles:
-    # - { role: common, tags: ["common"] }
-    # - { role: tomcat, tags: ["tomcat"] }
-    # - { role: mysql, tags: ["mysql"] }          
-    # - { role: shib3idp, tags: ["shib3idp"] }
+    - { role: common, tags: ["common"] }
+    - { role: tomcat, tags: ["tomcat"] }
+    - { role: mysql, tags: ["mysql"] }          
+    - { role: shib3idp, tags: ["shib3idp"] }
     - { role: apache2, tags: ["apache2"] }
-    # - { role: mod-shib2, tags: ["shib2"] }  
+    - { role: mod-shib2, tags: ["shib2"] }  
