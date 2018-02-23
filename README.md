@@ -14,12 +14,13 @@ I servizi configurati in questo playbook sono:
 - apache2
 - mod_shib2 (Service provider)
 - shibboleth (Identity provider)
-- mysql
+- mariaDB
 
 Requisiti
 ---------
 
-Almeno due interfacce di rete
+- Installare OpenLDAP separatamente, eventualmente con il seguente playbook: https://github.com/peppelinux/ansible-slapd-eduperson2016
+- Creare e utilizzare due interfacce di rete, rispettivamente per IDP e SP
 
 ````    
 aptitude install python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev
