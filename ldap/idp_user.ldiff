@@ -1,0 +1,8 @@
+# Change dn and password as your needs
+# ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -W -f idp_user.ldiff 
+dn: uid=idp,ou=applications,dc=testunical,dc=it
+objectClass: inetOrgPerson
+cn: idp
+sn: shibboleth
+uid: idp
+userPassword: idpsecret
