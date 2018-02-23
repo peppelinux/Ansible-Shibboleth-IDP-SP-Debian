@@ -1,13 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-    This file is an EXAMPLE policy file.  While the policy presented in this 
-    example file is illustrative of some simple cases, it relies on the names of
-    non-existent example services and the example attributes demonstrated in the
-    default attribute-resolver.xml file.
-    
-    Deployers should refer to the documentation for a complete list of components
-    and their options.
--->
 <AttributeFilterPolicyGroup id="ShibbolethFilterPolicy"
         xmlns="urn:mace:shibboleth:2.0:afp"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -39,7 +30,7 @@
     </AttributeFilterPolicy>
 
     <!-- Release eduPersonAffiliation to two specific SPs. -->
-    <AttributeFilterPolicy id="example2">
+    <AttributeFilterPolicy id="{{ sp_fqdn }}">
         <PolicyRequirementRule xsi:type="OR">
             <Rule xsi:type="Requester" value="https://{{ sp_fqdn }}" />
             <!-- <Rule xsi:type="Requester" value="https://another.example.org/shibboleth" /> -->

@@ -21,6 +21,7 @@
     # LDAP configuration
     ldap_basedc: "dc={{ hostname }},dc={{ domain1 }}"
     ldap_basedn: "ou=people,dc={{ hostname }},dc={{ domain1 }}"
+    ldap_login: "cn=idp-{{ hostname }},dc={{ hostname }},dc={{ domain1 }}"
     ldap_pw: slapdsecret
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
@@ -38,8 +39,8 @@
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
     shib_setup_folder: "{{ shib_dest_dir }}/shibboleth-identity-provider-{{ shib_idp_version }}"
     idp_dl_url: "https://shibboleth.net/downloads/identity-provider/{{ shib_idp_version }}/{{ shib_idp_package }}"
-    idp_entity_id: "https://{{ idp_fqdn }}/idp/shibboleth"
     idp_fqdn: "idp.{{ domain }}"
+    idp_entity_id: "https://{{ idp_fqdn }}/idp/shibboleth"
     idp_secret:   idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     

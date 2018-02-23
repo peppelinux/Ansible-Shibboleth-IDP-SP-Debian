@@ -14,13 +14,13 @@ I servizi configurati in questo playbook sono:
 - apache2
 - mod_shib2 (Service provider)
 - shibboleth (Identity provider)
-- mariaDB
+- mariaDB (persistent store)
 
 Requisiti
 ---------
 
-- Installare OpenLDAP separatamente, eventualmente con il seguente playbook: https://github.com/peppelinux/ansible-slapd-eduperson2016
-- Creare e utilizzare due interfacce di rete, rispettivamente per IDP e SP
+- Una installazione preesistente di OpenLDAP
+- Due interfacce di rete, rispettivamente per IDP e SP
 - Installare le seguenti dipendenze per l'esecuzione in locale di ansible
 
 ````    
@@ -103,12 +103,16 @@ Disabilitare SAML 1 (stessa fonte del precedente) - questo e le seguenti indicaz
 Ringraziamenti
 ========================
 
-Ispirato da Garr Netvolution 2017 (http://eventi.garr.it/it/ws17) e basato sul lavoro di Davide Vaghetti https://github.com/daserzw/IdP3-ansible.
+Inspirato da Garr Netvolution 2017 (http://eventi.garr.it/it/ws17) e basato sul lavoro di Davide Vaghetti https://github.com/daserzw/IdP3-ansible.
 
 Un ringraziamento speciale a Marco Malavolti per la redazione delle guide di installazione ufficiali e per le repository (https://github.com/malavolti).
 
 Troubleshooting
 ========================
+
+net.shibboleth.utilities.java.support.component.ComponentInitializationException: Injected service was null or not an AttributeResolver
+    In tomcat8 localhost.YYYY-mm-dd.log
+    La connessione al datasource fallisce (ldap/mysql connection/authentication error).
 
 opensaml::FatalProfileException
     Error from identity provider: 
@@ -124,10 +128,20 @@ opensaml::FatalProfileException
 
 Test confgurazioni singoli servizi/demoni
 
-    xmlwf -e UTF-8 /etc/tomcat8/$nomefile.xml
-    apache2ctl configtest
-    shibd -t
-    
+````
+# general purpose tomcat file test
+xmlwf -e UTF-8 /etc/tomcat8/$nomefile.xml
+
+apache2ctl configtest
+
+# status shibboleth idp
+export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+/opt/shibboleth-idp/bin/status.sh 
+
+# shibboleth sp test
+shibd -t
+
+````
 
 opensaml::SecurityPolicyException
 Message was signed, but signature could not be verified.
