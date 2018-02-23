@@ -20,6 +20,7 @@ Requisiti
 ---------
 
 - Una installazione preesistente di OpenLDAP
+- Un utente LDAP che possa accedere in sola lettura le definizioni degli utenti (vedi esempi in /ldap)
 - Due interfacce di rete, rispettivamente per IDP e SP
 - Installare le seguenti dipendenze per l'esecuzione in locale di ansible
 
