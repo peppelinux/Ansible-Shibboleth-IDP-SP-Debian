@@ -21,6 +21,7 @@
     # LDAP configuration
     ldap_basedc: "dc={{ hostname }},dc={{ domain1 }}"
     ldap_basedn: "ou=people,dc={{ hostname }},dc={{ domain1 }}"
+    ldap_login: "cn=idp-{{ hostname }},dc={{ hostname }},dc={{ domain1 }}"
     ldap_pw: slapdsecret
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem

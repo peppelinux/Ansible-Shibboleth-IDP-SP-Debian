@@ -110,6 +110,10 @@ Un ringraziamento speciale a Marco Malavolti per la redazione delle guide di ins
 Troubleshooting
 ========================
 
+net.shibboleth.utilities.java.support.component.ComponentInitializationException: Injected service was null or not an AttributeResolver
+    In tomcat8 localhost.YYYY-mm-dd.log
+    La connessione al datasource fallisce (ldap/mysql connection/authentication error).
+
 opensaml::FatalProfileException
     Error from identity provider: 
     Status: urn:oasis:names:tc:SAML:2.0:status:Responder
@@ -124,10 +128,20 @@ opensaml::FatalProfileException
 
 Test confgurazioni singoli servizi/demoni
 
-    xmlwf -e UTF-8 /etc/tomcat8/$nomefile.xml
-    apache2ctl configtest
-    shibd -t
-    
+````
+# general purpose tomcat file test
+xmlwf -e UTF-8 /etc/tomcat8/$nomefile.xml
+
+apache2ctl configtest
+
+# status shibboleth idp
+export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
+/opt/shibboleth-idp/bin/status.sh 
+
+# shibboleth sp test
+shibd -t
+
+````
 
 opensaml::SecurityPolicyException
 Message was signed, but signature could not be verified.
