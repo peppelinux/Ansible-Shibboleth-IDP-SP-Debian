@@ -41,8 +41,8 @@
             (Set discoveryProtocol to "WAYF" for legacy Shibboleth WAYF support.)
             You can also override entityID on /Login query string, or in RequestMap/htaccess.
             -->
-            <SSO entityID="https://{{ idp_fqdn }}/idp/shibboleth">
-              SAML2 SAML1
+            <SSO entityID="{{ idp_entity_id }}">
+              SAML2 <!--SAML1-->
             </SSO>
 
             <!-- SAML and local-only logout. -->

@@ -38,8 +38,8 @@
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
     shib_setup_folder: "{{ shib_dest_dir }}/shibboleth-identity-provider-{{ shib_idp_version }}"
     idp_dl_url: "https://shibboleth.net/downloads/identity-provider/{{ shib_idp_version }}/{{ shib_idp_package }}"
-    idp_entity_id: "https://{{ idp_fqdn }}/idp/shibboleth"
     idp_fqdn: "idp.{{ domain }}"
+    idp_entity_id: "https://{{ idp_fqdn }}/idp/shibboleth"
     idp_secret:   idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     
