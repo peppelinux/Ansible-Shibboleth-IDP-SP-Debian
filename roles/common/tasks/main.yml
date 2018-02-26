@@ -13,7 +13,6 @@
     - ntp
     - apache2
     - openjdk-8-jre
-    - "{{ tomcat_version }}"
     - libapache2-mod-shib2
     - libapache2-mod-php7.0
   tags: online

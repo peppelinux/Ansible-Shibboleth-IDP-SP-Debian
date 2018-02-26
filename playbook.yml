@@ -1,7 +1,7 @@
+# https://wiki.shibboleth.net/confluence/display/IDP30/Installation
 # ansible-playbook playbook.yml -i hosts -v
 # or if you want to run specifieds roles:
 # ansible-playbook playbook.yml -i hosts -v --tag common
-
 ---
 - name: Install Shibboleth IDP and SP
   hosts: all
@@ -21,16 +21,17 @@
     # LDAP configuration
     ldap_basedc: "dc={{ hostname }},dc={{ domain1 }}"
     ldap_basedn: "ou=people,dc={{ hostname }},dc={{ domain1 }}"
-    ldap_login: "cn=idp-{{ hostname }},dc={{ hostname }},dc={{ domain1 }}"
-    ldap_pw: slapdsecret
+    ldap_binddn: "uid=idp,ou=applications,dc=testunical,dc=it"
+    ldap_pw: idpsecret
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
     
-    # Tomcat configuration
-    tomcat_version: tomcat8
-    tomcat_admin_pw: tomcatsecret
-    tomcat_manager_pw: tomcatsecret
-    tomcat_ram: 384m
+    # Jetty configuration
+    jetty_distribution: jetty-distribution-9.4.8.v20171121
+    jetty_pkg: "{{ jetty_distribution }}.tar.gz"
+    jetty_admin_pw: jettysecret
+    jetty_manager_pw: jettysecret
+    jetty_ram: 384m
 
     # Shibboleth IDP
     shib_idp_version: "3.3.2"
@@ -39,8 +40,8 @@
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
     shib_setup_folder: "{{ shib_dest_dir }}/shibboleth-identity-provider-{{ shib_idp_version }}"
     idp_dl_url: "https://shibboleth.net/downloads/identity-provider/{{ shib_idp_version }}/{{ shib_idp_package }}"
-    idp_fqdn: "idp.{{ domain }}"
     idp_entity_id: "https://{{ idp_fqdn }}/idp/shibboleth"
+    idp_fqdn: "idp.{{ domain }}"
     idp_secret:   idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     
@@ -53,9 +54,9 @@
     sp_fqdn: "sp.{{ domain }}"
 
   roles:
-    - { role: common, tags: ["common"] }
-    - { role: tomcat, tags: ["tomcat"] }
-    - { role: mysql, tags: ["mysql"] }          
+    # - { role: common, tags: ["common"] }
+    - { role: jetty, tags: ["jetty"] }
+    # - { role: mysql, tags: ["mysql"] }          
     - { role: shib3idp, tags: ["shib3idp"] }
-    - { role: apache2, tags: ["apache2"] }
-    - { role: mod-shib2, tags: ["shib2"] }  
+    # - { role: apache2, tags: ["apache2"] }
+    # - { role: mod-shib2, tags: ["shib2"] }  

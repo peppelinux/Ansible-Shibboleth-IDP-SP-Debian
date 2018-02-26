@@ -1,0 +1,11 @@
+---
+# handlers file for jetty
+
+- name: "Restart Jetty"
+  become: yes
+  become_method: sudo
+  systemd:
+   name: jetty
+   daemon-reload: True
+   state: restarted
+

@@ -14,13 +14,18 @@
   unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
   # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 
 
-# Esegui setup di shibboleth e rispondi al prompt di installazione
+# setup di shibboleth, prompt di installazione
 # http://docs.ansible.com/ansible/expect_module.html
 
 - name: Prepare properties for Shibboleth IdP install
   template: 
     src: roles/shib3idp/templates/shib-install.properties 
     dest: "{{ tmp_upload_dir }}/shib-install.properties"
+
+- name: Install JSTL-1.2 library
+  get_url:
+    url: https://repo1.maven.org/maven2/jstl/jstl/1.2/jstl-1.2.jar
+    dest: "{{ idp_path }}/edit-webapp/WEB-INF/lib"
 
 - name: get JAVA_HOME
   shell: readlink -f /usr/bin/java | sed "s:bin/java::"
@@ -63,8 +68,8 @@
     src: roles/shib3idp/templates/global.xml
     dest: "{{ idp_path }}/conf/global.xml"
 
-- name: tomcat user for idp dirs
-  file: name="{{ item }}" owner="{{ tomcat_version }}" recurse=yes
+- name: jetty user for idp dirs
+  file: name="{{ item }}" owner="jetty" recurse=yes
   with_items:
     - "{{ idp_path }}/conf"
     - "{{ idp_path }}/logs"

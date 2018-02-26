@@ -130,12 +130,13 @@ opensaml::FatalProfileException
 Test confgurazioni singoli servizi/demoni
 
 ````
-# general purpose tomcat file test
-xmlwf -e UTF-8 /etc/tomcat8/$nomefile.xml
+# jetty status
+service jetty check
 
+# apache2 configuration test
 apache2ctl configtest
 
-# status shibboleth idp
+# You can test that the IdP is properly installed and is at least running successfully in the container with the status command line utility 
 export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 /opt/shibboleth-idp/bin/status.sh 
 

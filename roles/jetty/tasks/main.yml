@@ -1,0 +1,98 @@
+---
+# https://github.com/ConsortiumGARR/idem-tutorials/blob/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/Ubuntu/HOWTO%20Install%20and%20Configure%20a%20Shibboleth%20IdP%20v3.2.1%20on%20Ubuntu%20Linux%20LTS%2016.04%20with%20Apache2%20%2B%20Jetty9.md
+
+- name: "Check what Java version is installed and store the result on 'java_version' ansible variable"
+  shell: java -version 2>&1 | grep -i version | sed 's/.*version ".*\.\(.*\)\..*"/\1/; 1q'
+  register: java_version
+  changed_when: false
+  tags: jetty
+
+- name: "Create 'jetty' group"
+  group: 
+   name: "jetty"
+   state: present
+  tags: jetty
+
+- name: "Create 'jetty' user"
+  user: 
+   name: "jetty"
+   groups: "jetty"
+   createhome: "no"
+  tags: jetty
+
+- name: "Extract Jetty Package"
+  unarchive:
+   src: "files/java{{ java_version['stdout'] }}/{{ jetty_pkg }}"
+   dest: "/usr/local/src"
+   owner: "jetty"
+   group: "jetty"
+  tags: jetty
+
+- name: "Create 'jetty-src' link"
+  file:
+   src: "{{ item.src }}" 
+   dest: "{{ item.dest }}"
+   owner: "jetty"
+   group: "jetty"
+   state: link
+  with_items:
+   - { src: '/usr/local/src/{{ jetty_distribution }}' , dest: '/usr/local/src/jetty-src' }
+  register: jetty_src
+  tags: jetty
+
+- name: "Create '/etc/init.d/jetty' link"
+  file:
+   src: "{{ item.src }}" 
+   dest: "{{ item.dest }}"
+   owner: "jetty"
+   group: "jetty"
+   state: link
+  with_items:
+   - { src: '/usr/local/src/jetty-src/bin/jetty.sh' , dest: '/etc/init.d/jetty' }
+  tags: jetty
+
+- name: "Create Jetty's directories"
+  file:
+   path: "{{ item }}"
+   owner: "jetty"
+   group: "jetty"
+   state: directory
+  with_items:
+   - /opt/jetty
+   - /opt/jetty/etc
+   - /opt/jetty/lib
+   - /opt/jetty/lib/ext
+   - /opt/jetty/logs
+   - /opt/jetty/resources
+   - /opt/jetty/webapps
+   - /opt/jetty/tmp
+   - /var/log/jetty
+  tags: jetty
+  
+- name: "Configure Jetty"
+  template:
+   src: "{{ item.src }}"
+   dest: "{{ item.dest }}"
+   owner: "jetty"
+   group: "jetty"
+  with_items:
+   - { src: "files/java{{ java_version['stdout'] }}/jetty", dest: '/etc/default/jetty' }
+   - { src: "files/java{{ java_version['stdout'] }}/start.ini", dest: '/opt/jetty/start.ini' }
+   - { src: "files/java{{ java_version['stdout'] }}/jetty.xml", dest: '/opt/jetty/etc/jetty.xml' }
+  tags: jetty
+
+- name: "Stop jetty after an upgrade of its package"
+  systemd: 
+   name: "jetty"
+   state: stopped
+  when:
+   - jetty_src.changed
+  tags: jetty
+
+- name: "Start jetty by re-reading configs (2.4 and above)"
+  systemd: 
+   name: "jetty"
+   daemon_reload: True
+   state: started
+   enabled: True
+  tags: jetty

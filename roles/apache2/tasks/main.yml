@@ -1,7 +1,12 @@
-- name: Enable proxy_ajp, ssl modules, shib2
+- name: Enable modules: shib2, proxy_http ssl headers alias include negotiation
   apache2_module: name={{ item }} state=present
   with_items:
-    - proxy_ajp
+    #- proxy_ajp
+    - proxy_http
+    - headers
+    - alias
+    - include
+    - negotiation
     - ssl
     - shib2
 

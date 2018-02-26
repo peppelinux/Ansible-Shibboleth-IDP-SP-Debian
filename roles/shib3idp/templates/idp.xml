@@ -1,6 +1,7 @@
-<Context docBase="{{ idp_path }}/war/idp.war"
-         privileged="true"
-         antiResourceLocking="false"
-         swallowOutput="true">
-  <Manager pathname="" />
-</Context>
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+  <Set name="war"><SystemProperty name="idp.home"/>/war/idp.war</Set>
+  <Set name="contextPath">/idp</Set>
+  <Set name="extractWAR">false</Set>
+  <Set name="copyWebDir">false</Set>
+  <Set name="copyWebInf">true</Set>
+</Configure>
