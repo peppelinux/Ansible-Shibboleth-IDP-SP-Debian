@@ -131,49 +131,42 @@
     src: roles/shib3idp/templates/metadata-providers.xml-no_sp
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
 
-# Malavolti docet
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">'
     replace: '<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">'
     backup: yes
 
-# Malavolti docet
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML1/SOAP/ArtifactResolution" index="1"/>'
     replace: ''
     backup: yes
 
-# Malavolti docet
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '/idp/profile/SAML2/SOAP/ArtifactResolution" index="2"'
     replace: '/idp/profile/SAML2/SOAP/ArtifactResolution" index="1"'
     backup: yes
 
-# Malavolti docet
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol">'
     replace: '<AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">'
     backup: yes
 
-# Malavolti docet
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<AttributeService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML1/SOAP/AttributeQuery"/>'
     replace: ''
     backup: yes
 
-# Malavolti docet
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<!-- <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/> -->'
     replace: '<AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/>'
     backup: yes
 
-# Malavolti docet
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: ':8443'
@@ -181,5 +174,5 @@
     backup: yes
 
 
-- name: Restart Tomcat
-  service: name="{{ tomcat_version }}" state=restarted
+- name: Restart Jetty
+  service: name="jetty" state=restarted

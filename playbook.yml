@@ -29,8 +29,9 @@
     # Jetty configuration
     jetty_distribution: jetty-distribution-9.4.8.v20171121
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
-    jetty_admin_pw: jettysecret
-    jetty_manager_pw: jettysecret
+    jetty_path : /opt/jetty
+    # jetty_admin_pw: jettysecret
+    # jetty_manager_pw: jettysecret
     jetty_ram: 384m
 
     # Shibboleth IDP
@@ -54,9 +55,10 @@
     sp_fqdn: "sp.{{ domain }}"
 
   roles:
-    # - { role: common, tags: ["common"] }
+    # - { role: uninstall, tags: ["uninstall"] }
+    - { role: common, tags: ["common"] }
     - { role: jetty, tags: ["jetty"] }
-    # - { role: mysql, tags: ["mysql"] }          
-    - { role: shib3idp, tags: ["shib3idp"] }
+    - { role: mysql, tags: ["mysql"] }          
+    # - { role: shib3idp, tags: ["shib3idp"] }
     # - { role: apache2, tags: ["apache2"] }
     # - { role: mod-shib2, tags: ["shib2"] }  

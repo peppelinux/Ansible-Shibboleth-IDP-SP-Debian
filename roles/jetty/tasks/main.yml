@@ -58,14 +58,14 @@
    group: "jetty"
    state: directory
   with_items:
-   - /opt/jetty
-   - /opt/jetty/etc
-   - /opt/jetty/lib
-   - /opt/jetty/lib/ext
-   - /opt/jetty/logs
-   - /opt/jetty/resources
-   - /opt/jetty/webapps
-   - /opt/jetty/tmp
+   - "{{ jetty_path }}"
+   - "{{ jetty_path }}/etc"
+   - "{{ jetty_path }}/lib"
+   - "{{ jetty_path }}/lib/ext"
+   - "{{ jetty_path }}/logs"
+   - "{{ jetty_path }}/resources"
+   - "{{ jetty_path }}/webapps"
+   - "{{ jetty_path }}/tmp"
    - /var/log/jetty
   tags: jetty
   
@@ -77,8 +77,8 @@
    group: "jetty"
   with_items:
    - { src: "files/java{{ java_version['stdout'] }}/jetty", dest: '/etc/default/jetty' }
-   - { src: "files/java{{ java_version['stdout'] }}/start.ini", dest: '/opt/jetty/start.ini' }
-   - { src: "files/java{{ java_version['stdout'] }}/jetty.xml", dest: '/opt/jetty/etc/jetty.xml' }
+   - { src: "files/java{{ java_version['stdout'] }}/start.ini", dest: '{{ jetty_path }}/start.ini' }
+   - { src: "files/java{{ java_version['stdout'] }}/jetty.xml", dest: '{{ jetty_path }}/etc/jetty.xml' }
   tags: jetty
 
 - name: "Stop jetty after an upgrade of its package"
