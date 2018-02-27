@@ -1,0 +1,33 @@
+# Servlet
+- name: Stop Jetty
+  service: name=jetty state=stopped enabled=false
+  ignore_errors: yes
+
+- name: Uninstall jetty
+  file: path="{{ jetty_path }}/" state=absent
+
+- name: Remove /etc/init.d/jetty
+  file: path=/etc/init.d/jetty state=absent
+
+# SHIBBOLETH
+- name: Cleanup Shibboleth IdP Install
+  file: path="{{ idp_path }}" state=absent
+
+# TODO
+
+# MYSQL
+- name: Stop mysql-server
+  service: name=mysql state=stopped enabled=false
+  ignore_errors: yes
+
+# - name: Uninstall apache2
+  # apt: name=apache2 state=absent purge=yes
+
+- name: Uninstall libapache2-mod-shib2
+  apt: name=libapache2-mod-shib2 state=absent purge=yes
+
+- name: Remove /etc/shibboleth dir
+  file: path=/etc/shibboleth state=absent
+
+- name: "Remove {{ idp_path }}"
+  file: path="idp_path" state=absent

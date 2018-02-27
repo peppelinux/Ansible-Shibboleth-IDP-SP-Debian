@@ -1,72 +1,7 @@
-- name: Stat Shibboleth IdP tarball in /opt 
-  stat: path="{{ shib_dest_dir }}/{{ shib_idp_package }}"
-  register: shib_tarball
-
-- name: "Download Shibboleth {{ shib_idp_version }} IdP"
-  get_url: url={{ idp_dl_url }} dest=/opt
-  when: shib_tarball.stat.exists == False
-
-- name: Stat Shibboleth IdP source dir in /opt 
-  stat: path="{{ idp_path }}"
-  register: shib_dir_source
-  
-- name: Unarchive Shibboleth IdP
-  unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
-  # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 
-
-# setup di shibboleth, prompt di installazione
-# http://docs.ansible.com/ansible/expect_module.html
-
-- name: Prepare properties for Shibboleth IdP install
-  template: 
-    src: roles/shib3idp/templates/shib-install.properties 
-    dest: "{{ tmp_upload_dir }}/shib-install.properties"
-
-- name: Install JSTL-1.2 library
-  get_url:
-    url: https://repo1.maven.org/maven2/jstl/jstl/1.2/jstl-1.2.jar
-    dest: "{{ idp_path }}/edit-webapp/WEB-INF/lib"
-
-- name: get JAVA_HOME
-  shell: readlink -f /usr/bin/java | sed "s:bin/java::"
-  register: java_home
-
-- name: Stat Shibboleth IdP dest dir in /opt
-  stat: path="{{ idp_path }}/metadata"
-  register: shib_dir_dest
-
-- name: Install Shibboleth Idp
-  environment: 
-    JAVA_HOME: "{{ java_home.stdout }}"
-  command: "{{ shib_setup_folder }}/bin/install.sh \
-            -Didp.sealer.password={{ idp_secret }} \
-            -Didp.keystore.password={{ idp_secret }} \
-            -Didp.scope={{ domain }} \
-            -Didp.src.dir={{ shib_setup_folder }} \
-            -Didp.host.name={{ idp_fqdn }} \
-            -Didp.target.dir={{ idp_path }} \
-            -Didp.merge.properties={{ tmp_upload_dir }}/shib-install.properties"
-  when: shib_dir_dest.stat.exists == False 
-
-- name: Copy template configuration for ldap.properties
-  template: 
-    src: roles/shib3idp/templates/ldap.properties
-    dest: "{{ idp_path }}/conf/ldap.properties"
-
 - name: Generate salt for persistentId generator
   shell: openssl rand -base64 36
   register: persId_salt
   when: persId_salt is not defined
-
-- name: Copy template configuration saml-nameid.properties
-  template: 
-    src: roles/shib3idp/templates/saml-nameid.properties
-    dest: "{{ idp_path }}/conf/saml-nameid.properties"
-
-- name: Copy template configuration global.xml
-  template: 
-    src: roles/shib3idp/templates/global.xml
-    dest: "{{ idp_path }}/conf/global.xml"
 
 - name: jetty user for idp dirs
   file: name="{{ item }}" owner="jetty" recurse=yes
@@ -172,7 +107,6 @@
     regexp: ':8443'
     replace: ''
     backup: yes
-
 
 - name: Restart Jetty
   service: name="jetty" state=restarted

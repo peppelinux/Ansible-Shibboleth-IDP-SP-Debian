@@ -58,7 +58,10 @@
     # - { role: uninstall, tags: ["uninstall"] }
     - { role: common, tags: ["common"] }
     - { role: jetty, tags: ["jetty"] }
-    - { role: mysql, tags: ["mysql"] }          
+    - { role: mysql, tags: ["mysql"] }
+    - { role: shib3idp_install, tags: ["shib3idp_install"] }
+    
+    # - { role: shib3idp_configure, tags: ["shib3idp_configure"] }
     # - { role: shib3idp, tags: ["shib3idp"] }
     # - { role: apache2, tags: ["apache2"] }
     # - { role: mod-shib2, tags: ["shib2"] }  

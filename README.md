@@ -16,13 +16,13 @@ I servizi configurati nel presente playbook sono:
 - shibboleth (Identity provider)
 - mariaDB    (IDP persistent store)
 
-La versione di Java con la quale viene fatto il presente setup è OpenJDK
+La versione di Java con la quale viene fatto il presente setup è OpenJDK 8.
 
 Requisiti
 ---------
 
-- Una installazione preesistente di OpenLDAP (dedicare un utente e una ACL per consentire le ricerche all'IDP)
-- Un utente LDAP che possa accedere in sola lettura le definizioni degli utenti (vedi esempi in /ldap)
+- Una installazione preesistente di OpenLDAP
+- Creare o dedicare un utente e una ACL per consentire le query dell'IDP sulle definizioni LDAP in sola lettura
 - Due interfacce di rete, rispettivamente per IDP e SP
 - Installare le seguenti dipendenze per l'esecuzione in locale di ansible
 
@@ -122,4 +122,4 @@ Ringraziamenti
 
 Inspirato da Garr Netvolution 2017 (http://eventi.garr.it/it/ws17) e basato sul playbook di Davide Vaghetti https://github.com/daserzw/IdP3-ansible.
 Un ringraziamento speciale a Marco Malavolti per la redazione delle guide di installazione ufficiali e per le repository (https://github.com/malavolti).
-Un ringraziamento speciale a Francesco Sansone per le funzionalità esemplificative sviluppate in PHP per l'integrazione del Service Provider.
+Un ringraziamento speciale a Francesco Sansone per l'integrazione del Service Provider mediante frontend PHP.
