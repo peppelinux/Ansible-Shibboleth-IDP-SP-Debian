@@ -81,6 +81,17 @@
    - { src: "files/java{{ java_version['stdout'] }}/jetty.xml", dest: '{{ jetty_path }}/etc/jetty.xml' }
   tags: jetty
 
+- name: Enable jetty libs
+  file:
+   src: "{{ item.src }}" 
+   dest: "{{ item.dest }}"
+   state: link
+  with_items:
+   - { src: '/usr/share/java/mysql.jar' , dest: '{{ jetty_path }}/lib/ext/mysql.jar' }
+   - { src: '/usr/share/java/commons-pool2.jar' , dest: '{{ jetty_path }}/lib/ext/commons-pool2.jar' }
+   - { src: '/usr/share/java/commons-dbcp.jar' , dest: '{{ jetty_path }}/lib/ext/commons-dbcp.jar' }
+  tags: jetty
+
 - name: "Stop jetty after an upgrade of its package"
   systemd: 
    name: "jetty"

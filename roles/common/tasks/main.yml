@@ -6,6 +6,10 @@
 - name: Install apt packages
   apt: name={{ item }} state=present
   with_items:
+    - ntp
+    - libcommons-dbcp-java  # jetty requirement
+    - libcommons-pool2-java # jetty req
+    - expat                 # jetty req
     - libmysql-java #contains: /usr/share/java/mysql.jar
     - html2text
     - emacs24-nox
