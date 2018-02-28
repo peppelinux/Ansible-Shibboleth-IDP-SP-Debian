@@ -45,8 +45,10 @@
     <!-- Logs OpenSAML, but not IdP, messages -->
     <logger name="org.opensaml.saml" level="${idp.loglevel.opensaml:-INFO}"/>
     
-    <!-- Logs LDAP related messages -->
+    <!-- Logs LDAP related messages 
     <logger name="org.ldaptive" level="${idp.loglevel.ldap:-WARN}"/>
+    -->
+    <logger name="org.ldaptive" level="INFO"/>
 
     <!-- Logs LDAP user authentication messages -->
     <logger name="org.ldaptive.auth.Authenticator" level="${idp.loglevel.ldap:-INFO}"/>

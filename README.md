@@ -1,5 +1,5 @@
 [NotUsableYET][Ansible playbook] Shibboleth Debian 9 
-======================================
+====================================================
 
 Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2.
 Richiede una installazione preesistente di OpenLDAP, come esemplificata nel seguente playbook:
@@ -16,15 +16,14 @@ I servizi configurati nel presente playbook sono:
 - shibboleth (Identity provider)
 - mariaDB    (IDP persistent store)
 
-La versione di Java con la quale viene fatto il presente setup è OpenJDK 8.
+La versione di Java utilizzata è OpenJDK 8.
 
 Requisiti
 ---------
 
 - Una installazione preesistente di OpenLDAP
-- Creare o dedicare un utente e una ACL per consentire le query dell'IDP sulle definizioni LDAP in sola lettura
-- Due interfacce di rete, rispettivamente per IDP e SP
-- Installare le seguenti dipendenze per l'esecuzione in locale di ansible
+- Creazione di un utente e di una ACL LDAP per consentire le query dell'IDP sulle definizioni LDAP in sola lettura
+- Installazuibe delle seguenti dipendenze
 
 ````    
 aptitude install python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev
@@ -34,8 +33,15 @@ pip3 install ansible
 Comandi di deployment e cleanup
 ===============================
 
-Puoi creare delle chiavi firmate di esempio con make_ca.sh.
-Edita le variabili nel playbook e il file hosts prima di fare l'esecuzione.
+Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le variabili all'interno del file secondo le tue preferenze.
+
+Edita le variabili nel playbook e il file /etc/hosts con gli hostname idp ed sp del tuo dominio:
+
+````
+# /etc/hosts
+10.0.3.22  idp.testunical.it
+10.0.4.22  sp.testunical.it
+````
 Il seguente esempio considera una esecuzione in locale.
 
 ````
@@ -49,33 +55,51 @@ Risultato
 ![Alt text](images/2.png)
 ![Alt text](images/3.png)
 
-Note
-========================
-
-Crea nel tuo DNS o in /etc/hosts gli hostname idp ed sp se sei in testunical
-
-    10.0.3.22  idp.testunical.it
-    10.0.4.22  sp.testunical.it
-	
 
 Troubleshooting
 ========================
 
+````
 net.shibboleth.utilities.java.support.component.ComponentInitializationException: Injected service was null or not an AttributeResolver
-    In tomcat8 localhost.YYYY-mm-dd.log
-    La connessione al datasource fallisce (ldap/mysql connection/authentication error).
+````
+In tomcat8 localhost.YYYY-mm-dd.log
+La connessione al datasource fallisce (ldap/mysql connection/authentication error).
 
+
+````
 opensaml::FatalProfileException
-    Error from identity provider: 
-    Status: urn:oasis:names:tc:SAML:2.0:status:Responder
-    probabilmente manca la chiave pubblica dell'SP presso l'IDP, oppure le chiavi presentano, localmente, permessi di 
-    lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo errore si presenta e i certificati sono     stati adeguatamente definiti in shibboleth2.xml... Hai ricordato di riavviare shibd? :)
+
+Error from identity provider: 
+Status: urn:oasis:names:tc:SAML:2.0:status:Responder
+````
+Probabilmente manca la chiave pubblica dell'SP presso l'IDP, oppure le chiavi presentano, localmente, permessi di 
+lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo errore si presenta e i certificati sono     stati adeguatamente definiti in shibboleth2.xml... Hai ricordato di riavviare shibd? :)
+
+````
 
 "Request failed: <urlopen error ('_ssl.c:565: The handshake operation timed out',)>"
+````
+TASK [mod-shib2 : Add IdP Metadata to Shibboleth SP]
+libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su una jessie 8.0 aggiornata a 8.7). 
+Verificare la presenza di questi altrimenti ripopolare la directory
 
-    TASK [mod-shib2 : Add IdP Metadata to Shibboleth SP]
-    libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su una jessie 8.0 aggiornata a 8.7). 
-    Verificare la presenza di questi altrimenti ripopolare la directory
+
+````
+opensaml::SecurityPolicyException
+Message was signed, but signature could not be verified.
+````
+L'SP ha i metadati dell'IDP errati/disallineati. Soluzione:
+
+````
+cd /etc/shibboleth/metadata
+wget --no-check-certificate https://idp.testunical.it/idp/shibboleth
+
+# verificare che siano effettivamente differenti !
+diff shibboleth idp.testunical.it-metadata.xml 
+rm idp.testunical.it-metadata.xml 
+mv shibboleth idp.testunical.it-metadata.xml 
+# nessun riavvio è richiesto
+````
 
 Test confgurazioni singoli servizi/demoni
 
@@ -95,31 +119,19 @@ shibd -t
 
 ````
 
-opensaml::SecurityPolicyException
-Message was signed, but signature could not be verified.
-L'SP ha i metadati dell'IDP errati/disallineati.
-
-````
-cd /etc/shibboleth/metadata
-wget --no-check-certificate https://idp.testunical.it/idp/shibboleth
-
-# verificare che siano effettivamente differenti !
-diff shibboleth idp.testunical.it-metadata.xml 
-rm idp.testunical.it-metadata.xml 
-mv shibboleth idp.testunical.it-metadata.xml 
-
-# nessun riavvio è richiesto
-````
-
 Todo
 ====
 
+- Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, esposizione di questo layer a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
 - ruolo per SP con nginx
+- SSL hardening di Apache2
 
 Ringraziamenti
-========================
+==============
 
 Inspirato da Garr Netvolution 2017 (http://eventi.garr.it/it/ws17) e basato sul playbook di Davide Vaghetti https://github.com/daserzw/IdP3-ansible.
+
 Un ringraziamento speciale a Marco Malavolti per la redazione delle guide di installazione ufficiali e per le repository (https://github.com/malavolti).
-Un ringraziamento speciale a Francesco Sansone per l'integrazione del Service Provider mediante frontend PHP.
+
+Un ringraziamento speciale a Francesco Sansone per l'integrazione, all'interno della configurazione del Service Provider, della pagina riassuntiva del profilo utente, scritto in codice PHP.

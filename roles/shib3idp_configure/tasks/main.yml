@@ -13,57 +13,65 @@
   
 - name: Install the IdP WAR
   template: 
-    src: roles/shib3idp/templates/idp.xml 
-    dest: "/etc/{{ tomcat_version }}/Catalina/localhost/idp.xml"
+    src: roles/shib3idp_configure/templates/idp.xml 
+    dest: "{{ jetty_path }}/webapps/idp.xml"
   
 - name: Configure LDAP Auth
   template: 
-    src: roles/shib3idp/templates/ldap.properties 
+    src: roles/shib3idp_configure/templates/ldap.properties 
     dest: "{{ idp_path }}/conf/ldap.properties" 
     
 - name: Configure Enhanced Logging
   copy: 
-    src: roles/shib3idp/files/logback.xml 
+    src: roles/shib3idp_configure/files/logback.xml 
     dest: "{{ idp_path }}/conf/logback.xml"
 
+# the sourceAttribute MUST BE an attribute, or a list of comma-separated attributes, that uniquely identify the subject of the generated persistent-id. It MUST BE: Stable, Permanent and Not-reassignable
 - name: Configure saml-nameid.properties (dataStore and persistentId)
   template: 
-    src: roles/shib3idp/templates/saml-nameid.properties 
+    src: roles/shib3idp_configure/templates/saml-nameid.properties 
     dest: "{{ idp_path }}/conf/saml-nameid.properties" 
 
 - name: Configure saml-nameid.xml (persistentId)
   copy: 
-    src: roles/shib3idp/files/saml-nameid.xml
+    src: roles/shib3idp_configure/files/saml-nameid.xml
     dest:  "{{ idp_path }}/conf/saml-nameid.xml"
+
+# Remove the comment to the bean called "c14n/SAML2Persistent"
+- name: Configure subject-c14n.xml (persistentId)
+  copy: 
+    src: roles/shib3idp_configure/files/subject-c14n.xml
+    dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
 
 - name: Configure relying-party.xml (persistentId)
   template:
-    src: roles/shib3idp/templates/relying-party.xml
+    src: roles/shib3idp_configure/templates/relying-party.xml
     dest:  "{{ idp_path }}/conf/relying-party.xml"
 
 - name: Configure global.xml (dataStore and persistentId)
   template:
-    src: roles/shib3idp/templates/global.xml
+    src: roles/shib3idp_configure/templates/global.xml
     dest:  "{{ idp_path }}/conf/global.xml"
 
 - name: Configure IdP attribute-filter.xml 
   template: 
-    src: roles/shib3idp/templates/attribute-filter.xml
+    src: roles/shib3idp_configure/templates/attribute-filter.xml
     dest: "{{ idp_path }}/conf/attribute-filter.xml"
 
+# wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
 - name: Copy configured attribute-resolver-full.xml in attribute-resolver.xml
   copy: 
-    src: roles/shib3idp/files/attribute-resolver-full.xml
+    src: roles/shib3idp_configure/files/attribute-resolver-full.xml
     dest: "{{ idp_path }}/conf/attribute-resolver.xml"
 
 - name: Add attribute-resolver-full.xml to services.xml
   copy: 
-    src: roles/shib3idp/files/services.xml
+    src: roles/shib3idp_configure/files/services.xml
     dest: "{{ idp_path }}/conf/services.xml"
 
 - name: Add metadata providers
   template: 
-    src: roles/shib3idp/templates/metadata-providers.xml-no_sp
+    src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
 
 - replace:

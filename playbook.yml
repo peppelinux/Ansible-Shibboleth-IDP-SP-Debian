@@ -20,9 +20,9 @@
 
     # LDAP configuration
     ldap_basedc: "dc={{ hostname }},dc={{ domain1 }}"
-    ldap_basedn: "ou=people,dc={{ hostname }},dc={{ domain1 }}"
     ldap_binddn: "uid=idp,ou=applications,dc=testunical,dc=it"
     ldap_pw: idpsecret
+    ldap_basedn: "ou=people,dc={{ hostname }},dc={{ domain1 }}"
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
     
@@ -56,12 +56,12 @@
 
   roles:
     # - { role: uninstall, tags: ["uninstall"] }
+    
     - { role: common, tags: ["common"] }
     - { role: jetty, tags: ["jetty"] }
     - { role: mysql, tags: ["mysql"] }
     - { role: shib3idp_install, tags: ["shib3idp_install"] }
+    - { role: apache2, tags: ["apache2"] }
+    - { role: shib3idp_configure, tags: ["shib3idp_configure"] }
     
-    # - { role: shib3idp_configure, tags: ["shib3idp_configure"] }
-    # - { role: shib3idp, tags: ["shib3idp"] }
-    # - { role: apache2, tags: ["apache2"] }
     # - { role: mod-shib2, tags: ["shib2"] }  
