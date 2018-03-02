@@ -2,6 +2,7 @@
 # ansible-playbook playbook.yml -i hosts -v
 # or if you want to run specifieds roles:
 # ansible-playbook playbook.yml -i hosts -v --tag common
+# inspired by: https://github.com/ConsortiumGARR/idem-tutorials/blob/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/Ubuntu/HOWTO%20Install%20and%20Configure%20a%20Shibboleth%20IdP%20v3.2.1%20on%20Ubuntu%20Linux%20LTS%2016.04%20with%20Apache2%20%2B%20Jetty9.md
 ---
 - name: Install Shibboleth IDP and SP
   hosts: all
@@ -37,7 +38,7 @@
     jetty_ram: 384m
 
     # Shibboleth IDP
-    shib_idp_version: "3.3.2"
+    shib_idp_version: "3.2.1" # su versione 3.3.2 ancora AttributeResolver error, devo rivedere :(
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
     shib_dest_dir: "/opt"
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
