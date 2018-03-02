@@ -20,8 +20,8 @@
   service: name=mysql state=stopped enabled=false
   ignore_errors: yes
 
-# - name: Uninstall apache2
-  # apt: name=apache2 state=absent purge=yes
+- name: Uninstall apache2
+  apt: name=apache2 state=absent purge=yes
 
 - name: Uninstall libapache2-mod-shib2
   apt: name=libapache2-mod-shib2 state=absent purge=yes

@@ -81,6 +81,16 @@
    - { src: "files/java{{ java_version['stdout'] }}/jetty.xml", dest: '{{ jetty_path }}/etc/jetty.xml' }
   tags: jetty
 
+- name: "Installing additional JARS"
+  copy:
+   src: "{{ item.src }}"
+   dest: "{{ item.dest }}"
+   owner: "jetty"
+   group: "jetty"
+  with_items:
+   - { src: "files/java{{ java_version['stdout'] }}/javax.json-api-1.0.jar" , dest: '{{ jetty_path }}/lib/ext/javax.json-api-1.0.jar' }
+  tags: jetty
+
 - name: Enable jetty libs
   file:
    src: "{{ item.src }}" 
@@ -88,8 +98,9 @@
    state: link
   with_items:
    - { src: '/usr/share/java/mysql.jar' , dest: '{{ jetty_path }}/lib/ext/mysql.jar' }
-   - { src: '/usr/share/java/commons-pool2.jar' , dest: '{{ jetty_path }}/lib/ext/commons-pool2.jar' }
+   - { src: '/usr/share/java/commons-pool.jar' , dest: '{{ jetty_path }}/lib/ext/commons-pool.jar' }
    - { src: '/usr/share/java/commons-dbcp.jar' , dest: '{{ jetty_path }}/lib/ext/commons-dbcp.jar' }
+   - { src: '/usr/share/java/javax.json-1.0.4.jar' , dest: '{{ jetty_path }}/lib/ext/javax.json-1.0.4.jar' }
   tags: jetty
 
 - name: "Stop jetty after an upgrade of its package"

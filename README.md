@@ -101,7 +101,33 @@ mv shibboleth idp.testunical.it-metadata.xml
 # nessun riavvio è richiesto
 ````
 
+````
+java.lang.NoClassDefFoundError: org/apache/commons/pool/ObjectPool
+...
+Cannot resolve reference to bean 'MyDataSource' while setting bean property 'dataSource'
+...
+Failed to instantiate [org.apache.commons.dbcp.BasicDataSource]: No default constructor found
+````
+manca commons-pool.jar in /opt/jetty/lib/ext oppure al posto di commons-pool.jar hai installato commons-pool2.jar
+
+```
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authn/IPAddress' defined in file [/opt/shibboleth-idp/system/conf/../../conf/authn/general-authn.xml]:
+....
+Cannot resolve reference to bean 'shibboleth.DefaultAuthenticationResultSerializer' while setting bean property 'resultSerializer'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'shibboleth.DefaultAuthenticationResultSerializer' defined in file [/opt/shibboleth-idp/system/conf/general-authn-system.xml]:
+....
+Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [net.shibboleth.idp.authn.impl.DefaultAuthenticationResultSerializer]: Constructor threw exception; nested exception is javax.json.JsonException: Provider org.glassfish.json.JsonProviderImpl not found
+````
+manca javax.json-api-1.0.jar in /opt/jetty/lib/ext
 Test confgurazioni singoli servizi/demoni
+
+
+````
+ Cannot resolve reference to bean 'shibboleth.metrics.AttributeResolverGaugeSet' while setting bean property 'arguments'
+````
+L'eccezione emerge lungo il parse del file general-admin-system.xml, bean id="shibboleth.metrics.AttributeResolverGaugeSet".
+riferimento ML shibboleth-users: http://shibboleth.1660669.n2.nabble.com/Update-IdP3-3-0-error-td7629585.html
+Controllare ldap.properties, probabilmente non è possibile recuperare gli attributi dal repository dei dati.
+
 
 ````
 # jetty status

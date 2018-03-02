@@ -10,7 +10,8 @@
     - libcommons-dbcp-java  # jetty requirement
     - libcommons-pool2-java # jetty req
     - expat                 # jetty req
-    - libmysql-java #contains: /usr/share/java/mysql.jar
+    - libmysql-java # contains: /usr/share/java/mysql.jar
+    - libjsonp-java # contains: javax.json-1.0.4.jar
     - html2text
     - emacs24-nox
     - vim
