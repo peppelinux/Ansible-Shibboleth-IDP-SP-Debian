@@ -42,7 +42,7 @@ Edita le variabili nel playbook e il file /etc/hosts con gli hostname idp ed sp 
 10.0.3.22  idp.testunical.it
 10.0.4.22  sp.testunical.it
 ````
-Il seguente esempio considera una esecuzione in locale.
+Il seguente esempio considera una esecuzione in locale del playbook:
 
 ````
 ansible-playbook -i "localhost," -c local playbook.yml [-vvv]
@@ -55,6 +55,24 @@ Risultato
 ![Alt text](images/2.png)
 ![Alt text](images/3.png)
 
+
+LDAP Troubleshooting
+====================
+
+E' sempre meglio testare la connessione ad LDAP prima del setup.
+Da verificare oltre ai certificati anche le ACL di slapd.
+
+````
+ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
+````
+Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.testunical.it).
+Significa che bisogna prima allineare i certificati e le corrispondenze commonName di questo con l'hostname del server.
+
+
+Esclusivamente per scopo di test è possibile eludere la validazione del certificato con il seguente comando, al fine di escludere ulteriori variabili.
+````
+LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
+````
 
 Troubleshooting
 ========================
@@ -124,9 +142,10 @@ Test confgurazioni singoli servizi/demoni
 ````
  Cannot resolve reference to bean 'shibboleth.metrics.AttributeResolverGaugeSet' while setting bean property 'arguments'
 ````
-L'eccezione emerge lungo il parse del file general-admin-system.xml, bean id="shibboleth.metrics.AttributeResolverGaugeSet".
-riferimento ML shibboleth-users: http://shibboleth.1660669.n2.nabble.com/Update-IdP3-3-0-error-td7629585.html
-Controllare ldap.properties, probabilmente non è possibile recuperare gli attributi dal repository dei dati.
+L'eccezione emerge lungo il parse del file general-admin-system.xml, al bean id="shibboleth.metrics.AttributeResolverGaugeSet".
+Riferimento ML shibboleth-users: http://shibboleth.1660669.n2.nabble.com/Update-IdP3-3-0-error-td7629585.html
+Controllare ldap.properties e attribute-resolver.xml, probabilmente non è possibile recuperare gli attributi dal repository dei dati.
+Testa la connessione al server LDAP prima di qualsiasi altro tentativo!
 
 
 ````

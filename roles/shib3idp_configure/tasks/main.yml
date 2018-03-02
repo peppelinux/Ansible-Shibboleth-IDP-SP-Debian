@@ -64,7 +64,7 @@
     src: roles/shib3idp_configure/files/attribute-resolver-full.xml
     dest: "{{ idp_path }}/conf/attribute-resolver.xml"
 
-- name: Add attribute-resolver-full.xml to services.xml
+- name: Add attribute-resolver.xml to services.xml
   copy: 
     src: roles/shib3idp_configure/files/services.xml
     dest: "{{ idp_path }}/conf/services.xml"

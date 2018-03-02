@@ -11,18 +11,20 @@
     domain1: it
     domain: "{{ hostname }}.{{ domain1 }}"
 
-    idp_ip: "192.168.27.72"
-    sp_ip:  "192.168.27.72"
+    ldap_ip:  "192.168.27.72"
+    idp_ip:   "192.168.27.72"
+    sp_ip:    "192.168.27.72"
 
     # Commons
     cert_path: "/etc/ssl/certs/{{ domain }}"
     tmp_upload_dir: "/tmp/ansible-shibboleth-idp-sp-setup"
 
     # LDAP configuration
+    ldap_fqdn: "ldap.testunical.it"
     ldap_basedc: "dc={{ hostname }},dc={{ domain1 }}"
-    ldap_binddn: "uid=idp,ou=applications,dc=testunical,dc=it"
+    ldap_binddn: "uid=idp,ou=applications,{{ ldap_basedc }}"
     ldap_pw: idpsecret
-    ldap_basedn: "ou=people,dc={{ hostname }},dc={{ domain1 }}"
+    ldap_basedn: "ou=people,{{ ldap_basedc }}"
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
     

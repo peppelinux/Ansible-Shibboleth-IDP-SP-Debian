@@ -1,3 +1,4 @@
 127.0.0.1	localhost
+{{ ldap_ip }}	{{ ldap_fqdn }}
 {{ idp_ip }}	{{ idp_fqdn }}
 {{ sp_ip }}	{{ sp_fqdn }}
