@@ -42,7 +42,7 @@
   copy: 
     src: roles/shib3idp_configure/files/subject-c14n.xml
     dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
-
+ 
 - name: Configure relying-party.xml (persistentId)
   template:
     src: roles/shib3idp_configure/templates/relying-party.xml
@@ -59,15 +59,15 @@
     dest: "{{ idp_path }}/conf/attribute-filter.xml"
 
 # wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
-- name: Copy configured attribute-resolver-full.xml in attribute-resolver.xml
+- name: Copy configured attribute-resolver-v3-idem.xml in attribute-resolver.xml
   copy: 
-    src: roles/shib3idp_configure/files/attribute-resolver-full.xml
+    src: roles/shib3idp_configure/files/attribute-resolver-v3-idem.xml
     dest: "{{ idp_path }}/conf/attribute-resolver.xml"
 
-- name: Add attribute-resolver.xml to services.xml
-  copy: 
-    src: roles/shib3idp_configure/files/services.xml
-    dest: "{{ idp_path }}/conf/services.xml"
+# - name: Add attribute-resolver.xml to services.xml
+  # copy: 
+    # src: roles/shib3idp_configure/files/services.xml
+    # dest: "{{ idp_path }}/conf/services.xml"
 
 - name: Add metadata providers
   template: 

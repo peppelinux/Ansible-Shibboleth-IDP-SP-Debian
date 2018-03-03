@@ -26,8 +26,5 @@
 - name: Uninstall libapache2-mod-shib2
   apt: name=libapache2-mod-shib2 state=absent purge=yes
 
-- name: Remove /etc/shibboleth dir
-  file: path=/etc/shibboleth state=absent
-
 - name: "Remove {{ idp_path }}"
   file: path="idp_path" state=absent

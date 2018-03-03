@@ -4,4 +4,5 @@
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 delete: olcAccess
-olcAccess: {1}
+olcAccess: {2}
+olcAccess: {3}

@@ -31,15 +31,14 @@ pip3 install ansible
 ````
 
 Comandi di deployment e cleanup
-===============================
-
+---------
 Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le variabili all'interno del file secondo le tue preferenze.
 
 Edita le variabili nel playbook e il file /etc/hosts con gli hostname idp ed sp del tuo dominio:
 
 ````
 # /etc/hosts
-10.0.3.22  idp.testunical.it
+10.0.3.22  idp.testunical.it ldap.testunical.it
 10.0.4.22  sp.testunical.it
 ````
 Il seguente esempio considera una esecuzione in locale del playbook:
@@ -49,15 +48,14 @@ ansible-playbook -i "localhost," -c local playbook.yml [-vvv]
 ````
 
 Risultato
-========================
-
+---------
 ![Alt text](images/1.png)
 ![Alt text](images/2.png)
 ![Alt text](images/3.png)
 
 
 LDAP Troubleshooting
-====================
+---------
 
 E' sempre meglio testare la connessione ad LDAP prima del setup.
 Da verificare oltre ai certificati anche le ACL di slapd.
@@ -66,7 +64,7 @@ Da verificare oltre ai certificati anche le ACL di slapd.
 ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
 ````
 Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.testunical.it).
-Significa che bisogna prima allineare i certificati e le corrispondenze commonName di questo con l'hostname del server.
+Soluzione: allineare i certificati e la corrispondenza commonName con l'hostname del server.
 
 
 Esclusivamente per scopo di test è possibile eludere la validazione del certificato con il seguente comando, al fine di escludere ulteriori variabili.
@@ -75,14 +73,14 @@ LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,
 ````
 
 Troubleshooting
-========================
-
+---------
 ````
 net.shibboleth.utilities.java.support.component.ComponentInitializationException: Injected service was null or not an AttributeResolver
 ````
-In tomcat8 localhost.YYYY-mm-dd.log
+In tomcat8/jetty localhost.YYYY-mm-dd.log
 La connessione al datasource fallisce (ldap/mysql connection/authentication error).
 
+--------------------------------
 
 ````
 opensaml::FatalProfileException
@@ -91,7 +89,9 @@ Error from identity provider:
 Status: urn:oasis:names:tc:SAML:2.0:status:Responder
 ````
 Probabilmente manca la chiave pubblica dell'SP presso l'IDP, oppure le chiavi presentano, localmente, permessi di 
-lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo errore si presenta e i certificati sono     stati adeguatamente definiti in shibboleth2.xml... Hai ricordato di riavviare shibd? :)
+lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo errore si presenta e i certificati sono stati adeguatamente definiti in shibboleth2.xml... Hai ricordato di riavviare shibd? :)
+
+---------------------------------
 
 ````
 
@@ -101,6 +101,7 @@ TASK [mod-shib2 : Add IdP Metadata to Shibboleth SP]
 libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su una jessie 8.0 aggiornata a 8.7). 
 Verificare la presenza di questi altrimenti ripopolare la directory
 
+---------------------------------
 
 ````
 opensaml::SecurityPolicyException
@@ -119,6 +120,8 @@ mv shibboleth idp.testunical.it-metadata.xml
 # nessun riavvio è richiesto
 ````
 
+--------------------------------------
+
 ````
 java.lang.NoClassDefFoundError: org/apache/commons/pool/ObjectPool
 ...
@@ -128,7 +131,8 @@ Failed to instantiate [org.apache.commons.dbcp.BasicDataSource]: No default cons
 ````
 manca commons-pool.jar in /opt/jetty/lib/ext oppure al posto di commons-pool.jar hai installato commons-pool2.jar
 
-```
+-------------------------------------
+````
 Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authn/IPAddress' defined in file [/opt/shibboleth-idp/system/conf/../../conf/authn/general-authn.xml]:
 ....
 Cannot resolve reference to bean 'shibboleth.DefaultAuthenticationResultSerializer' while setting bean property 'resultSerializer'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'shibboleth.DefaultAuthenticationResultSerializer' defined in file [/opt/shibboleth-idp/system/conf/general-authn-system.xml]:
@@ -138,16 +142,18 @@ Instantiation of bean failed; nested exception is org.springframework.beans.Bean
 manca javax.json-api-1.0.jar in /opt/jetty/lib/ext
 Test confgurazioni singoli servizi/demoni
 
-
+----------------------------
 ````
  Cannot resolve reference to bean 'shibboleth.metrics.AttributeResolverGaugeSet' while setting bean property 'arguments'
 ````
 L'eccezione emerge lungo il parse del file general-admin-system.xml, al bean id="shibboleth.metrics.AttributeResolverGaugeSet".
 Riferimento ML shibboleth-users: http://shibboleth.1660669.n2.nabble.com/Update-IdP3-3-0-error-td7629585.html
-Controllare ldap.properties e attribute-resolver.xml, probabilmente non è possibile recuperare gli attributi dal repository dei dati.
-Testa la connessione al server LDAP prima di qualsiasi altro tentativo!
+Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'è un errore di connessione al server LDAP.
 
+---------------------------
 
+Systems checks
+---------
 ````
 # jetty status
 service jetty check
@@ -165,7 +171,7 @@ shibd -t
 ````
 
 Todo
-====
+---------
 
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, esposizione di questo layer a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
@@ -173,7 +179,7 @@ Todo
 - SSL hardening di Apache2
 
 Ringraziamenti
-==============
+---------
 
 Inspirato da Garr Netvolution 2017 (http://eventi.garr.it/it/ws17) e basato sul playbook di Davide Vaghetti https://github.com/daserzw/IdP3-ansible.
 

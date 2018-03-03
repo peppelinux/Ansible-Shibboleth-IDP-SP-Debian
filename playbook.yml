@@ -11,10 +11,10 @@
     hostname: testunical
     domain1: it
     domain: "{{ hostname }}.{{ domain1 }}"
-
-    ldap_ip:  "192.168.27.72"
-    idp_ip:   "192.168.27.72"
-    sp_ip:    "192.168.27.72"
+    
+    ldap_ip:  "192.168.3.63"
+    idp_ip:   "192.168.3.63"
+    sp_ip:    "192.168.3.63"
 
     # Commons
     cert_path: "/etc/ssl/certs/{{ domain }}"
@@ -38,13 +38,14 @@
     jetty_ram: 384m
 
     # Shibboleth IDP
-    shib_idp_version: "3.2.1" # su versione 3.3.2 ancora AttributeResolver error, devo rivedere :(
+    shib_idp_version: "3.3.2"
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
     shib_dest_dir: "/opt"
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
     shib_setup_folder: "{{ shib_dest_dir }}/shibboleth-identity-provider-{{ shib_idp_version }}"
     idp_dl_url: "https://shibboleth.net/downloads/identity-provider/{{ shib_idp_version }}/{{ shib_idp_package }}"
-    idp_entity_id: "https://{{ idp_fqdn }}/idp/shibboleth"
+    idp_web_folder: /idp/shibboleth
+    idp_entity_id: "https://{{ idp_fqdn }}{{ idp_web_folder }}"
     idp_fqdn: "idp.{{ domain }}"
     idp_secret:   idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
@@ -67,4 +68,4 @@
     - { role: apache2, tags: ["apache2"] }
     - { role: shib3idp_configure, tags: ["shib3idp_configure"] }
     
-    # - { role: mod-shib2, tags: ["shib2"] }  
+    - { role: mod-shib2, tags: ["shib2"] }  
