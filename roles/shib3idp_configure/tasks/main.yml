@@ -52,45 +52,40 @@
   copy: 
     src: roles/shib3idp_configure/files/logback.xml 
     dest: "{{ idp_path }}/conf/logback.xml"
-
-# the sourceAttribute MUST BE an attribute, or a list of comma-separated attributes, that uniquely identify the subject of the generated persistent-id. It MUST BE: Stable, Permanent and Not-reassignable
-- name: Configure saml-nameid.properties (dataStore and persistentId)
-  template: 
-    src: roles/shib3idp_configure/templates/saml-nameid.properties 
-    dest: "{{ idp_path }}/conf/saml-nameid.properties" 
-
-- name: Configure saml-nameid.xml (persistentId)
-  copy: 
-    src: roles/shib3idp_configure/files/saml-nameid.xml
-    dest:  "{{ idp_path }}/conf/saml-nameid.xml"
-
-# Remove the comment to the bean called "c14n/SAML2Persistent"
-- name: Configure subject-c14n.xml (persistentId)
-  copy: 
-    src: roles/shib3idp_configure/files/subject-c14n.xml
-    dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
- 
-- name: Configure relying-party.xml (persistentId)
-  template:
-    src: roles/shib3idp_configure/templates/relying-party.xml
-    dest:  "{{ idp_path }}/conf/relying-party.xml"
-
-- name: Configure global.xml (dataStore and persistentId)
-  template:
-    src: roles/shib3idp_configure/templates/global.xml
-    dest:  "{{ idp_path }}/conf/global.xml"
-
+  
 - name: Configure IdP attribute-filter.xml 
   template: 
     src: roles/shib3idp_configure/templates/attribute-filter.xml
     dest: "{{ idp_path }}/conf/attribute-filter.xml"
 
 # wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
-- name: Copy configured attribute-resolver-full.v332.xml in attribute-resolver.xml
+- name: Copy configured {{ idp_attr_resolver }} in attribute-resolver.xml
   copy: 
-    src: roles/shib3idp_configure/files/attribute-resolver-full.v332.xml 
+    src: "roles/shib3idp_configure/files/{{ idp_attr_resolver }}"
     dest: "{{ idp_path }}/conf/attribute-resolver.xml"
 
+# these replace will be overwritten by next task if idp_local_storage == true
+- replace:
+    path: "{{ idp_path }}/conf/saml-nameid.properties"
+    regexp: '#idp.persistentId.sourceAttribute = changethistosomethingreal'
+    replace: 'idp.persistentId.sourceAttribute = uid'
+  when: idp_local_storage == false
+
+- replace:
+    path: "{{ idp_path }}/conf/saml-nameid.properties"
+    regexp: '#idp.persistentId.salt = changethistosomethingrandom'
+    replace: 'idp.persistentId.salt = {{ persId_salt.stdout }}'
+  when: idp_local_storage == false
+
+- name: "Persistent ID Datastore (mariaDB)"
+  import_tasks: persistent_id_datastore.yml
+  when: idp_local_storage == true
+
+- name: "Disable SAML1"
+  import_tasks: disable_saml1.yml
+  when: disable_saml1 == true
+
+# additionals to add
 # - name: Add attribute-resolver.xml to services.xml
   # copy: 
     # src: roles/shib3idp_configure/files/services.xml
@@ -106,38 +101,6 @@
   template: 
     src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
-
-# DISABLE SAML1 in idp-metadata.xml
-- replace:
-    path: "{{ idp_path }}/metadata/idp-metadata.xml"
-    regexp: '<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">'
-    replace: '<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">'
-    backup: yes
-
-- replace:
-    path: "{{ idp_path }}/metadata/idp-metadata.xml"
-    regexp: '<ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML1/SOAP/ArtifactResolution" index="1"/>'
-    replace: ''
-
-- replace:
-    path: "{{ idp_path }}/metadata/idp-metadata.xml"
-    regexp: '/idp/profile/SAML2/SOAP/ArtifactResolution" index="2"'
-    replace: '/idp/profile/SAML2/SOAP/ArtifactResolution" index="1"'
-
-- replace:
-    path: "{{ idp_path }}/metadata/idp-metadata.xml"
-    regexp: '<AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol">'
-    replace: '<AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">'
-
-- replace:
-    path: "{{ idp_path }}/metadata/idp-metadata.xml"
-    regexp: '<AttributeService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML1/SOAP/AttributeQuery"/>'
-    replace: ''
-
-- replace:
-    path: "{{ idp_path }}/metadata/idp-metadata.xml"
-    regexp: '<!-- <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/> -->'
-    replace: '<AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/>'
 
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"

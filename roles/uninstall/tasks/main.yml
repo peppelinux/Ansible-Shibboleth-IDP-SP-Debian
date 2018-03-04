@@ -16,22 +16,63 @@
 - name: Uninstall Tomcat
   apt: name="{{ tomcat_version }}" state=absent purge=yes
 
-# SHIBBOLETH
+# SHIBBOLETH IDP
 - name: Cleanup Shibboleth IdP Install
   file: path="{{ idp_path }}" state=absent
 
-# TODO
-
 # MYSQL
+- name: "Destroy database {{ idp_rdbms_dbname }}"
+  shell: 'mysql -u {{ idp_rdbms_user }} --password={{ idp_rdbms_pw }} -D {{ idp_rdbms_dbname }} -e "DROP DATABASE IF EXISTS {{ idp_rdbms_dbname }}"'
+  ignore_errors: yes
+
 - name: Stop mysql-server
   service: name=mysql state=stopped enabled=false
   ignore_errors: yes
 
-- name: Uninstall apache2
-  apt: name=apache2 state=absent purge=yes
+# APACHE
+- name: Stop Apache2
+  service: name="apache2" state=stopped enabled=false
+  ignore_errors: yes
 
-- name: Uninstall libapache2-mod-shib2
-  apt: name=libapache2-mod-shib2 state=absent purge=yes
+# CLEANUP DEPENDENCIES
+# SHIBBOLETH SP
+- name: Stop SP
+  service: name="shibd" state=stopped enabled=false
+  ignore_errors: yes
 
-- name: "Remove {{ idp_path }}"
-  file: path="idp_path" state=absent
+- name: Uninstall packages
+  apt: name={{ item }} state=absent purge=yes
+  with_items:
+    - ntp
+    - expat                 # jetty req
+    - libservlet3.1-java    # servlet common requirements
+    - libcommons-dbcp-java  # jetty requirement
+    - libcommons-pool2-java # jetty req
+    - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
+    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
+    - html2text
+    - emacs24-nox
+    - vim
+    - ntp
+    - apache2
+    - openjdk-8-jre
+    - libapache2-mod-shib2  # sp
+    - shibboleth-sp2-utils  # sp
+    - shibboleth-sp2-common # sp
+    - libshibsp7            # sp
+    #- libapache2-mod-php7.0
+
+- name: Cleanup Shibboleth SP Install
+  file: path="/etc/shibboleth" state=absent
+  
+- name: APT autoremove unused deps
+  shell: apt autoremove -y
+
+- name: Purge old logs
+  file: name={{ item }} state=absent
+  with_items:
+    - /var/log/shibboleth/shibd_warn.log
+    - /var/log/shibboleth/shibd.log
+    - /opt/shibboleth-idp/logs/idp-warn.log
+    - /opt/shibboleth-idp/logs/idp-process.log
+  ignore_errors: true

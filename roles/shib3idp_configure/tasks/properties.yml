@@ -1,0 +1,10 @@
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.cookie.secure = false'
+    replace: 'idp.cookie.secure = true'
+    backup: yes
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.cookie.domain ='
+    replace: 'idp.cookie.domain = {{ idp_fqdn }}'

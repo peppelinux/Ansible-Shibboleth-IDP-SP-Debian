@@ -1,0 +1,31 @@
+# DISABLE SAML1 in idp-metadata.xml
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">'
+    replace: '<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">'
+    backup: yes
+
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML1/SOAP/ArtifactResolution" index="1"/>'
+    replace: ''
+
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '/idp/profile/SAML2/SOAP/ArtifactResolution" index="2"'
+    replace: '/idp/profile/SAML2/SOAP/ArtifactResolution" index="1"'
+
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol">'
+    replace: '<AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">'
+
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<AttributeService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML1/SOAP/AttributeQuery"/>'
+    replace: ''
+
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<!-- <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/> -->'
+    replace: '<AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/>'

@@ -3,4 +3,4 @@
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcAccess
-olcAccess: {1} to dn.subtree="ou=people,dc=testunical,dc=it" by self write by anonymous auth by dn.children="ou=applications,dc=testunical,dc=it" read by * break
+olcAccess: {4} to "*" by self write by anonymous auth by dn.children="ou=applications,dc=testunical,dc=it" read by * break

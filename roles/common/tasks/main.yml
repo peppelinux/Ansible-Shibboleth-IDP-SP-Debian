@@ -1,3 +1,8 @@
+- name: "Uninstall and Purge"
+  include_role:
+    name: "uninstall"
+  when: uninstall == 'true'
+  
 - name: Update apt cache
   apt: update_cache=yes
   # apt: update_cache=yes cache_valid_time=86400
@@ -7,20 +12,23 @@
   apt: name={{ item }} state=present
   with_items:
     - ntp
-    - libservlet3.1-java # servlet common requirements
+    - expat                 # jetty req
+    - libservlet3.1-java    # servlet common requirements
     - libcommons-dbcp-java  # jetty requirement
     - libcommons-pool2-java # jetty req
-    - expat                 # jetty req
-    - libmysql-java # contains: /usr/share/java/mysql.jar
-    - libjsonp-java # contains: javax.json-1.0.4.jar
+    - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
+    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
     - html2text
     - emacs24-nox
     - vim
     - ntp
     - apache2
     - openjdk-8-jre
-    - libapache2-mod-shib2
-    - libapache2-mod-php7.0
+    - libapache2-mod-shib2  # sp
+    - shibboleth-sp2-utils  # sp
+    - shibboleth-sp2-common # sp
+    - libshibsp7            # sp
+    #- libapache2-mod-php7.0
   tags: online
 
 - name: "Install {{ tomcat_version }}"

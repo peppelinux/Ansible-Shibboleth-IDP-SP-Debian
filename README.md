@@ -1,16 +1,11 @@
-[NotUsableYET][Ansible playbook] Shibboleth Debian 9 
-====================================================
+[Ansible playbook] Shibboleth IDPv3 SP2 Debian 9 
+================================================
 
-Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2.
-Richiede una installazione preesistente di OpenLDAP, come esemplificata nel seguente playbook:
-
-````
-git clone https://github.com/peppelinux/ansible-slapd-eduperson2016
-````
+Questo playbook produce il setup in locale di ShibbolethIdP 3 e Shibboleth SP 2.
 
 I servizi configurati nel presente playbook sono:
 
-- jetty9     (Servlet Container for shibboleth idp)
+- Servlet Container per IDP (tomcat8 o jetty9, default: tomcat8)
 - apache2    (HTTPS frontend)
 - mod_shib2  (Application module for shibboleth sp)
 - shibboleth (Identity provider)
@@ -18,29 +13,81 @@ I servizi configurati nel presente playbook sono:
 
 La versione di Java utilizzata è OpenJDK 8.
 
+Opzioni:
+
+- shib_idp_version: 3.3.2. Testato anche con 3.2.1, richiede attribute-resolver.v3-idem.xml
+- idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP
+- idp_local_storage: true. Configura lo storage dei Persistent ID su MariaDB
+- servlet_container: tomcat | jetty.
+
+Organizzazione dei ruoli
+
+In questo playbook la installazione dell'IDP e la sua configurazione sono stati divisi in due ruoli distinti.
+
 Requisiti
 ---------
 
-- Una installazione preesistente di OpenLDAP
-- Creazione di un utente e di una ACL LDAP per consentire le query dell'IDP sulle definizioni LDAP in sola lettura
-- Installazuibe delle seguenti dipendenze
+- Una installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
+- Un utente LDAP abilitato per le ricerche nella uo di interesse (esempio ldap/idp_user.ldiff)
+- Una ACL LDAP per consentire le query dell'IDP all'utente precedentemente creato
+- Installazione delle seguenti dipendenze
 
 ````    
 aptitude install python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev
 pip3 install ansible
 ````
 
-Comandi di deployment e cleanup
+Guida all'uso
 ---------
+Se non hai una installazione funzionante di LDAP puoi crearne una così:
+````
+git clone https://github.com/peppelinux/ansible-slapd-eduperson2016
+cd ansible-slapd-eduperson2016
+
+# nano playbook.yml 
+
+# modifica le variabili di make_ca.sh prima di creare le chiavi, specialmente l'hostname del server ldap altrimenti le connessioni SSL falliranno!
+nano make_ca.sh 
+bash make_ca.sh
+
+# questo comando rimuove precedenti installazioni di LDAP
+ansible-playbook -i "localhost," -c local playbook.yml -e '{ cleanup: true }'
+
+# installiamo e configuriamo quindi il nostro LDAP
+ansible-playbook -i "localhost," -c local playbook.yml
+
+# testare la connessione ad LDAP da un client remoto
+# accertati che l'hostname del server LDAP sia presente in /etc/hosts oppure che questo possa essere risolto dal tuo DNS.
+nano /etc/hosts
+
+# accertati che in /etc/ldap/ldap.conf sia stato configurato TLS_CACERT con il certificato del tuo CA, esempio:
+TLS_CACERT /etc/ssl/certs/testunical.it/slapd-cacert.crt
+
+# aggiungi l'utente idp
+ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldiff
+
+# aggiungi una ACL per consentire la connessione e la ricerca all'utente idp
+ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldiff
+
+# testiamo che l'utente idp effettivamente possa interrogare il server LDAP
+ldapsearch -H ldap://127.0.0.1 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
+
+# controlliamo/modifichiamo le variabili del nostro playbook ed eseguiamolo
+# i nomi dei certificati rimangono costanti, in caso di modifica conviene riutilizzare gli stessi nomi
+
+ansible-playbook -i "localhost," -c local playbook.yml
+
+````
+
 Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le variabili all'interno del file secondo le tue preferenze.
 
-Edita le variabili nel playbook e il file /etc/hosts con gli hostname idp ed sp del tuo dominio:
+````
+nano make_ca.sh
+
 
 ````
-# /etc/hosts
-10.0.3.22  idp.testunical.it ldap.testunical.it
-10.0.4.22  sp.testunical.it
-````
+
+
 Il seguente esempio considera una esecuzione in locale del playbook:
 
 ````
@@ -77,8 +124,7 @@ Troubleshooting
 ````
 net.shibboleth.utilities.java.support.component.ComponentInitializationException: Injected service was null or not an AttributeResolver
 ````
-In tomcat8/jetty localhost.YYYY-mm-dd.log
-La connessione al datasource fallisce (ldap/mysql connection/authentication error).
+In tomcat8/jetty logs: la connessione al datasource fallisce (ldap/mysql connection/authentication error) oppure un errore sintattico in attribute-resolver.xml (o quali abilitati in services.xml)
 
 --------------------------------
 
@@ -180,13 +226,6 @@ Todo
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, esposizione di questo layer a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
 - ruolo per SP con nginx
-- SSL hardening di Apache2
-
-Ringraziamenti
----------
-
-Inspirato da Garr Netvolution 2017 (http://eventi.garr.it/it/ws17) e basato sul playbook di Davide Vaghetti https://github.com/daserzw/IdP3-ansible.
-
-Un ringraziamento speciale a Marco Malavolti per la redazione delle guide di installazione ufficiali e per le repository (https://github.com/malavolti).
-
-Un ringraziamento speciale a Francesco Sansone per l'integrazione, all'interno della configurazione del Service Provider, della pagina riassuntiva del profilo utente, scritto in codice PHP.
+- Apache2/Tomcat2 hardening
+- implementare ruolo/opzioni per setup Attribute Authority, senza auth/con auth
+- JRE selezionabile: openJDK, Oracle

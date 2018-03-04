@@ -11,10 +11,16 @@
     hostname: testunical
     domain1: it
     domain: "{{ hostname }}.{{ domain1 }}"
+
+    # If True will uninstall and purge existing applications and configurations
+    # DO NOT USE THIS IN PRODUCTION ENVIRONMENT
+    purge: true
+
+    disable_saml1: true
     
-    ldap_ip:  "192.168.3.63"
-    idp_ip:   "192.168.3.63"
-    sp_ip:    "192.168.3.63"
+    ldap_ip:  "192.168.27.72"
+    idp_ip:   "{{ ldap_ip }}" # everything on the same vm
+    sp_ip:    "{{ ldap_ip }}"
 
     # Commons
     cert_path: "/etc/ssl/certs/{{ domain }}"
@@ -41,7 +47,6 @@
     # tomcat_admin_pw: tomcatsecret
     # tomcat_manager_pw: tomcatsecret
 
-
     # Shibboleth IDP
     shib_idp_version: "3.3.2"
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
@@ -52,10 +57,14 @@
     idp_web_folder: /idp/shibboleth
     idp_entity_id: "https://{{ idp_fqdn }}{{ idp_web_folder }}"
     idp_fqdn: "idp.{{ domain }}"
-    idp_secret:   idpsecret
+    idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
+    idp_attr_resolver: attribute-resolver-full.v332.xml # in roles/shib2_configure/files
     # TODO: Error creating bean with name 'shibboleth.AccessControlPolicies': Cannot create inner bean 'shibboleth.IPRangeAccessControl$child#4f0c1409'
     # idp_status_acl: "192.168.3.34/24, 192.168.27.72/24"
+    
+    # persistent id on rdbms, it will install mariadb
+    idp_local_storage: false
     
     # Shibboleth IDP RDBMS per persistentID
     idp_rdbms_dbname: shibboleth
@@ -65,16 +74,16 @@
     # Shibboleth SP
     sp_fqdn: "sp.{{ domain }}"
 
-  roles:
-    # comment it if you want just to overwrite existing
-    - { role: uninstall, tags: ["uninstall"] }
-    
+  roles:   
     # apt dependencies and certificates
     - { role: common, tags: ["common"] }
-    # 
-    - { role: mysql, tags: ["mysql"] }
     - { role: shib3idp_install, tags: ["shib3idp_install"] }
+    
+    # TODO: decouple idp tasks and sp tasks in apache2
     - { role: apache2, tags: ["apache2"] }
+    
+    # shibboleth-idp only configuration
     - { role: shib3idp_configure, tags: ["shib3idp_configure"] }
-
+    
+    # service provider setup
     - { role: mod-shib2, tags: ["shib2"] }  

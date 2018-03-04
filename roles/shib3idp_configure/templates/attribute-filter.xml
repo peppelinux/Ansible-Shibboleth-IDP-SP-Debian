@@ -6,7 +6,10 @@
 
     <!-- Release some attributes to an SP. -->
     <AttributeFilterPolicy id="example1">
+<!--
         <PolicyRequirementRule xsi:type="Requester" value="https://{{ sp_fqdn }}/shibboleth" />
+-->
+        <PolicyRequirementRule xsi:type="Requester" value="https://{{ sp_fqdn }}" />
 
         <AttributeRule attributeID="eduPersonPrincipalName">
             <PermitValueRule xsi:type="ANY" />
@@ -30,15 +33,16 @@
     </AttributeFilterPolicy>
 
     <!-- Release eduPersonAffiliation to two specific SPs. -->
-    <AttributeFilterPolicy id="{{ sp_fqdn }}">
+<!--
+    <AttributeFilterPolicy id="example2">
         <PolicyRequirementRule xsi:type="OR">
-            <Rule xsi:type="Requester" value="https://{{ sp_fqdn }}" />
-            <!-- <Rule xsi:type="Requester" value="https://another.example.org/shibboleth" /> -->
+            <Rule xsi:type="Requester" value="https://another.example.org/shibboleth" />
         </PolicyRequirementRule>
 
         <AttributeRule attributeID="eduPersonScopedAffiliation">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
     </AttributeFilterPolicy>
+-->
 
 </AttributeFilterPolicyGroup>

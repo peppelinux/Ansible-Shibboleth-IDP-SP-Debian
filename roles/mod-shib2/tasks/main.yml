@@ -1,28 +1,25 @@
 - name: Install libapache2-mod-shib2
   apt: name=libapache2-mod-shib2 state=present
 
-
 - name: Create Shibboleth SP keys
-  shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth 
-  args:
-    creates: /etc/shibboleth/{{ sp_fqdn }}-key.pem
+  shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth
 
 - file:
-    path: "/etc/shibboleth/{{ sp_fqdn }}-key.pem"
+    glob: "/etc/shibboleth/sp-key.pem"
     owner: _shibd
     group: "{{ servlet_container }}"
     mode: 0640
   when: servlet_container == "jetty"
 
 - file:
-    path: "/etc/shibboleth/{{ sp_fqdn }}-key.pem"
+    path: "/etc/shibboleth/sp-key.pem"
     owner: _shibd
     group: "{{ tomcat_version }}"
     mode: 0640
   when: servlet_container == "tomcat"
 
 - file:
-    path: "/etc/shibboleth/{{ sp_fqdn }}-cert.pem"
+    path: "/etc/shibboleth/sp-cert.pem"
     owner: _shibd
     group: _shibd
     mode: 0644
@@ -55,30 +52,33 @@
     dest: /etc/shibboleth/attribute-map.xml
     backup: yes
 
-- name: Cleanup old Shibboleth IdP metadata from SP
-  file: path="/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml" state=absent
-  when: cleanup is defined
-
-- name: Add IdP Metadata to Shibboleth SP
-  get_url:
-    url: https://{{ idp_fqdn }}/idp/shibboleth
-    dest: /etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml
-    validate_certs: no
-
-- name: Restart shibd
-  service: name=shibd state=restarted enabled=yes
-  
+# METADATAS
 - name: Add SP {{ sp_fqdn }} Metadata to Shibboleth IdP
   get_url:
     url: https://{{ sp_fqdn }}/Shibboleth.sso/Metadata
     dest: "{{ idp_path }}/metadata/{{ sp_fqdn }}-metadata.xml"
     validate_certs: no
+    force: yes
 
-- name: Configure SP Metadata in Shibboleth IdP
+- name: Register SP into Shibboleth IdP's metadata-providers.xml
   template:
     src: roles/shib3idp_configure/templates/metadata-providers.xml
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
     backup: yes
+
+- name: Cleanup old Shibboleth IdP metadata from SP
+  file: path="/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml" state=absent
+  when: cleanup is defined
+
+- name: Add IdP Metadata to SP (/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml)
+  get_url:
+    url: "{{ idp_entity_id }}"
+    dest: "/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml"
+    validate_certs: no
+    force: yes
+    
+- name: Restart shibd
+  service: name=shibd state=restarted enabled=yes
 
 - name: Restart Jetty
   service: name="jetty" state=restarted enabled=yes
@@ -87,3 +87,4 @@
 - name: Restart Tomcat
   service: name="{{ tomcat_version }}" state=restarted enabled=yes
   when: servlet_container == "tomcat"
+# END METADATAS

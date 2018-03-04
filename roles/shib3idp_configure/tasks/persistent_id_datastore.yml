@@ -1,0 +1,62 @@
+- name: "Run MariaDB role"
+  include_role:
+    name: "mysql"
+
+# the sourceAttribute MUST BE an attribute, or a list of comma-separated attributes, that uniquely identify the subject of the generated persistent-id. It MUST BE: Stable, Permanent and Not-reassignable
+- name: Configure saml-nameid.properties (dataStore and persistentId)
+  template: 
+    src: roles/shib3idp_configure/templates/saml-nameid.properties 
+    dest: "{{ idp_path }}/conf/saml-nameid.properties" 
+
+- name: Configure saml-nameid.xml (persistentId)
+  copy: 
+    src: roles/shib3idp_configure/files/saml-nameid.xml
+    dest:  "{{ idp_path }}/conf/saml-nameid.xml"
+
+# Remove the comment to the bean called "c14n/SAML2Persistent"
+- name: Configure subject-c14n.xml (persistentId)
+  copy: 
+    src: roles/shib3idp_configure/files/subject-c14n.xml
+    dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
+  when: idp_local_storage == true
+
+- name: Configure relying-party.xml (persistentId)
+  template:
+    src: roles/shib3idp_configure/templates/relying-party.xml
+    dest:  "{{ idp_path }}/conf/relying-party.xml"
+
+- name: Configure global.xml (dataStore and persistentId)
+  template:
+    src: roles/shib3idp_configure/templates/global.xml
+    dest:  "{{ idp_path }}/conf/global.xml"
+
+#  SAML2PersistentGenerator on RDBMS
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.session.StorageService = shibboleth.ClientSessionStorageService'
+    replace: 'idp.session.StorageService = shibboleth.JPAStorageService'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.consent.StorageService = shibboleth.ClientPersistentStorageService'
+    replace: 'idp.consent.StorageService = shibboleth.JPAStorageService'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.replayCache.StorageService = shibboleth.StorageService'
+    replace: 'idp.replayCache.StorageService = shibboleth.JPAStorageService'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.replayCache.StorageService = shibboleth.StorageService'
+    replace: 'idp.replayCache.StorageService = shibboleth.JPAStorageService'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.artifact.StorageService = shibboleth.StorageService'
+    replace: 'idp.artifact.StorageService = shibboleth.JPAStorageService'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.artifact.StorageService = shibboleth.StorageService'
+    replace: 'idp.artifact.StorageService = shibboleth.JPAStorageService'
