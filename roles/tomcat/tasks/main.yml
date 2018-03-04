@@ -6,7 +6,7 @@
     src: roles/tomcat/templates/server.xml
     dest: /etc/{{ tomcat_version }}/server.xml
 
-- name: /etc/default/{{ tomcat_version }} with urandom and 384m heap mem
+- name: "/etc/default/{{ tomcat_version }} with urandom and {{ servlet_ram }} heap mem"
   template:
     src: roles/tomcat/templates/{{ tomcat_version }}
     dest: /etc/default/{{ tomcat_version }}

@@ -10,12 +10,29 @@
     - "{{ idp_path }}/logs"
     - "{{ idp_path }}/metadata"
     - "{{ idp_path }}/credentials"
-  
+  when: servlet_container == "jetty"
+
+- name: tomcat user for idp dirs
+  file: name="{{ item }}" owner="{{ tomcat_version }}" recurse=yes
+  with_items:
+    - "{{ idp_path }}/conf"
+    - "{{ idp_path }}/logs"
+    - "{{ idp_path }}/metadata"
+    - "{{ idp_path }}/credentials"
+  when: servlet_container == "tomcat"
+
 - name: Install the IdP WAR
   template: 
-    src: roles/shib3idp_configure/templates/idp.xml 
+    src: roles/shib3idp_configure/templates/idp-jetty.xml 
     dest: "{{ jetty_path }}/webapps/idp.xml"
-  
+  when: servlet_container == "jetty"
+
+- name: Install the IdP WAR
+  template: 
+    src: roles/shib3idp_configure/templates/idp-tomcat.xml 
+    dest: "/etc/{{ tomcat_version }}/Catalina/localhost/idp.xml"
+  when: servlet_container == "tomcat"
+
 - name: Configure LDAP Auth
   template: 
     src: roles/shib3idp_configure/templates/ldap.properties 
@@ -69,6 +86,12 @@
     # src: roles/shib3idp_configure/files/services.xml
     # dest: "{{ idp_path }}/conf/services.xml"
 
+# TODO: Error creating bean with name 'shibboleth.AccessControlPolicies': Cannot create inner bean 'shibboleth.IPRangeAccessControl$child#4f0c1409'
+# - name: Configure access-control.xml for /status page 
+  # template: 
+    # src: roles/shib3idp_configure/templates/access-control.xml
+    # dest: "{{ idp_path }}/conf/access-control.xml"
+
 - name: Add metadata providers
   template: 
     src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
@@ -118,3 +141,8 @@
 
 - name: Restart Jetty
   service: name="jetty" state=restarted
+  when: servlet_container == "jetty"
+
+- name: Restart Tomcat
+  service: name="{{ tomcat_version }}" state=restarted
+  when: servlet_container == "tomcat"

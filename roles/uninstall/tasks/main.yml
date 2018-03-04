@@ -9,6 +9,13 @@
 - name: Remove /etc/init.d/jetty
   file: path=/etc/init.d/jetty state=absent
 
+- name: Stop Tomcat
+  service: name="{{ tomcat_version }}" state=stopped enabled=false
+  ignore_errors: yes
+
+- name: Uninstall Tomcat
+  apt: name="{{ tomcat_version }}" state=absent purge=yes
+
 # SHIBBOLETH
 - name: Cleanup Shibboleth IdP Install
   file: path="{{ idp_path }}" state=absent

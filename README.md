@@ -118,6 +118,10 @@ diff shibboleth idp.testunical.it-metadata.xml
 rm idp.testunical.it-metadata.xml 
 mv shibboleth idp.testunical.it-metadata.xml 
 # nessun riavvio è richiesto
+
+# controllare inoltre che i certificati del sp siano leggibili da _shibd
+chown _shibd /etc/shibboleth/sp.testunical.it-*
+
 ````
 
 --------------------------------------

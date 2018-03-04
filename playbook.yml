@@ -29,16 +29,21 @@
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
     
+    # Servlet configuration
+    servlet_container: tomcat
+    servlet_ram: 384m
     # Jetty configuration
     jetty_distribution: jetty-distribution-9.4.8.v20171121
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_path : /opt/jetty
-    # jetty_admin_pw: jettysecret
-    # jetty_manager_pw: jettysecret
-    jetty_ram: 384m
+    # Tomcat configuration
+    tomcat_version: tomcat8
+    # tomcat_admin_pw: tomcatsecret
+    # tomcat_manager_pw: tomcatsecret
+
 
     # Shibboleth IDP
-    shib_idp_version: "3.3.2"
+    shib_idp_version: "3.2.1"
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
     shib_dest_dir: "/opt"
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
@@ -49,6 +54,8 @@
     idp_fqdn: "idp.{{ domain }}"
     idp_secret:   idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
+    # TODO: Error creating bean with name 'shibboleth.AccessControlPolicies': Cannot create inner bean 'shibboleth.IPRangeAccessControl$child#4f0c1409'
+    # idp_status_acl: "192.168.3.34/24, 192.168.27.72/24"
     
     # Shibboleth IDP RDBMS per persistentID
     idp_rdbms_dbname: shibboleth
@@ -59,13 +66,15 @@
     sp_fqdn: "sp.{{ domain }}"
 
   roles:
-    # - { role: uninstall, tags: ["uninstall"] }
+    # comment it if you want just to overwrite existing
+    - { role: uninstall, tags: ["uninstall"] }
     
+    # apt dependencies and certificates
     - { role: common, tags: ["common"] }
-    - { role: jetty, tags: ["jetty"] }
+    
     - { role: mysql, tags: ["mysql"] }
     - { role: shib3idp_install, tags: ["shib3idp_install"] }
     - { role: apache2, tags: ["apache2"] }
     - { role: shib3idp_configure, tags: ["shib3idp_configure"] }
-    
+
     - { role: mod-shib2, tags: ["shib2"] }  

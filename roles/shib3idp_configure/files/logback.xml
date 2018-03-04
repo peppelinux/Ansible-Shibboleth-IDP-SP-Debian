@@ -25,9 +25,10 @@
     <variable name="idp.loglevel.container" value="ERROR" />
     <variable name="idp.loglevel.xmlsec" value="INFO" />
     
-    <!-- Syslog address for F-TICKS (see FTICKSLoggingConfiguration). -->
+    <!-- Syslog address for F-TICKS (see FTICKSLoggingConfiguration). 
     <variable name="idp.fticks.loghost" value="localhost" />
     <variable name="idp.fticks.logport" value="514" />
+    -->
 
     <!--
     If you want to use custom properties in this config file,
@@ -45,11 +46,9 @@
     <!-- Logs OpenSAML, but not IdP, messages -->
     <logger name="org.opensaml.saml" level="${idp.loglevel.opensaml:-INFO}"/>
     
-    <!-- Logs LDAP related messages 
-    <logger name="org.ldaptive" level="${idp.loglevel.ldap:-WARN}"/>
-    -->
-    <logger name="org.ldaptive" level="INFO"/>
-
+    <!-- Logs LDAP related messages -->
+    <logger name="org.ldaptive" level="${idp.loglevel.ldap:-INFO}"/>
+    
     <!-- Logs LDAP user authentication messages -->
     <logger name="org.ldaptive.auth.Authenticator" level="${idp.loglevel.ldap:-INFO}"/>
     

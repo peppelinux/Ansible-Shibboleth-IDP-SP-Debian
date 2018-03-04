@@ -7,6 +7,7 @@
   apt: name={{ item }} state=present
   with_items:
     - ntp
+    - libservlet3.1-java # servlet common requirements
     - libcommons-dbcp-java  # jetty requirement
     - libcommons-pool2-java # jetty req
     - expat                 # jetty req
@@ -22,6 +23,13 @@
     - libapache2-mod-php7.0
   tags: online
 
+- name: "Install {{ tomcat_version }}"
+  apt: name={{ item }} state=present
+  with_items:
+    - "{{ tomcat_version }}"
+    - "{{ tomcat_version }}-admin"
+  when: servlet_container == "tomcat"
+  
 - name: Configure /etc/hosts
   template: 
     src: roles/common/templates/hosts 

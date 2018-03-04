@@ -1,11 +1,36 @@
 - name: Install libapache2-mod-shib2
   apt: name=libapache2-mod-shib2 state=present
 
-# da rimuovere
-# - name: Create Shibboleth SP keys
-  # shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth 
-  # args:
-    # creates: /etc/shibboleth/{{ sp_fqdn }}-key.pem
+
+- name: Create Shibboleth SP keys
+  shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth 
+  args:
+    creates: /etc/shibboleth/{{ sp_fqdn }}-key.pem
+
+- file:
+    path: "/etc/shibboleth/{{ sp_fqdn }}-key.pem"
+    owner: _shibd
+    group: _shibd
+    mode: 0644
+
+- file:
+    path: "/etc/shibboleth/{{ sp_fqdn }}-cert.pem"
+    owner: _shibd
+    group: _shibd
+    mode: 0644
+
+# 2018-03-04 00:53:22 ERROR OpenSSL : error code: 537346050 in bss_file.c, line 408
+# 2018-03-04 00:53:22 CRIT Shibboleth.Application : error building CredentialResolver: Unable to load private key from file (/etc/shibboleth/sp.testunical.it-key.pem).
+# - name: Copy Shibboleth SP certs
+  # copy: 
+    # src: "{{ item }}"
+    # dest: "/etc/shibboleth/"
+    # owner: root
+    # group: ssl-cert
+    # mode: 640
+  # with_fileglob:
+    # - roles/common/files/certs/{{ sp_fqdn }}-key.pem
+    # - roles/common/files/certs/{{ sp_fqdn }}-cert.pem
 
 - name: Create metadata directory for IdP metadata
   file: name=/etc/shibboleth/metadata state=directory
@@ -41,8 +66,14 @@
 
 - name: Configure SP Metadata in Shibboleth IdP
   template:
-    src: roles/shib3idp/templates/metadata-providers.xml
+    src: roles/shib3idp_configure/templates/metadata-providers.xml
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
  
-- name: Restart tomcat
+
+- name: Restart Jetty
+  service: name="jetty" state=restarted enabled=yes
+  when: servlet_container == "jetty"
+
+- name: Restart Tomcat
   service: name="{{ tomcat_version }}" state=restarted enabled=yes
+  when: servlet_container == "tomcat"

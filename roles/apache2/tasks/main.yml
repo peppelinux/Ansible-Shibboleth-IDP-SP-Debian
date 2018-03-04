@@ -1,7 +1,7 @@
 - name: Enable modules shib2, proxy_http ssl headers alias include negotiation
   apache2_module: name={{ item }} state=present
   with_items:
-    #- proxy_ajp
+    - proxy_ajp
     - proxy_http
     - headers
     - alias
@@ -26,9 +26,10 @@
 
 - name: Install IdP Virtualhost configuration
   template:
-    src: roles/apache2/templates/idp.conf
+    src: "roles/apache2/templates/idp-{{ servlet_container }}.conf"
     dest: /etc/apache2/sites-available/{{ idp_fqdn }}.conf
 
+  
 - name: Install SP Virtualhost configuration
   template:
     src: roles/apache2/templates/sp.conf
