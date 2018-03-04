@@ -33,6 +33,16 @@
     dest: "/etc/{{ tomcat_version }}/Catalina/localhost/idp.xml"
   when: servlet_container == "tomcat"
 
+- name: Copy certs
+  copy: 
+    src: "{{ item }}"
+    dest: "{{ idp_path}}/credentials/"
+    owner: root
+    group: ssl-cert
+    mode: 644
+  with_fileglob:
+    - /etc/ssl/certs/{{ domain }}/{{ ldap_cert }}
+
 - name: Configure LDAP Auth
   template: 
     src: roles/shib3idp_configure/templates/ldap.properties 
@@ -76,9 +86,9 @@
     dest: "{{ idp_path }}/conf/attribute-filter.xml"
 
 # wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
-- name: Copy configured attribute-resolver-v3-idem.xml in attribute-resolver.xml
+- name: Copy configured attribute-resolver-full.v332.xml in attribute-resolver.xml
   copy: 
-    src: roles/shib3idp_configure/files/attribute-resolver-v3-idem.xml
+    src: roles/shib3idp_configure/files/attribute-resolver-full.v332.xml 
     dest: "{{ idp_path }}/conf/attribute-resolver.xml"
 
 # - name: Add attribute-resolver.xml to services.xml
@@ -97,6 +107,7 @@
     src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
 
+# DISABLE SAML1 in idp-metadata.xml
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">'
@@ -107,37 +118,34 @@
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML1/SOAP/ArtifactResolution" index="1"/>'
     replace: ''
-    backup: yes
 
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '/idp/profile/SAML2/SOAP/ArtifactResolution" index="2"'
     replace: '/idp/profile/SAML2/SOAP/ArtifactResolution" index="1"'
-    backup: yes
 
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol">'
     replace: '<AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">'
-    backup: yes
 
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<AttributeService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML1/SOAP/AttributeQuery"/>'
     replace: ''
-    backup: yes
 
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<!-- <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/> -->'
     replace: '<AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/>'
-    backup: yes
 
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: ':8443'
     replace: ''
-    backup: yes
+
+- name: "Configure idp.properties"
+  import_tasks: properties.yml
 
 - name: Restart Jetty
   service: name="jetty" state=restarted

@@ -18,9 +18,6 @@
   unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
   # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 
 
-# setup di shibboleth, prompt di installazione
-# http://docs.ansible.com/ansible/expect_module.html
-
 - name: Prepare properties for Shibboleth IdP install
   template: 
     src: roles/shib3idp_install/templates/shib-install.properties 
@@ -63,4 +60,5 @@
             -Didp.host.name={{ idp_fqdn }} \
             -Didp.target.dir={{ idp_path }} \
             -Didp.merge.properties={{ tmp_upload_dir }}/shib-install.properties"
-  when: shib_dir_dest.stat.exists == False 
+  when: shib_dir_dest.stat.exists == False
+

@@ -32,9 +32,9 @@ JAVA_OPTS="-Djava.awt.headless=true -Xmx{{ servlet_ram }} -XX:+UseConcMarkSweepG
 #TOMCAT8_SECURITY=no
 
 # Number of days to keep logfiles in /var/log/tomcat8. Default is 14 days.
-#LOGFILE_DAYS=14
+LOGFILE_DAYS=128
 # Whether to compress logfiles older than today's
-#LOGFILE_COMPRESS=1
+LOGFILE_COMPRESS=1
 
 # Location of the JVM temporary directory
 # WARNING: This directory will be destroyed and recreated at every startup !

@@ -43,7 +43,7 @@
 
 
     # Shibboleth IDP
-    shib_idp_version: "3.2.1"
+    shib_idp_version: "3.3.2"
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
     shib_dest_dir: "/opt"
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
@@ -71,7 +71,7 @@
     
     # apt dependencies and certificates
     - { role: common, tags: ["common"] }
-    
+    # 
     - { role: mysql, tags: ["mysql"] }
     - { role: shib3idp_install, tags: ["shib3idp_install"] }
     - { role: apache2, tags: ["apache2"] }

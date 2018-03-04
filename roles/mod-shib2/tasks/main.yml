@@ -10,8 +10,16 @@
 - file:
     path: "/etc/shibboleth/{{ sp_fqdn }}-key.pem"
     owner: _shibd
-    group: _shibd
-    mode: 0644
+    group: "{{ servlet_container }}"
+    mode: 0640
+  when: servlet_container == "jetty"
+
+- file:
+    path: "/etc/shibboleth/{{ sp_fqdn }}-key.pem"
+    owner: _shibd
+    group: "{{ tomcat_version }}"
+    mode: 0640
+  when: servlet_container == "tomcat"
 
 - file:
     path: "/etc/shibboleth/{{ sp_fqdn }}-cert.pem"
@@ -39,11 +47,13 @@
   template:
     src: roles/mod-shib2/templates/shibboleth2.xml
     dest: /etc/shibboleth/shibboleth2.xml
-    
+    backup: yes
+
 - name: Configure Shibboleth SP Attribute Map
   copy:
     src: roles/mod-shib2/files/attribute-map.xml
     dest: /etc/shibboleth/attribute-map.xml
+    backup: yes
 
 - name: Cleanup old Shibboleth IdP metadata from SP
   file: path="/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml" state=absent
@@ -68,7 +78,7 @@
   template:
     src: roles/shib3idp_configure/templates/metadata-providers.xml
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
- 
+    backup: yes
 
 - name: Restart Jetty
   service: name="jetty" state=restarted enabled=yes
