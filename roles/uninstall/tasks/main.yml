@@ -73,6 +73,5 @@
   with_items:
     - /var/log/shibboleth/shibd_warn.log
     - /var/log/shibboleth/shibd.log
-    - /opt/shibboleth-idp/logs/idp-warn.log
-    - /opt/shibboleth-idp/logs/idp-process.log
+    - /opt/shibboleth-idp
   ignore_errors: true

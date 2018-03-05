@@ -84,9 +84,7 @@ Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le var
 ````
 nano make_ca.sh
 
-
 ````
-
 
 Il seguente esempio considera una esecuzione in locale del playbook:
 
@@ -219,6 +217,11 @@ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 shibd -t
 
 ````
+---------------------
+````
+2018-03-05 13:38:13,259 - INFO [org.opensaml.saml.common.binding.impl.SAMLMetadataLookupHandler:128] - Message Handler:  No metadata returned for https://sp.testunical.it/shibboleth in role {urn:oasis:names:tc:SAML:2.0:metadata}SPSSODescriptor with protocol urn:oasis:names:tc:SAML:2.0:protocol
+````
+Copiare i metadati dell'SP (wget --no-check-certificate https://sp.testunical.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
 
 Todo
 ---------

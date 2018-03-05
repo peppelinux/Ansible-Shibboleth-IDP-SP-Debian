@@ -83,7 +83,7 @@
 
 - name: "Disable SAML1"
   import_tasks: disable_saml1.yml
-  when: disable_saml1 == true
+  when: idp_disable_saml1 == true
 
 # additionals to add
 # - name: Add attribute-resolver.xml to services.xml

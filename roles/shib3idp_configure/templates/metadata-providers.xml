@@ -26,18 +26,6 @@
     <!-- ========================================================================================== -->
 
     <!--
-    Example HTTP metadata provider.  Use this if you want to download the metadata
-    from a remote source.
-
-    You *MUST* provide the SignatureValidationFilter in order to function securely.
-    Get the public key from the party publishing the metadata, and validate it
-    with them via some out of band mechanism.
-
-    The EntityRoleWhiteList saves memory by only loading metadata from SAML roles
-    that the IdP needs to interoperate with. 
-    -->
-    
-    <!--
     <MetadataProvider id="HTTPMetadata"
                       xsi:type="FileBackedHTTPMetadataProvider"
                       backingFile="%{idp.home}/metadata/localCopyFromXYZHTTP.xml"
