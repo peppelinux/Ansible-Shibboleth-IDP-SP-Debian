@@ -4,9 +4,8 @@
   when: uninstall == 'true'
   
 - name: Update apt cache
-  apt: update_cache=yes
-  # apt: update_cache=yes cache_valid_time=86400
-  tags: online
+  # apt: update_cache=yes
+  apt: update_cache=yes cache_valid_time=86400
 
 - name: Install apt packages
   apt: name={{ item }} state=present
@@ -29,7 +28,6 @@
     - shibboleth-sp2-common # sp
     - libshibsp7            # sp
     #- libapache2-mod-php7.0
-  tags: online
 
 - name: "Install {{ tomcat_version }}"
   apt: name={{ item }} state=present

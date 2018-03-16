@@ -8,10 +8,12 @@
   hosts: all
   become: yes
   vars:
-    hostname: testunical
+    domain2: testunical
     domain1: it
-    domain: "{{ hostname }}.{{ domain1 }}"
+    domain: "{{ domain2 }}.{{ domain1 }}"
 
+    server_admin: "root@{{ domain }}"
+    
     # If True will uninstall and purge existing applications and configurations
     # DO NOT USE THIS IN PRODUCTION ENVIRONMENT
     purge: true
@@ -26,7 +28,7 @@
 
     # LDAP configuration
     ldap_fqdn: "ldap.testunical.it"
-    ldap_basedc: "dc={{ hostname }},dc={{ domain1 }}"
+    ldap_basedc: "dc={{ domain2 }},dc={{ domain1 }}"
     ldap_binddn: "uid=idp,ou=applications,{{ ldap_basedc }}"
     ldap_pw: idpsecret
     ldap_basedn: "ou=people,{{ ldap_basedc }}"

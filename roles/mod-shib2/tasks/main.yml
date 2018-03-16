@@ -48,6 +48,29 @@
   service: name="{{ tomcat_version }}" state=restarted enabled=yes
   when: servlet_container == "tomcat"
 
+# METADATAS - SP
+
+# reboot time (thank you servlet_container) makes metadata GET fails or return 404!
+# Marco Malavolti consiglia una regexp sul log di avvio di tomcat/jetty relativo all'idp
+# tipo:
+- name: "Wait until the string 'RemoteUserAuthServlet will process REMOTE_USER' in {{ idp_path }}/logs/idp-process.log"
+  wait_for:
+    path: "{{ idp_path }}/logs/idp-process.log" 
+    search_regex: "RemoteUserAuthServlet will process REMOTE_USER"
+
+# - name: sleep for 10 seconds to let servlet reboot and make its bootstrap assessments
+  # wait_for: timeout=10
+
+- name: Add IdP Metadata to SP (/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml)
+  get_url:
+    url: "{{ idp_entity_id }}"
+    dest: "/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml"
+    validate_certs: no
+    force: yes
+
+- name: Restart shibd
+  service: name=shibd state=restarted enabled=yes
+
 # METADATAS - IDP FIRST
 - name: Register SP into Shibboleth IdP's metadata-providers.xml
   template:
@@ -69,25 +92,5 @@
 - name: Restart Tomcat
   service: name="{{ tomcat_version }}" state=restarted enabled=yes
   when: servlet_container == "tomcat"
-
-# METADATAS - SP
-
-# reboot time (thank you servlet_container) makes metadata GET fails or return 404!
-- name: sleep for 10 seconds to let servlet reboot and make its bootstrap assessments
-  wait_for: timeout=10
-
-- name: Cleanup old Shibboleth IdP metadata from SP
-  file: path="/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml" state=absent
-  when: cleanup is defined
-
-- name: Add IdP Metadata to SP (/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml)
-  get_url:
-    url: "{{ idp_entity_id }}"
-    dest: "/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml"
-    validate_certs: no
-    force: yes
-
-- name: Restart shibd
-  service: name=shibd state=restarted enabled=yes
 
 # END METADATAS

@@ -3,7 +3,7 @@
 
 Questo playbook produce il setup in locale di ShibbolethIdP 3 e Shibboleth SP 2.
 
-I servizi configurati nel presente playbook sono:
+I servizi configurati sono:
 
 - Servlet Container per IDP (tomcat8 o jetty9, default: tomcat8)
 - apache2    (HTTPS frontend)
@@ -20,16 +20,14 @@ Opzioni:
 - idp_local_storage: true. Configura lo storage dei Persistent ID su MariaDB
 - servlet_container: tomcat | jetty.
 
-Organizzazione dei ruoli
-
-In questo playbook la installazione dell'IDP e la sua configurazione sono stati divisi in due ruoli distinti.
+In questo playbook la installazione dell'IDP e la sua configurazione sono divisi in due ruoli distinti.
 
 Requisiti
 ---------
 
-- Una installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
-- Un utente LDAP abilitato per le ricerche nella uo di interesse (esempio ldap/idp_user.ldiff)
-- Una ACL LDAP per consentire le query dell'IDP all'utente precedentemente creato
+- Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
+- Utente LDAP abilitato per le ricerche nella uo di interesse (esempio consultabile in ldap/idp_user.ldiff)
+- ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldiff)
 - Installazione delle seguenti dipendenze
 
 ````    
@@ -226,6 +224,7 @@ Copiare i metadati dell'SP (wget --no-check-certificate https://sp.testunical.it
 Todo
 ---------
 
+- divisione task apache2 per IDP e apache2 per SP
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, esposizione di questo layer a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
 - ruolo per SP con nginx
