@@ -60,7 +60,13 @@
     - shibboleth-sp2-utils  # sp
     - shibboleth-sp2-common # sp
     - libshibsp7            # sp
-    #- libapache2-mod-php7.0
+    - libapache2-mod-php
+    - apache2-utils
+    - apache2-data
+    - apache2-bin
+
+- name: Cleanup Apache2 Configuration
+  file: path="/etc/apache2" state=absent
 
 - name: Cleanup Shibboleth SP Install
   file: path="/etc/shibboleth" state=absent

@@ -20,8 +20,8 @@
     
     # if idp and sp have the same ip: apache's <VirtualHost ip:port> must be configured as <VirtualHost *:port>
     # otherwise exception "[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:661)" will be raised
-    # otherwise exception SSL_ERROR_RX_RECORD_TOO_LONG will be raised or other, exception message depends by the client!
-    ldap_ip:  "10.87.7.124"
+    # otherwise exception SSL_ERROR_RX_RECORD_TOO_LONG will be raised or other, exception message depends by the client.
+    ldap_ip:  "192.168.3.63"
     idp_ip:   "{{ ldap_ip }}" # everything on the same vm
     sp_ip:    "{{ ldap_ip }}"
 
