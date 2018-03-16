@@ -44,21 +44,3 @@
             -Didp.merge.properties={{ tmp_upload_dir }}/shib-install.properties"
   when: shib_dir_dest.stat.exists == False 
 
-- name: Install JSTL-1.2 library
-  get_url:
-    url: https://repo1.maven.org/maven2/jstl/jstl/1.2/jstl-1.2.jar
-    dest: "{{ idp_path }}/edit-webapp/WEB-INF/lib"
-
-- name: Re-build Shibboleth Idp with jstl.jar for /status resource
-  environment: 
-    JAVA_HOME: "{{ java_home.stdout }}"
-  command: "{{ shib_setup_folder }}/bin/install.sh \
-            -Didp.sealer.password={{ idp_secret }} \
-            -Didp.keystore.password={{ idp_secret }} \
-            -Didp.scope={{ domain }} \
-            -Didp.src.dir={{ shib_setup_folder }} \
-            -Didp.host.name={{ idp_fqdn }} \
-            -Didp.target.dir={{ idp_path }} \
-            -Didp.merge.properties={{ tmp_upload_dir }}/shib-install.properties"
-  when: shib_dir_dest.stat.exists == False
-

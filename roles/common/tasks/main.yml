@@ -27,7 +27,7 @@
     - shibboleth-sp2-utils  # sp
     - shibboleth-sp2-common # sp
     - libshibsp7            # sp
-    #- libapache2-mod-php7.0
+    - libapache2-mod-php
 
 - name: "Install {{ tomcat_version }}"
   apt: name={{ item }} state=present

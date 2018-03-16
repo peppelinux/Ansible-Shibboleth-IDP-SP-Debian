@@ -16,6 +16,9 @@
 - name: Uninstall Tomcat
   apt: name="{{ tomcat_version }}" state=absent purge=yes
 
+- name: Remove /var/lib/{{ tomcat_version }}
+  file: path=/var/lib/{{ tomcat_version }} state=absent
+
 # SHIBBOLETH IDP
 - name: Cleanup Shibboleth IdP Install
   file: path="{{ idp_path }}" state=absent
@@ -60,7 +63,13 @@
     - shibboleth-sp2-utils  # sp
     - shibboleth-sp2-common # sp
     - libshibsp7            # sp
-    #- libapache2-mod-php7.0
+    - libapache2-mod-php
+    - apache2-utils
+    - apache2-data
+    - apache2-bin
+
+- name: Cleanup Apache2 Configuration
+  file: path="/etc/apache2" state=absent
 
 - name: Cleanup Shibboleth SP Install
   file: path="/etc/shibboleth" state=absent
@@ -71,7 +80,5 @@
 - name: Purge old logs
   file: name={{ item }} state=absent
   with_items:
-    - /var/log/shibboleth/shibd_warn.log
-    - /var/log/shibboleth/shibd.log
-    - /opt/shibboleth-idp
+    - /var/log/shibboleth
   ignore_errors: true

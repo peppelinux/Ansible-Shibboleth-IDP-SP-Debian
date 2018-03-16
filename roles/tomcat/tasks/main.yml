@@ -22,7 +22,6 @@
     dest: /usr/share/{{ tomcat_version }}/lib
   ignore_errors: yes
   
-  
 - name: Link mysql-java library
   file:
     src: /usr/share/java/mysql.jar
