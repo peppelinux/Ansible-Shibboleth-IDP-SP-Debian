@@ -53,7 +53,7 @@
 # reboot time (thank you servlet_container) makes metadata GET fails or return 404!
 # Marco Malavolti consiglia una regexp sul log di avvio di tomcat/jetty relativo all'idp
 # tipo:
-- name: "Wait until the string 'RemoteUserAuthServlet will process REMOTE_USER' in {{ idp_path }}/logs/idp-process.log"
+- name: "Wait until the string 'RemoteUserAuthServlet will process REMOTE_USER' appears in {{ idp_path }}/logs/idp-process.log"
   wait_for:
     path: "{{ idp_path }}/logs/idp-process.log" 
     search_regex: "RemoteUserAuthServlet will process REMOTE_USER"
@@ -67,6 +67,7 @@
     dest: "/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml"
     validate_certs: no
     force: yes
+    timeout: 60
 
 - name: Restart shibd
   service: name=shibd state=restarted enabled=yes

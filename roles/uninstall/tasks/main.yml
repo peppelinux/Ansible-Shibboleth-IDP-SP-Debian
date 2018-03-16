@@ -22,7 +22,7 @@
 
 # MYSQL
 - name: "Destroy database {{ idp_rdbms_dbname }}"
-  shell: 'mysql -u {{ idp_rdbms_user }} --password={{ idp_rdbms_pw }} -D {{ idp_rdbms_dbname }} -e "DROP DATABASE IF EXISTS {{ idp_rdbms_dbname }}"'
+  shell: 'mysql -u {{ idp_rdbms_user }} --password={{ idp_rdbms_pw }} -e "DROP DATABASE IF EXISTS {{ idp_rdbms_dbname }}"'
   ignore_errors: yes
 
 - name: Stop mysql-server

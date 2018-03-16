@@ -214,6 +214,9 @@ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 # shibboleth sp test
 shibd -t
 
+# idp and sp http checks
+openssl s_client -connect sp.testunical.it:443
+openssl s_client -connect idp.testunical.it:443
 ````
 ---------------------
 ````
