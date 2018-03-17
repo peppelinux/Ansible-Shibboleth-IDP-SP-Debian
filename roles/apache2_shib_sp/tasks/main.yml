@@ -1,3 +1,36 @@
+- name: Install SP Virtualhost configuration
+  template:
+    src: roles/apache2_shib_sp/templates/sp.conf
+    dest: /etc/apache2/sites-available/{{ sp_fqdn }}.conf
+
+- name: Site content for {{ sp_fqdn }}
+  copy:
+    src: roles/apache2_shib_sp/files/webroot/sp.example.org/
+    dest: /var/www/html/{{ sp_fqdn }}/
+
+- name: Parse {{ sp_fqdn }} in index.html
+  template:
+    src: roles/apache2_shib_sp/files/webroot/sp.example.org/index.html
+    dest: /var/www/html/{{ sp_fqdn }}/index.html
+
+- name: Install Bootstrap Min CSS 
+  copy:
+    src: roles/apache2_shib_sp/files/webroot/bootstrap.min.css
+    dest: /var/www/css/bootstrap.min.css
+
+- name: Parse {{ domain }} in attributes_map.php
+  template:
+    src: roles/apache2_shib_sp/files/webroot/sp.example.org/secure/attributes_map.php
+    dest: /var/www/html/{{ sp_fqdn }}/secure/attributes_map.php
+
+- name: Enable SP Virtualhost
+  command: a2ensite {{ sp_fqdn }}.conf
+  args:
+    creates: /etc/apache2/sites-enabled/{{ sp_fqdn }}.conf
+
+- name: Restart Apache2
+  service: name=apache2 state=restarted enabled=yes
+
 - name: Install libapache2-mod-shib2
   apt: name=libapache2-mod-shib2 state=present
 
@@ -6,7 +39,7 @@
   shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth
 
 - file:
-    glob: "/etc/shibboleth/sp-key.pem"
+    path: "/etc/shibboleth/sp-key.pem"
     owner: _shibd
     group: "{{ servlet_container }}"
     mode: 0640
@@ -19,45 +52,35 @@
     mode: 0640
   when: servlet_container == "tomcat"
 
+# TODO: less generalized permissions configuration here
 - file:
     path: "/etc/shibboleth/sp-cert.pem"
     owner: _shibd
     group: _shibd
     mode: 0644
 
-- name: Create metadata directory for IdP metadata
-  file: name=/etc/shibboleth/metadata state=directory
-
 - name: Configure Shibboleth SP
   template:
-    src: roles/mod-shib2/templates/shibboleth2.xml
+    src: roles/apache2_shib_sp/templates/shibboleth2.xml
     dest: /etc/shibboleth/shibboleth2.xml
     backup: yes
 
 - name: Configure Shibboleth SP Attribute Map
   copy:
-    src: roles/mod-shib2/files/attribute-map.xml
+    src: roles/apache2_shib_sp/files/attribute-map.xml
     dest: /etc/shibboleth/attribute-map.xml
     backup: yes
 
-- name: Restart Jetty
-  service: name="jetty" state=restarted enabled=yes
-  when: servlet_container == "jetty"
-
-- name: Restart Tomcat
-  service: name="{{ tomcat_version }}" state=restarted enabled=yes
-  when: servlet_container == "tomcat"
-
 # METADATAS - SP
-
 # reboot time (thank you servlet_container) makes metadata GET fails or return 404!
-# Marco Malavolti consiglia una regexp sul log di avvio di tomcat/jetty relativo all'idp
-# tipo:
+# Marco Malavolti consiglia una regexp sul log di avvio di tomcat/jetty relativo all'idp, funziona bene!
 - name: "Wait until the string 'RemoteUserAuthServlet will process REMOTE_USER' appears in {{ idp_path }}/logs/idp-process.log"
   wait_for:
     path: "{{ idp_path }}/logs/idp-process.log" 
     search_regex: "RemoteUserAuthServlet will process REMOTE_USER"
+  when: servlet_container == "tomcat"
 
+# the old one
 # - name: sleep for 10 seconds to let servlet reboot and make its bootstrap assessments
   # wait_for: timeout=10
 
@@ -71,27 +94,3 @@
 
 - name: Restart shibd
   service: name=shibd state=restarted enabled=yes
-
-# METADATAS - IDP FIRST
-- name: Register SP into Shibboleth IdP's metadata-providers.xml
-  template:
-    src: roles/shib3idp_configure/templates/metadata-providers.xml
-    dest: "{{ idp_path }}/conf/metadata-providers.xml"
-    backup: yes
-
-- name: Add SP {{ sp_fqdn }} Metadata to Shibboleth IdP
-  get_url:
-    url: https://{{ sp_fqdn }}/Shibboleth.sso/Metadata
-    dest: "{{ idp_path }}/metadata/{{ sp_fqdn }}-metadata.xml"
-    validate_certs: no
-    force: yes
-
-- name: Restart Jetty
-  service: name="jetty" state=restarted enabled=yes
-  when: servlet_container == "jetty"
-
-- name: Restart Tomcat
-  service: name="{{ tomcat_version }}" state=restarted enabled=yes
-  when: servlet_container == "tomcat"
-
-# END METADATAS

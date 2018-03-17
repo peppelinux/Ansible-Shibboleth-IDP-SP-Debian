@@ -1,9 +1,9 @@
-[Ansible playbook] Shibboleth IDPv3 SP2 Debian 9 
-================================================
+[Ansible playbook] 
 
-Questo playbook produce il setup in locale di ShibbolethIdP 3 e Shibboleth SP 2.
+Shibboleth IDPv3 SP2 Debian 9 
+=============================
 
-I servizi configurati sono:
+Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
 
 - Servlet Container per IDP (tomcat8 o jetty9, default: tomcat8)
 - apache2    (HTTPS frontend)
@@ -13,14 +13,14 @@ I servizi configurati sono:
 
 La versione di Java utilizzata è OpenJDK 8.
 
-Opzioni:
+Parametri ed opzioni utili:
 
 - shib_idp_version: 3.3.2. Testato anche con 3.2.1, richiede attribute-resolver.v3-idem.xml
 - idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP
-- idp_local_storage: true. Configura lo storage dei Persistent ID su MariaDB
+- idp_persistent_id_rdbms: true. Configura lo storage dei Persistent ID su MariaDB e ottine REMOTE_USER nella diagnostica della pagina SP
 - servlet_container: tomcat | jetty.
-
-In questo playbook la installazione dell'IDP e la sua configurazione sono divisi in due ruoli distinti.
+- idp_disable_saml1: disabilita il supporto a SAML versione 1
+- servlet_ram: 384m. Quanta ram destinare al servlet container
 
 Requisiti
 ---------
@@ -197,6 +197,11 @@ Riferimento ML shibboleth-users: http://shibboleth.1660669.n2.nabble.com/Update-
 Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'è un errore di connessione al server LDAP.
 
 ---------------------------
+````
+2018-03-05 13:38:13,259 - INFO [org.opensaml.saml.common.binding.impl.SAMLMetadataLookupHandler:128] - Message Handler:  No metadata returned for https://sp.testunical.it/shibboleth in role {urn:oasis:names:tc:SAML:2.0:metadata}SPSSODescriptor with protocol urn:oasis:names:tc:SAML:2.0:protocol
+````
+Copiare i metadati dell'SP (wget --no-check-certificate https://sp.testunical.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
+
 
 Systems checks
 ---------
@@ -214,23 +219,18 @@ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 # shibboleth sp test
 shibd -t
 
-# idp and sp http checks
+# idp and sp https checks
 openssl s_client -connect sp.testunical.it:443
 openssl s_client -connect idp.testunical.it:443
 ````
 ---------------------
-````
-2018-03-05 13:38:13,259 - INFO [org.opensaml.saml.common.binding.impl.SAMLMetadataLookupHandler:128] - Message Handler:  No metadata returned for https://sp.testunical.it/shibboleth in role {urn:oasis:names:tc:SAML:2.0:metadata}SPSSODescriptor with protocol urn:oasis:names:tc:SAML:2.0:protocol
-````
-Copiare i metadati dell'SP (wget --no-check-certificate https://sp.testunical.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
 
 Todo
 ---------
 
-- divisione task apache2 per IDP e apache2 per SP
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, esposizione di questo layer a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
 - ruolo per SP con nginx
 - Apache2/Tomcat2 hardening
-- implementare ruolo/opzioni per setup Attribute Authority, senza auth/con auth
+- implementare ruolo/opzioni per setup Attribute Authority, con e senza autenticazione
 - JRE selezionabile: openJDK, Oracle

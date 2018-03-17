@@ -64,22 +64,22 @@
     src: "roles/shib3idp_configure/files/{{ idp_attr_resolver }}"
     dest: "{{ idp_path }}/conf/attribute-resolver.xml"
 
-# these replace will be overwritten by next task if idp_local_storage == true
+# these replace will be overwritten by next task if idp_persistent_id_rdbms == true
 - replace:
     path: "{{ idp_path }}/conf/saml-nameid.properties"
     regexp: '#idp.persistentId.sourceAttribute = changethistosomethingreal'
     replace: 'idp.persistentId.sourceAttribute = uid'
-  when: idp_local_storage == false
+  when: idp_persistent_id_rdbms == false
 
 - replace:
     path: "{{ idp_path }}/conf/saml-nameid.properties"
     regexp: '#idp.persistentId.salt = changethistosomethingrandom'
     replace: 'idp.persistentId.salt = {{ persId_salt.stdout }}'
-  when: idp_local_storage == false
+  when: idp_persistent_id_rdbms == false
 
 - name: "Persistent ID Datastore (mariaDB)"
   import_tasks: persistent_id_datastore.yml
-  when: idp_local_storage == true
+  when: idp_persistent_id_rdbms == true
 
 - name: "Disable SAML1"
   import_tasks: disable_saml1.yml

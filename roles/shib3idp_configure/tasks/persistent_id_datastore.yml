@@ -18,7 +18,6 @@
   copy: 
     src: roles/shib3idp_configure/files/subject-c14n.xml
     dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
-  when: idp_local_storage == true
 
 - name: Configure relying-party.xml (persistentId)
   template:

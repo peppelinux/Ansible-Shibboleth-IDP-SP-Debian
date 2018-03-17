@@ -14,14 +14,15 @@
 
     server_admin: "root@{{ domain }}"
     
-    # If True will uninstall and purge existing applications and configurations
-    # DO NOT USE THIS IN PRODUCTION ENVIRONMENT
+    # If True it will uninstall and purge existing applications and configurations
+    # DO NOT USE THIS IN PRODUCTION ENVIRONMENT, it will destroy everything!
     purge: true
     
     # if idp and sp have the same ip: apache's <VirtualHost ip:port> must be configured as <VirtualHost *:port>
     # otherwise exception "[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:661)" will be raised
     # otherwise exception SSL_ERROR_RX_RECORD_TOO_LONG will be raised or other, exception message depends by the client.
-    ldap_ip:  "192.168.3.63"
+
+    ldap_ip:  "192.168.27.72"
     idp_ip:   "{{ ldap_ip }}" # everything on the same vm
     sp_ip:    "{{ ldap_ip }}"
 
@@ -47,6 +48,8 @@
     jetty_path : /opt/jetty
     # Tomcat configuration
     tomcat_version: tomcat8
+    
+    # TODO: tomcat_common
     # tomcat_admin_pw: tomcatsecret
     # tomcat_manager_pw: tomcatsecret
 
@@ -68,7 +71,7 @@
     idp_disable_saml1: true
     
     # persistent id on rdbms, it will install mariadb
-    idp_local_storage: false
+    idp_persistent_id_rdbms: true
     
     # Shibboleth IDP RDBMS per persistentID
     idp_rdbms_dbname: shibboleth
@@ -78,16 +81,17 @@
     # Shibboleth SP
     sp_fqdn: "sp.{{ domain }}"
 
-  roles:   
+  roles:
     # apt dependencies and certificates
     - { role: common, tags: ["common"] }
-    - { role: shib3idp_install, tags: ["shib3idp_install"] }
+    - { role: shib3idp_install, tags: ["idp_install"] }
     
     # TODO: decouple idp tasks and sp tasks in apache2
-    - { role: apache2, tags: ["apache2"] }
+    - { role: apache2_common, tags: ["apache2"] }
     
     # shibboleth-idp only configuration
-    - { role: shib3idp_configure, tags: ["shib3idp_configure"] }
-    
-    # service provider setup
-    - { role: mod-shib2, tags: ["shib2"] }  
+    - { role: shib3idp_configure, tags: ["idp_configure"] }
+
+    - { role: apache2_shib_idp, tags: ["apache2"] }
+    - { role: apache2_shib_sp, tags: ["sp"] }
+    - { role: sp_federation, tags: ["sp"] }

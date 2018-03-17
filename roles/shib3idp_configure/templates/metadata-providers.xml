@@ -60,8 +60,10 @@
     <MetadataProvider id="LocalMetadata"  xsi:type="FilesystemMetadataProvider" metadataFile="PATH_TO_YOUR_METADATA"/>
     -->
 
+    <MetadataProvider id="{{ sp_fqdn }}" xsi:type="FilesystemMetadataProvider"
+        xmlns="urn:mace:shibboleth:2.0:metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:metadata http://shibboleth.net/schema/idp/shibboleth-metadata.xsd"
+        failFastInitialization="true"
+        metadataFile="%{idp.home}/metadata/{{ sp_fqdn }}-metadata.xml"/>
 
-    <MetadataProvider id="{{ sp_fqdn }}"
-		      xsi:type="FilesystemMetadataProvider"
-		      metadataFile="{{ idp_path }}/metadata/{{ sp_fqdn }}-metadata.xml"/>
-    </MetadataProvider>
+</MetadataProvider>

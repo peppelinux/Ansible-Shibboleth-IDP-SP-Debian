@@ -1,0 +1,20 @@
+- name: Register SP into Shibboleth IdP's metadata-providers.xml
+  template:
+    src: roles/shib3idp_configure/templates/metadata-providers.xml
+    dest: "{{ idp_path }}/conf/metadata-providers.xml"
+    backup: yes
+
+- name: Add SP {{ sp_fqdn }} Metadata to Shibboleth IdP
+  get_url:
+    url: https://{{ sp_fqdn }}/Shibboleth.sso/Metadata
+    dest: "{{ idp_path }}/metadata/{{ sp_fqdn }}-metadata.xml"
+    validate_certs: no
+    force: yes
+
+- name: Restart Jetty
+  service: name="jetty" state=restarted enabled=yes
+  when: servlet_container == "jetty"
+
+- name: Restart Tomcat
+  service: name="{{ tomcat_version }}" state=restarted enabled=yes
+  when: servlet_container == "tomcat"
