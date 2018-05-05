@@ -3,4 +3,8 @@
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcAccess
-olcAccess: {4} to "*" by self write by anonymous auth by dn.children="ou=applications,dc=testunical,dc=it" read by * break
+olcAccess: to * 
+ by self write 
+ by anonymous auth 
+ by dn.children="ou=applications,dc=testunical,dc=it" read 
+ by * none 

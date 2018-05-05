@@ -1,5 +1,4 @@
-[Ansible playbook] 
-
+#### [Ansible playbook] 
 Shibboleth IDPv3 SP2 Debian 9 
 =============================
 
@@ -13,7 +12,7 @@ Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
 
 La versione di Java utilizzata è OpenJDK 8.
 
-Parametri ed opzioni utili:
+#### Parametri utili:
 
 - shib_idp_version: 3.3.2. Testato anche con 3.2.1, richiede attribute-resolver.v3-idem.xml
 - idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP
@@ -31,61 +30,62 @@ Requisiti
 - Installazione delle seguenti dipendenze
 
 ````    
-aptitude install python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev
+apt install -y python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev ldap-utils
 pip3 install ansible
 ````
 
 Guida all'uso
 ---------
-Se non hai una installazione funzionante di LDAP puoi crearne una così:
+
+## Installare una nuova istanza di LDAP
+Se non hai una installazione funzionante di LDAP puoi crearne una utilizzando questo playbook:
 ````
 git clone https://github.com/peppelinux/ansible-slapd-eduperson2016
 cd ansible-slapd-eduperson2016
+````
 
-# nano playbook.yml 
-
-# modifica le variabili di make_ca.sh prima di creare le chiavi, specialmente l'hostname del server ldap altrimenti le connessioni SSL falliranno!
+### Certificati SSL di LDAP
+se non possiedi certificati autorevoli modifica le variabili di make_ca.sh prima di creare le chiavi, specialmente l'hostname del server ldap altrimenti le connessioni SSL falliranno!
+````
 nano make_ca.sh 
 bash make_ca.sh
-
-# questo comando rimuove precedenti installazioni di LDAP
-ansible-playbook -i "localhost," -c local playbook.yml -e '{ cleanup: true }'
 
 # installiamo e configuriamo quindi il nostro LDAP
 ansible-playbook -i "localhost," -c local playbook.yml
 
-# testare la connessione ad LDAP da un client remoto
+# testare la connessione LDAP da un client remoto
 # accertati che l'hostname del server LDAP sia presente in /etc/hosts oppure che questo possa essere risolto dal tuo DNS.
 nano /etc/hosts
+# 10.87.7.104 ldap.testunical.it
 
 # accertati che in /etc/ldap/ldap.conf sia stato configurato TLS_CACERT con il certificato del tuo CA, esempio:
-TLS_CACERT /etc/ssl/certs/testunical.it/slapd-cacert.crt
+TLS_CACERT /etc/ssl/certs/testunical.it/slapd-cacert.pem
 
-# aggiungi l'utente idp
+# aggiungi l'utente idp sul server LDAP
 ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldiff
 
 # aggiungi una ACL per consentire la connessione e la ricerca all'utente idp
 ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldiff
 
-# testiamo che l'utente idp effettivamente possa interrogare il server LDAP
-ldapsearch -H ldap://127.0.0.1 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
+# testiamo che l'utente idp possa interrogare il server LDAP
+# dal server locale di LDAP
+ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
-# controlliamo/modifichiamo le variabili del nostro playbook ed eseguiamolo
-# i nomi dei certificati rimangono costanti, in caso di modifica conviene riutilizzare gli stessi nomi
-
-ansible-playbook -i "localhost," -c local playbook.yml
+# dal server IDP
+ldapsearch -H ldaps://10.87.7.104 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
 ````
 
-Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le variabili all'interno del file secondo le tue preferenze.
+## Installazione di Shibboleth IDPv3 e SPv2
 
+### Certificati SSL di shibboleth IDP e SP
+Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le variabili all'interno del file secondo le tue preferenze.
 ````
 nano make_ca.sh
-
+bash make_ca.sh
 ````
 
 Il seguente esempio considera una esecuzione in locale del playbook:
-
 ````
 ansible-playbook -i "localhost," -c local playbook.yml [-vvv]
 ````
@@ -115,7 +115,7 @@ Esclusivamente per scopo di test è possibile eludere la validazione del certifi
 LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
 ````
 
-Troubleshooting
+Shibboleth Troubleshooting
 ---------
 ````
 net.shibboleth.utilities.java.support.component.ComponentInitializationException: Injected service was null or not an AttributeResolver
@@ -202,6 +202,17 @@ Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'�
 ````
 Copiare i metadati dell'SP (wget --no-check-certificate https://sp.testunical.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
 
+````
+
+2018-05-05 18:09:41,360 - ERROR [net.shibboleth.idp.attribute.resolver.ad.impl.PrescopedAttributeDefinition:134] - Attribute Definition 'eduPersonPrincipalName': Input attribute value rossi does not contain delimiter @ and can not be split
+2018-05-05 18:09:41,390 - ERROR [net.shibboleth.idp.profile.impl.ResolveAttributes:299] - Profile Action ResolveAttributes: Error resolving attributes
+net.shibboleth.idp.attribute.resolver.ResolutionException: Input attribute value can not be split.
+        at net.shibboleth.idp.attribute.resolver.ad.impl.PrescopedAttributeDefinition.buildScopedStringAttributeValue(PrescopedAttributeDefinition.java:136)
+2018-05-05 18:09:42,536 - WARN [net.shibboleth.idp.consent.flow.ar.impl.AbstractAttributeReleaseAction:155] - Profile Action PopulateAttributeReleaseContext: Unable to locate attribute context
+````
+Un attributo configurato per essere diviso (split) non risulta essere divisibile. Nel caso specifico EduPersonAttributeName si aspettava
+un indirizzo email.
+
 
 Systems checks
 ---------
@@ -225,12 +236,27 @@ openssl s_client -connect idp.testunical.it:443
 ````
 ---------------------
 
+Hints
+-----
+
+#### idp logout standard url
+https://idp.testunical.it/Shibboleth.sso/Logout
+
+#### shibboleth log path
+/opt/shibboleth-idp/logs/
+
+
 Todo
 ---------
 
-- Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, esposizione di questo layer a livello idp)
+- Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, interfacciamento a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
 - ruolo per SP con nginx
 - Apache2/Tomcat2 hardening
 - implementare ruolo/opzioni per setup Attribute Authority, con e senza autenticazione
 - JRE selezionabile: openJDK, Oracle
+
+Special thanks
+--------------
+
+IDEM GARR

@@ -13,6 +13,9 @@
     src: roles/apache2_shib_sp/files/webroot/sp.example.org/index.html
     dest: /var/www/html/{{ sp_fqdn }}/index.html
 
+- name: Create CSS directory for SP webserver
+  file: name=/var/www/css state=directory 
+
 - name: Install Bootstrap Min CSS 
   copy:
     src: roles/apache2_shib_sp/files/webroot/bootstrap.min.css

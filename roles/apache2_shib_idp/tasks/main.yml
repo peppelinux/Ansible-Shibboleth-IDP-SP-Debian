@@ -21,6 +21,9 @@
     src: "roles/apache2_shib_idp/templates/idp-{{ servlet_container }}.conf"
     dest: /etc/apache2/sites-available/{{ idp_fqdn }}.conf
 
+- name: Create HTML directory for IdP webserver
+  file: name=/var/www/html/{{ idp_fqdn }} state=directory 
+
 - name: Install IdP Index file 
   template:
     src: roles/apache2_shib_idp/templates/idp-index.html

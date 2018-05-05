@@ -22,9 +22,9 @@
     # otherwise exception "[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:661)" will be raised
     # otherwise exception SSL_ERROR_RX_RECORD_TOO_LONG will be raised or other, exception message depends by the client.
 
-    ldap_ip:  "192.168.27.72"
-    idp_ip:   "{{ ldap_ip }}" # everything on the same vm
-    sp_ip:    "{{ ldap_ip }}"
+    ldap_ip: "10.87.7.104" 
+    idp_ip:   "10.87.7.235" 
+    sp_ip:    "{{ idp_ip }}" # everything on the same vm
 
     # Commons
     cert_path: "/etc/ssl/certs/{{ domain }}"
@@ -39,7 +39,7 @@
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
     
-    # Servlet configuration
+    # Servlet configuration, choose your preferred between tomcat and jetty. Default: tomcat.
     servlet_container: tomcat
     servlet_ram: 384m
     # Jetty configuration
@@ -86,7 +86,6 @@
     - { role: common, tags: ["common"] }
     - { role: shib3idp_install, tags: ["idp_install"] }
     
-    # TODO: decouple idp tasks and sp tasks in apache2
     - { role: apache2_common, tags: ["apache2"] }
     
     # shibboleth-idp only configuration
