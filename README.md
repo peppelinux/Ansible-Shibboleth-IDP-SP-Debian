@@ -210,7 +210,7 @@ net.shibboleth.idp.attribute.resolver.ResolutionException: Input attribute value
         at net.shibboleth.idp.attribute.resolver.ad.impl.PrescopedAttributeDefinition.buildScopedStringAttributeValue(PrescopedAttributeDefinition.java:136)
 2018-05-05 18:09:42,536 - WARN [net.shibboleth.idp.consent.flow.ar.impl.AbstractAttributeReleaseAction:155] - Profile Action PopulateAttributeReleaseContext: Unable to locate attribute context
 ````
-Un attributo configurato per essere diviso (split) non risulta essere divisibile. Nel caso specifico eduPersonPrincipalName si aspetta un valore scoped, nello specifico nomeutente@struttura. Queste specificazioni le troviamo nel documento: [Specifiche tecniche Attributi IDEM GARR](*https://www.eventi.garr.it/en/documenti/conferenza-garr-2016/riunione-idem/42-callofcomments-specifichetecnicheattributi-v3-0-20161005-it-it)
+Un attributo configurato per essere diviso (split) non risulta essere divisibile. Nel caso specifico eduPersonPrincipalName si aspetta un valore scoped, nello specifico nomeutente@struttura. Queste specificazioni le troviamo nel documento: [Specifiche tecniche Attributi IDEM GARR](https://www.eventi.garr.it/en/documenti/conferenza-garr-2016/riunione-idem/42-callofcomments-specifichetecnicheattributi-v3-0-20161005-it-it)
 
 
 Systems checks
