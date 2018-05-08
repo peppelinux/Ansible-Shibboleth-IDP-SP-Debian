@@ -250,8 +250,8 @@ Todo
 
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, interfacciamento a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
-- ruolo per SP con nginx
-- Apache2/Tomcat2 hardening
+- WebServer selezionabile: Apache2, NginX
+- NginX/Apache2/Tomcat2 hardening
 - implementare ruolo/opzioni per setup Attribute Authority, con e senza autenticazione
 - JRE selezionabile: openJDK, Oracle
 
