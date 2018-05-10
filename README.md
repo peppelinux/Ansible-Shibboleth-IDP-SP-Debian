@@ -12,6 +12,10 @@ Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
 
 La versione di Java utilizzata è OpenJDK 8.
 
+#### Documentazione di riferimento
+Il contenuto di questo playbook è stato perlopiù ricavato dalla seguente documentazione:
+- https://github.com/ConsortiumGARR/idem-tutorials
+
 #### Parametri utili:
 
 - shib_idp_version: 3.3.2. Testato anche con 3.2.1, richiede attribute-resolver.v3-idem.xml

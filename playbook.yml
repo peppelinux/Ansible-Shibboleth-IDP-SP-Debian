@@ -7,6 +7,10 @@
 - name: Install Shibboleth IDP and SP
   hosts: all
   become: yes
+  
+  vars_files:
+    - server_ip.yml
+
   vars:
     domain2: testunical
     domain1: it
@@ -22,9 +26,10 @@
     # otherwise exception "[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:661)" will be raised
     # otherwise exception SSL_ERROR_RX_RECORD_TOO_LONG will be raised or other, exception message depends by the client.
 
-    ldap_ip: "10.87.7.104" 
-    idp_ip:   "10.87.7.235" 
-    sp_ip:    "{{ idp_ip }}" # everything on the same vm
+    # modify this in server_ip.yml
+    # ldap_ip: "10.87.7.104" 
+    # idp_ip:   "10.87.7.235" 
+    # sp_ip:    "{{ idp_ip }}" # everything on the same vm
 
     # Commons
     cert_path: "/etc/ssl/certs/{{ domain }}"
@@ -40,10 +45,10 @@
     ldap_cert: slapd-cert.pem
     
     # Servlet configuration, choose your preferred between tomcat and jetty. Default: tomcat.
-    servlet_container: tomcat
+    servlet_container: jetty
     servlet_ram: 384m
     # Jetty configuration
-    jetty_distribution: jetty-distribution-9.4.8.v20171121
+    jetty_distribution: jetty-distribution-9.4.10.v20180503
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_path : /opt/jetty
     # Tomcat configuration

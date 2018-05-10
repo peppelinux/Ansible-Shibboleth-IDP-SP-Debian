@@ -6,10 +6,9 @@
 
     <!-- Release some attributes to an SP. -->
     <AttributeFilterPolicy id="example1">
-<!--
+
+
         <PolicyRequirementRule xsi:type="Requester" value="https://{{ sp_fqdn }}/shibboleth" />
--->
-        <PolicyRequirementRule xsi:type="Requester" value="https://{{ sp_fqdn }}" />
 
         <AttributeRule attributeID="eduPersonPrincipalName">
             <PermitValueRule xsi:type="ANY" />

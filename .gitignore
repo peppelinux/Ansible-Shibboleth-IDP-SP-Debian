@@ -1,2 +1,3 @@
 playbook.retry
 easy-rsa/
+server_ip.yml
