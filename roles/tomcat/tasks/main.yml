@@ -30,3 +30,6 @@
   
 - name: Restart {{ tomcat_version }}
   service: name={{ tomcat_version }} state=restarted enabled=yes
+
+- set_fact:
+     servlet_port: 8009

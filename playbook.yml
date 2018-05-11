@@ -43,6 +43,9 @@
     ldap_basedn: "ou=people,{{ ldap_basedc }}"
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
+
+    # webserver configuration, choose between apache and nginx
+    httpd: nginx
     
     # Servlet configuration, choose your preferred between tomcat and jetty. Default: tomcat.
     servlet_container: jetty

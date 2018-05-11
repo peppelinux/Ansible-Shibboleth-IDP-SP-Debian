@@ -32,9 +32,17 @@
   service: name=mysql state=stopped enabled=false
   ignore_errors: yes
 
-# APACHE
+# HTTPD
 - name: Stop Apache2
   service: name="apache2" state=stopped enabled=false
+  ignore_errors: yes
+
+- name: Stop NginX
+  service: name="nginx" state=stopped enabled=false
+  ignore_errors: yes
+
+- name: Stop Supervisor
+  service: name="suopervisor" state=stopped enabled=false
   ignore_errors: yes
 
 # CLEANUP DEPENDENCIES
@@ -68,6 +76,7 @@
     - apache2-data
     - apache2-bin
     - nginx
+    - supervisor
 
 - name: Cleanup Apache2 Configuration
   file: path="/etc/apache2" state=absent

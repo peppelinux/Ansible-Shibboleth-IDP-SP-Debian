@@ -18,9 +18,11 @@
   # apt: update_cache=yes
   apt: update_cache=yes cache_valid_time=86400
 
-- name: Install apt packages
+- name: Install Shibboleth apt packages
   apt: name={{ item }} state=present
   with_items:
+    - git
+    - wget
     - ntp
     - expat                 # jetty req
     - libservlet3.1-java    # servlet common requirements
@@ -32,13 +34,29 @@
     - emacs24-nox
     - vim
     - ntp
-    - apache2
     - openjdk-8-jre
-    - libapache2-mod-shib2  # sp
     - shibboleth-sp2-utils  # sp
     - shibboleth-sp2-common # sp
     - libshibsp7            # sp
+
+- name: Install Apache apt packages
+  apt: name={{ item }} state=present
+  with_items:
+    - apache2
+    - libapache2-mod-shib2  # sp
     - libapache2-mod-php
+  when: httpd == "apache"
+
+- name: Install NginX apt packages
+  apt: name={{ item }} state=present
+  with_items:
+    - nginx
+    - build-essential
+    - libssl-dev
+    - supervisor
+    - libpcre3
+    - libpcre3-dev
+  when: httpd == "nginx"
 
 - name: "Install {{ tomcat_version }}"
   apt: name={{ item }} state=present

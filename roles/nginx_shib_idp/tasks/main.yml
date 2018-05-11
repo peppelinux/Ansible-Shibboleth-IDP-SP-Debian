@@ -1,0 +1,19 @@
+# nginx runs as root user by default!
+# - name: Add nginx user to ssl-cert group
+  # user: name=apache2 groups=ssl-cert
+
+- name: Install IdP Virtualhost configuration
+  template:
+    src: "roles/{{ role_name }}/templates/idp-{{ servlet_container }}.conf"
+    dest: /etc/nginx/sites-available/{{ idp_fqdn }}.conf
+
+- name: Enable IdP Virtualhost
+  command: ln -s /etc/nginx/sites-available/{{ idp_fqdn }}.conf /etc/apache2/sites-enabled/
+
+- name: Enable NginX custom parameters
+  copy: roles/{{ role_name }}/files/{{ item }} /etc/nginx/conf.d/
+  with_items:
+    - ssl_hardening.conf
+  
+- name: Restart Nginx
+  service: name=nginx state=restarted enabled=yes

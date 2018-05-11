@@ -1,0 +1,33 @@
+apt-get source nginx
+
+# Clone the Nginx Shibboleth Module
+git clone https://github.com/nginx-shib/nginx-http-shibboleth.git http-shib
+# Clone the Clear Headers module
+git clone https://github.com/openresty/headers-more-nginx-module.git headers-more
+# Enter the Nginx folder
+pushd nginx-$NGINX_VERSION
+# Configure the Nginx compilation
+./configure --with-http_ssl_module \
+            --add-module=../push-stream --add-module=../http-shib \
+            --add-module=../headers-more
+# Compile Nginx
+make
+
+# copiare i moduli in
+/usr/lib/nginx/modules/
+
+# - name: Install IdP Virtualhost configuration
+  # template:
+    # src: "roles/{{ role_name }}/templates/idp-{{ servlet_container }}.conf"
+    # dest: /etc/nginx/sites-available/{{ idp_fqdn }}.conf
+
+# - name: Enable IdP Virtualhost
+  # command: ln -s /etc/nginx/sites-available/{{ idp_fqdn }}.conf /etc/apache2/sites-enabled/
+
+# - name: Enable NginX custom parameters
+  # copy: roles/{{ role_name }}/files/{{ item }} /etc/nginx/conf.d/
+  # with_items:
+    # - ssl_hardening.conf
+  
+# - name: Restart Nginx
+  # service: name=nginx state=restarted enabled=yes

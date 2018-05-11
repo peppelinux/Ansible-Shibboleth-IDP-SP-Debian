@@ -103,6 +103,9 @@
    - { src: '/usr/share/java/javax.json-1.0.4.jar' , dest: '{{ jetty_path }}/lib/ext/javax.json-1.0.4.jar' }
   tags: jetty
 
+- set_fact:
+     servlet_port: 8080
+
 # - name: "Stop jetty after an upgrade of its package"
   # systemd: 
    # name: "jetty"
