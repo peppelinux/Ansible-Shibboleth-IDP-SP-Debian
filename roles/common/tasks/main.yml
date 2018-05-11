@@ -2,6 +2,17 @@
   include_role:
     name: "uninstall"
   when: uninstall == 'true'
+
+- name: "Ensures {{ cert_path }} dir exists"
+  file: path="{{ cert_path }}" state=directory
+
+- name: "Ensures {{ cert_path }}/{{ ldap_cert }} exists"
+  stat: path={{ cert_path }}/{{ ldap_cert }}
+  register: ldap_cert_ok
+
+- name: "Check {{ cert_path }}/{{ ldap_cert }}"
+  fail: msg="{{ cert_path }}/{{ ldap_cert }} doesn't exists!"
+  when: not ldap_cert_ok.stat.exists
   
 - name: Update apt cache
   # apt: update_cache=yes
@@ -47,9 +58,6 @@
 
 - name: Configure /etc/environment
   template: src=roles/common/templates/environment dest=/etc/environment
-
-- name: "Ensures {{ cert_path }} dir exists"
-  file: path="{{ cert_path }}" state=directory
 
 - name: Copy certs
   copy: 

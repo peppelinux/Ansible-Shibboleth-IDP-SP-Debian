@@ -71,8 +71,7 @@
     idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     idp_attr_resolver: attribute-resolver-full.v332.xml # in roles/shib2_configure/files
-    # TODO: Error creating bean with name 'shibboleth.AccessControlPolicies': Cannot create inner bean 'shibboleth.IPRangeAccessControl$child#4f0c1409'
-    # idp_status_acl: "192.168.3.34/24, 192.168.27.72/24"
+
     idp_disable_saml1: true
     
     # persistent id on rdbms, it will install mariadb

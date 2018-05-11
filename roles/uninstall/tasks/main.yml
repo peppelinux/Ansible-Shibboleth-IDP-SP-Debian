@@ -67,6 +67,7 @@
     - apache2-utils
     - apache2-data
     - apache2-bin
+    - nginx
 
 - name: Cleanup Apache2 Configuration
   file: path="/etc/apache2" state=absent
