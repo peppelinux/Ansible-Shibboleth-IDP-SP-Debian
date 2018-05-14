@@ -50,12 +50,15 @@
 - name: Install NginX apt packages
   apt: name={{ item }} state=present
   with_items:
-    - nginx
+    # it will be compiled from source
+    #- nginx
     - build-essential
     - libssl-dev
     - supervisor
     - libpcre3
     - libpcre3-dev
+    - libssl-dev
+    - zlib1g-dev
   when: httpd == "nginx"
 
 - name: "Install {{ tomcat_version }}"

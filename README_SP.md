@@ -21,10 +21,6 @@ shibboleth2.xml
 This is the main XML file that I will go into a lot more detail on (as we’ll need to match some values up between here and the Nginx configuration).
 
 
-# trova versione nginx
-dpkg-query -l nginx | grep nginx | awk -F' ' {'print $3'}| awk -F'-' {'print $1'}
-
-
 #### Resources
 - https://www.nginx.com/blog/compiling-dynamic-modules-nginx-plus/
 - https://medium.com/ucl-api/adventures-in-shibboleth-and-nginx-part-2-of-2-6455a7f1d026
