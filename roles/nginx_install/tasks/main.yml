@@ -21,10 +21,81 @@
   get_url: url={{ nginx_dl_url }} dest=/opt
   when: nginx_tarball.stat.exists == False
 
-- name: Stat Shibboleth IdP source dir in /opt 
-  stat: path="{{ idp_path }}"
-  register: shib_dir_source
+- name: Create nginx_setup/nginx_src folder
+  file: path="{{ nginx_src_dir }}/nginx_setup" state=directory
 
-- name: Unarchive Shibboleth IdP
-  unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
+- name: Unarchive NginX
+  unarchive: src="{{ nginx_src_dir }}/{{ nginx_version }}.tar.gz" dest="{{ nginx_src_dir }}/nginx_setup" copy=no
   # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 
+
+- name: Get additional modules
+  command: "{{ item }}"
+  with_items:
+    - "git clone https://github.com/wandenberg/nginx-push-stream-module.git {{ nginx_src_dir }}/nginx_setup/push-stream"
+    - "git clone https://github.com/nginx-shib/nginx-http-shibboleth.git {{ nginx_src_dir }}/nginx_setup/http-shib"
+    - "git clone https://github.com/openresty/headers-more-nginx-module.git {{ nginx_src_dir }}/nginx_setup/headers-more"
+  ignore_errors: true
+  
+- name: Compile NginX
+  shell:
+    chdir: "{{ nginx_src_dir }}/nginx_setup/{{ nginx_version }}"
+    cmd:   "./configure --prefix=/usr \
+            --add-module={{ nginx_src_dir }}/nginx_setup/push-stream \
+            --add-module={{ nginx_src_dir }}/nginx_setup/http-shib \
+            --add-module={{ nginx_src_dir }}/nginx_setup/headers-more \
+            --sbin-path=/usr/sbin/nginx \
+            --modules-path=/usr/lib/nginx/modules \
+            --conf-path=/etc/nginx/nginx.conf \
+            --pid-path=/run/nginx.pid \
+            --error-log-path=/var/log/nginx/error.log \
+            --http-log-path=/var/log/nginx/access.log \
+            --user=www-data \
+            --group=www-data \
+            --with-http_ssl_module \
+            --with-stream_geoip_module \
+            --with-stream_realip_module \
+            --with-stream_ssl_module \
+            --with-stream \
+            --with-select_module \
+            --with-poll_module \
+            --with-threads \
+            --with-file-aio \
+            --with-http_ssl_module \
+            --with-http_v2_module \
+            --with-http_realip_module \
+            --with-http_addition_module \
+            --with-http_xslt_module \
+            --with-http_image_filter_module \
+            --with-http_geoip_module \
+            --with-http_sub_module \
+            --with-http_dav_module \
+            --with-http_flv_module \
+            --with-http_mp4_module \
+            --with-http_gunzip_module \
+            --with-http_gzip_static_module \
+            --with-http_auth_request_module \
+            --with-http_random_index_module \
+            --with-http_secure_link_module \
+            --with-http_degradation_module \
+            --with-http_slice_module \
+            --with-http_stub_status_module"
+
+- name: Install NginX
+  shell:
+    chdir: "{{ nginx_src_dir }}/nginx_setup/{{ nginx_version }}"
+    cmd:   "make install"
+
+- name: "Install NginX Debian's style configuration"
+  shell:
+    cmd: "{{ item }}"
+  with_items:
+    - rm -R /etc/nginx
+    - "cp -R roles/{{ role_name }}/files/nginx /etc/"
+    - "cp roles/{{ role_name }}/files/default /etc/default/nginx"
+    - "cp roles/{{ role_name }}/files/nginx-common.nginx.service /etc/systemd/system/nginx.service"
+    - systemctl enable nginx
+    - systemctl daemon-reload
+    - "cp roles/{{ role_name }}/files/nginx-common.nginx.init /etc/init.d/nginx"
+    - chmod 644 /etc/init.d/nginx
+    - update-rc.d nginx defaults
+    #- update-rc.d nginx enable 2

@@ -84,8 +84,8 @@
 - name: Cleanup Shibboleth IDP Install
   file: path="{{ item }}" state=absent
   with_items:
-    - {{ shib_setup_folder }}
-    - {{ idp_path }}
+    - "{{ shib_setup_folder }}"
+    - "{{ idp_path }}"
 
 - name: Cleanup Shibboleth SP Install
   file: path="/etc/shibboleth" state=absent
@@ -100,11 +100,14 @@
   ignore_errors: true
 
 # purge nginx source installation
-- name: Purge NginX insallation
+- name: Purge NginX installation
   file: name={{ item }} state=absent
   with_items:
     - /usr/sbin/nginx
     - /usr/sbin/nginx.old
     - /etc/nginx
     - /var/log/nginx
+    - /etc/init.d/nginx
+    - /etc/default/nginx
+    - /etc/systemd/system/nginx.service
   ignore_errors: true
