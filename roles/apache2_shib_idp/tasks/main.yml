@@ -17,7 +17,7 @@
 
 - name: Install IdP Virtualhost configuration
   template:
-    src: "roles/apache2_shib_idp/templates/idp-{{ servlet_container }}.conf"
+    src: "roles/{{ role_name }}/templates/idp-{{ servlet_container }}.conf"
     dest: /etc/apache2/sites-available/{{ idp_fqdn }}.conf
 
 - name: Create HTML directory for IdP webserver
@@ -25,7 +25,7 @@
 
 - name: Install IdP Index file 
   template:
-    src: roles/apache2_shib_idp/templates/idp-index.html
+    src: roles/{{ role_name }}/templates/idp-index.html
     dest: /var/www/html/{{ idp_fqdn }}/index.html
 
 - name: Enable IdP Virtualhost

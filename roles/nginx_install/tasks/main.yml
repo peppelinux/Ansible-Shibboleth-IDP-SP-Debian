@@ -1,0 +1,30 @@
+- name: Install NginX apt packages
+  apt: name={{ item }} state=present
+  with_items:
+    # it will be compiled from source
+    #- nginx
+    - build-essential
+    - libssl-dev
+    - supervisor
+    - libpcre3
+    - libpcre3-dev
+    - libssl-dev
+    - zlib1g-dev
+    - libgd-dev
+    - libgeoip-dev
+
+- name: Stat NginX tarball in /opt 
+  stat: path="{{ nginx_src_dir }}/{{ nginx_version }}.tar.gz"
+  register: nginx_tarball
+
+- name: "Download NginX {{ nginx_version }}"
+  get_url: url={{ nginx_dl_url }} dest=/opt
+  when: nginx_tarball.stat.exists == False
+
+- name: Stat Shibboleth IdP source dir in /opt 
+  stat: path="{{ idp_path }}"
+  register: shib_dir_source
+
+- name: Unarchive Shibboleth IdP
+  unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
+  # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 

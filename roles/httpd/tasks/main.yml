@@ -1,0 +1,29 @@
+- name: "Apache common"
+  include_role:
+    name: "apache2_common"
+  when: httpd == 'apache'
+
+- name: "Apache shib idp"
+  include_role:
+    name: "apache2_shib_idp"
+  when: httpd == 'apache'
+
+- name: "Apache shib sp"
+  include_role:
+    name: "apache2_shib_sp"
+  when: httpd == 'apache'
+
+- name: "NginX installation"
+  include_role:
+    name: "nginx_install"
+  when: httpd == 'nginx'
+
+- name: "NginX shib idp"
+  include_role:
+    name: "nginx_shib_idp"
+  when: httpd == 'nginx'
+
+- name: "NginX shib sp"
+  include_role:
+    name: "nginx_shib_sp"
+  when: httpd == 'nginx'

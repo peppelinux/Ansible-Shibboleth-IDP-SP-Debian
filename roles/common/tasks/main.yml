@@ -1,7 +1,7 @@
-- name: "Uninstall and Purge"
-  include_role:
-    name: "uninstall"
-  when: uninstall == 'true'
+# - name: "Uninstall and Purge"
+  # include_role:
+    # name: "uninstall"
+  # when: uninstall == 'true'
 
 - name: "Ensures {{ cert_path }} dir exists"
   file: path="{{ cert_path }}" state=directory
@@ -18,67 +18,24 @@
   # apt: update_cache=yes
   apt: update_cache=yes cache_valid_time=86400
 
-- name: Install Shibboleth apt packages
+- name: Install common apt packages
   apt: name={{ item }} state=present
   with_items:
     - git
     - wget
     - ntp
-    - expat                 # jetty req
-    - libservlet3.1-java    # servlet common requirements
-    - libcommons-dbcp-java  # jetty requirement
-    - libcommons-pool2-java # jetty req
-    - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
-    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
-    - html2text
     - emacs24-nox
     - vim
     - ntp
-    - openjdk-8-jre
-    - shibboleth-sp2-utils  # sp
-    - shibboleth-sp2-common # sp
-    - libshibsp7            # sp
 
-- name: Install Apache apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    - apache2
-    - libapache2-mod-shib2  # sp
-    - libapache2-mod-php
-  when: httpd == "apache"
-
-- name: Install NginX apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    # it will be compiled from source
-    #- nginx
-    - build-essential
-    - libssl-dev
-    - supervisor
-    - libpcre3
-    - libpcre3-dev
-    - libssl-dev
-    - zlib1g-dev
-  when: httpd == "nginx"
-
-- name: "Install {{ tomcat_version }}"
-  apt: name={{ item }} state=present
-  with_items:
-    - "{{ tomcat_version }}"
-    - "{{ tomcat_version }}-admin"
-  when: servlet_container == "tomcat"
+#  when: httpd == "apache"
+#  when: httpd == "nginx"
+#  when: servlet_container == "tomcat"
   
 - name: Configure /etc/hosts
   template: 
     src: roles/common/templates/hosts 
     dest: /etc/hosts
-
-- name: get JAVA_HOME
-  shell: readlink -f /usr/bin/java | sed "s:bin/java::"
-  register: java_home
-
-- name: Configure /etc/environment
-  template: src=roles/common/templates/environment dest=/etc/environment
 
 - name: Copy certs
   copy: 

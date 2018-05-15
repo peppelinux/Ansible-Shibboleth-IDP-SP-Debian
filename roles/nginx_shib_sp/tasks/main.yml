@@ -1,3 +1,10 @@
+- name: Install Shibboleth apt packages
+  apt: name={{ item }} state=present
+  with_items:
+    - shibboleth-sp2-utils  # sp
+    - shibboleth-sp2-common # sp
+    - libshibsp7            # sp
+
 # - name: Install IdP Virtualhost configuration
   # template:
     # src: "roles/{{ role_name }}/templates/idp-{{ servlet_container }}.conf"

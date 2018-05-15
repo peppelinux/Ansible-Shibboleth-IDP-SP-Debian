@@ -79,6 +79,13 @@ cd ansible-slapd-eduperson2016
 
 # modifica a tuo piacimento le variabili in playbook.yml prima di eseguire il seguente:
 ansible-playbook -i "localhost," -c local playbook.yml
+
+
+# seleziona esclusivamente alcuni ruoli, esempio soltanto la parte web
+ansible-playbook -i "localhost," -c local playbook.yml -v --tag httpd
+
+# soltanto disinstallare e rimuovere tutto
+ansible-playbook -i "localhost," -c local playbook.yml -v --tag uninstall
 ````
 
 ### Configurazione di LDAP

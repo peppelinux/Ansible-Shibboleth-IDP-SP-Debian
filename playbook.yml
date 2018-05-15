@@ -45,7 +45,12 @@
     ldap_cert: slapd-cert.pem
 
     # webserver configuration, choose between apache and nginx
-    httpd: nginx
+    httpd: apache
+
+    # nginx
+    nginx_src_dir: /opt
+    nginx_version: nginx-1.14.0
+    nginx_dl_url: http://nginx.org/download/{{ nginx_version }}.tar.gz
     
     # Servlet configuration, choose your preferred between tomcat and jetty. Default: tomcat.
     servlet_container: jetty
@@ -90,14 +95,21 @@
 
   roles:
     # apt dependencies and certificates
+    - { role: uninstall, tags: ["uninstall"] }
     - { role: common, tags: ["common"] }
+
+    # idp
     - { role: shib3idp_install, tags: ["idp_install"] }
-    
-    - { role: apache2_common, tags: ["apache2"] }
-    
-    # shibboleth-idp only configuration
     - { role: shib3idp_configure, tags: ["idp_configure"] }
 
-    - { role: apache2_shib_idp, tags: ["apache2"] }
-    - { role: apache2_shib_sp, tags: ["sp"] }
+    # sp
+    - { role: shib2sp, tags: ["sp"] }
+
+    # httpd
+    - { role: httpd, tags: ["httpd"] }
+    # - { role: apache2_common, tags: ["apache2"] }
+    # - { role: apache2_shib_idp, tags: ["apache2"] }
+    # - { role: apache2_shib_sp, tags: ["sp"] }
+
+    # federation
     - { role: sp_federation, tags: ["sp"] }
