@@ -1,23 +1,6 @@
-
-
 # this must be done, general purpose certificates will not works -> ERROR OpenSSL : error code: 537346050 in bss_file.c, line 408
 - name: Create Shibboleth SP keys
   shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth
-
-# Check this, is it usefull?
-# - file:
-    # path: "/etc/shibboleth/sp-key.pem"
-    # owner: _shibd
-    # group: "{{ servlet_container }}"
-    # mode: 0640
-  # when: servlet_container == "jetty"
-
-# - file:
-    # path: "/etc/shibboleth/sp-key.pem"
-    # owner: _shibd
-    # group: "{{ tomcat_version }}"
-    # mode: 0640
-  # when: servlet_container == "tomcat"
 
 # TODO: less generalized permissions configuration here
 - file:

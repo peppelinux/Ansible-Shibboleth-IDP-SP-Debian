@@ -18,12 +18,12 @@
     name: "nginx_install"
   when: httpd == 'nginx'
 
-# - name: "NginX shib idp"
-  # include_role:
-    # name: "nginx_shib_idp"
-  # when: httpd == 'nginx'
+- name: "NginX shib idp"
+  include_role:
+    name: "nginx_shib_idp"
+  when: httpd == 'nginx'
 
-# - name: "NginX shib sp"
-  # include_role:
-    # name: "nginx_shib_sp"
-  # when: httpd == 'nginx'
+- name: "NginX shib sp"
+  include_role:
+    name: "nginx_shib_sp"
+  when: httpd == 'nginx'

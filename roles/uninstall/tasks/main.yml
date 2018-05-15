@@ -99,6 +99,9 @@
     - /var/log/shibboleth
   ignore_errors: true
 
+- name: Stop Nginx
+  service: name=nginx state=stopped
+
 # purge nginx source installation
 - name: Purge NginX installation
   file: name={{ item }} state=absent

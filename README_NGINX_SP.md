@@ -79,12 +79,12 @@ make install
 make -n install
 
 # Compiled modules are in
-ls ./objs/addon/src/
-ls ./objs/addon/http-shib/
+# ls ./objs/addon/src/
+# ls ./objs/addon/http-shib/
 
 # copy its content in
-cp ./objs/addon/src/* /usr/lib/nginx/modules/
-cp ./objs/addon/http-shib/* /usr/lib/nginx/modules/
+# cp ./objs/addon/src/* /usr/lib/nginx/modules/
+# cp ./objs/addon/http-shib/* /usr/lib/nginx/modules/
 
 popd
 ````

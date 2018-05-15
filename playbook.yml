@@ -45,7 +45,7 @@
     ldap_cert: slapd-cert.pem
 
     # webserver configuration, choose between apache and nginx
-    httpd: apache
+    httpd: nginx
 
     # nginx
     nginx_src_dir: /opt
@@ -55,6 +55,7 @@
     # Servlet configuration, choose your preferred between tomcat and jetty. Default: tomcat.
     servlet_container: jetty
     servlet_ram: 384m
+    servlet_port: 8080
     # Jetty configuration
     jetty_distribution: jetty-distribution-9.4.10.v20180503
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
@@ -107,9 +108,6 @@
 
     # httpd
     - { role: httpd, tags: ["httpd"] }
-    # - { role: apache2_common, tags: ["apache2"] }
-    # - { role: apache2_shib_idp, tags: ["apache2"] }
-    # - { role: apache2_shib_sp, tags: ["sp"] }
 
     # federation
     - { role: sp_federation, tags: ["sp"] }

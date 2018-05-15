@@ -85,6 +85,9 @@
     chdir: "{{ nginx_src_dir }}/nginx_setup/{{ nginx_version }}"
     cmd:   "make install"
 
+- name: Add nginx user to ssl-cert group
+  user: name=www-data groups=ssl-cert
+
 - name: "Install NginX Debian's style configuration"
   shell:
     cmd: "{{ item }}"
@@ -99,3 +102,6 @@
     - chmod 644 /etc/init.d/nginx
     - update-rc.d nginx defaults
     #- update-rc.d nginx enable 2
+
+- name: Restart Nginx
+  service: name=nginx state=restarted enabled=yes

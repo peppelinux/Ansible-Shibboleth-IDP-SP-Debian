@@ -46,6 +46,3 @@
 
 - name: Restart Apache2
   service: name=apache2 state=restarted enabled=yes
-
-- name: Install libapache2-mod-shib2
-  apt: name=libapache2-mod-shib2 state=present
