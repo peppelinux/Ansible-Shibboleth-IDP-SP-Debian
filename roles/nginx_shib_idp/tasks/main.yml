@@ -1,0 +1,15 @@
+- name: Install IdP Virtualhost configuration
+  template:
+    src: "roles/{{ role_name }}/templates/shib_idp.conf"
+    dest: /etc/nginx/sites-available/{{ idp_fqdn }}.conf
+
+- name: Enable IdP Virtualhost
+  command: ln -s /etc/nginx/sites-available/{{ idp_fqdn }}.conf /etc/nginx/sites-enabled/
+
+- name: Enable NginX custom parameters
+  copy: src=roles/{{ role_name }}/files/{{ item }} dest=/etc/nginx/conf.d/
+  with_items:
+    - ssl_hardening.conf
+  
+- name: Restart Nginx
+  service: name=nginx state=restarted enabled=yes

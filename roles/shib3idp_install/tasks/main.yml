@@ -1,6 +1,34 @@
+- name: Install Shibboleth apt packages
+  apt: name={{ item }} state=present
+  with_items:
+    - expat                 # jetty req
+    - libservlet3.1-java    # servlet common requirements
+    - libcommons-dbcp-java  # jetty requirement
+    - libcommons-pool2-java # jetty req
+    - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
+    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
+    - html2text
+    - emacs24-nox
+    - openjdk-8-jre
+
+- name: get JAVA_HOME
+  shell: readlink -f /usr/bin/java | sed "s:bin/java::"
+  register: java_home
+
+- name: Configure /etc/environment
+  template: src=roles/{{ role_name }}/templates/environment dest=/etc/environment
+
+# use jetty or tomcat
 - name: "Run {{ servlet_container }} role"
   include_role:
     name: "{{ servlet_container }}"
+
+- name: Install Shibboleth apt packages
+  apt: name={{ item }} state=present
+  with_items:
+    - shibboleth-sp2-utils  # sp
+    - shibboleth-sp2-common # sp
+    - libshibsp7            # sp
 
 - name: Stat Shibboleth IdP tarball in /opt 
   stat: path="{{ shib_dest_dir }}/{{ shib_idp_package }}"
@@ -13,19 +41,15 @@
 - name: Stat Shibboleth IdP source dir in /opt 
   stat: path="{{ idp_path }}"
   register: shib_dir_source
-  
+
 - name: Unarchive Shibboleth IdP
   unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
   # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 
 
 - name: Prepare properties for Shibboleth IdP install
   template: 
-    src: roles/shib3idp_install/templates/shib-install.properties 
+    src: roles/{{ role_name }}/templates/shib-install.properties 
     dest: "{{ tmp_upload_dir }}/shib-install.properties"
-
-- name: get JAVA_HOME
-  shell: readlink -f /usr/bin/java | sed "s:bin/java::"
-  register: java_home
 
 - name: Stat Shibboleth IdP dest dir in /opt
   stat: path="{{ idp_path }}/metadata"
@@ -43,4 +67,3 @@
             -Didp.target.dir={{ idp_path }} \
             -Didp.merge.properties={{ tmp_upload_dir }}/shib-install.properties"
   when: shib_dir_dest.stat.exists == False 
-

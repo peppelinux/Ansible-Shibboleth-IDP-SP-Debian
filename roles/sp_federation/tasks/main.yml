@@ -1,6 +1,30 @@
+# METADATAS - SP
+# reboot time (thank you servlet_container) makes metadata GET fails or return 404!
+# Marco Malavolti consiglia una regexp sul log di avvio di tomcat/jetty relativo all'idp, funziona bene!
+- name: "Wait until the string 'RemoteUserAuthServlet will process REMOTE_USER' appears in {{ idp_path }}/logs/idp-process.log"
+  wait_for:
+    path: "{{ idp_path }}/logs/idp-process.log" 
+    search_regex: "RemoteUserAuthServlet will process REMOTE_USER"
+  when: servlet_container == "tomcat"
+
+# the old one
+# - name: sleep for 10 seconds to let servlet reboot and make its bootstrap assessments
+  # wait_for: timeout=10
+
+- name: Add IdP Metadata to SP (/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml)
+  get_url:
+    url: "{{ idp_entity_id }}"
+    dest: "/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml"
+    validate_certs: no
+    force: yes
+    timeout: 60
+
+- name: Restart shibd
+  service: name=shibd state=restarted enabled=yes
+
 - name: Register SP into Shibboleth IdP's metadata-providers.xml
   template:
-    src: roles/shib3idp_configure/templates/metadata-providers.xml
+    src: roles/{{ role_name }}/templates/metadata-providers.xml
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
     backup: yes
 

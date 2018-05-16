@@ -32,9 +32,17 @@
   service: name=mysql state=stopped enabled=false
   ignore_errors: yes
 
-# APACHE
+# HTTPD
 - name: Stop Apache2
   service: name="apache2" state=stopped enabled=false
+  ignore_errors: yes
+
+- name: Stop NginX
+  service: name="nginx" state=stopped enabled=false
+  ignore_errors: yes
+
+- name: Stop Supervisor
+  service: name="suopervisor" state=stopped enabled=false
   ignore_errors: yes
 
 # CLEANUP DEPENDENCIES
@@ -67,13 +75,21 @@
     - apache2-utils
     - apache2-data
     - apache2-bin
+    #- nginx
+    - supervisor
 
 - name: Cleanup Apache2 Configuration
   file: path="/etc/apache2" state=absent
 
+- name: Cleanup Shibboleth IDP Install
+  file: path="{{ item }}" state=absent
+  with_items:
+    - "{{ shib_setup_folder }}"
+    - "{{ idp_path }}"
+
 - name: Cleanup Shibboleth SP Install
   file: path="/etc/shibboleth" state=absent
-  
+
 - name: APT autoremove unused deps
   shell: apt autoremove -y
 
@@ -81,4 +97,21 @@
   file: name={{ item }} state=absent
   with_items:
     - /var/log/shibboleth
+  ignore_errors: true
+
+- name: Stop Nginx
+  service: name=nginx state=stopped
+  ignore_errors: true
+  
+# purge nginx source installation
+- name: Purge NginX installation
+  file: name={{ item }} state=absent
+  with_items:
+    - /usr/sbin/nginx
+    - /usr/sbin/nginx.old
+    - /etc/nginx
+    - /var/log/nginx
+    - /etc/init.d/nginx
+    - /etc/default/nginx
+    - /etc/systemd/system/nginx.service
   ignore_errors: true

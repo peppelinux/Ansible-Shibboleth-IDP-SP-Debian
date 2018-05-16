@@ -1,0 +1,62 @@
+- name: Create metadata directory for IdP metadata
+  file: name=/etc/shibboleth/metadata state=directory
+
+- name: Install Shibboleth apt packages
+  apt: name={{ item }} state=present
+  with_items:
+    - shibboleth-sp2-utils  # sp
+    - shibboleth-sp2-common # sp
+    - libshibsp7            # sp
+    - php-fpm               # php
+
+- name: Install SP Supervisor processes
+  copy:
+    src: roles/{{ role_name }}/files/supervisor_shibd.conf
+    dest: /etc/supervisor/conf.d/shib.conf
+
+- name: Install shib_clear_headers
+  copy:
+    src: roles/{{ role_name }}/files/shib_clear_headers
+    dest: /etc/nginx/
+
+- name: Install shib_fastcgi_params
+  copy:
+    src: roles/{{ role_name }}/files/shib_fastcgi_params
+    dest: /etc/nginx/
+
+- name: Restart Supervisor
+  service: name=supervisor state=restarted enabled=yes
+
+- name: Install SP Virtualhost configuration
+  template:
+    src: roles/{{ role_name }}/templates/shib_sp.conf
+    dest: /etc/nginx/sites-available/{{ sp_fqdn }}.conf
+
+- name: Enable SP Virtualhost
+  command: ln -s /etc/nginx/sites-available/{{ sp_fqdn }}.conf /etc/nginx/sites-enabled/
+
+- name: Disable nginx default site
+  file: name=/etc/nginx/sites-enabled/default state=absent
+
+# PHP Application (this will be changed with a Django application)
+- name: Site content for {{ sp_fqdn }}
+  copy:
+    src: roles/apache2_shib_sp/files/webroot/sp.example.org/
+    dest: /var/www/html/{{ sp_fqdn }}/
+
+- name: Parse {{ sp_fqdn }} in index.html
+  template:
+    src: roles/apache2_shib_sp/files/webroot/sp.example.org/index.html
+    dest: /var/www/html/{{ sp_fqdn }}/index.html
+
+- name: Create CSS directory for SP webserver
+  file: name=/var/www/html/{{ sp_fqdn }}/css state=directory 
+
+- name: Install Bootstrap Min CSS 
+  copy:
+    src: roles/apache2_shib_sp/files/webroot/bootstrap.min.css
+    dest: /var/www/html/{{ sp_fqdn }}/css/bootstrap.min.css
+# END PHP Application
+
+- name: Restart Nginx
+  service: name=nginx state=restarted enabled=yes

@@ -1,55 +1,41 @@
-- name: "Uninstall and Purge"
-  include_role:
-    name: "uninstall"
-  when: uninstall == 'true'
+# - name: "Uninstall and Purge"
+  # include_role:
+    # name: "uninstall"
+  # when: uninstall == 'true'
+
+- name: "Ensures {{ cert_path }} dir exists"
+  file: path="{{ cert_path }}" state=directory
+
+- name: "Ensures {{ cert_path }}/{{ ldap_cert }} exists"
+  stat: path={{ cert_path }}/{{ ldap_cert }}
+  register: ldap_cert_ok
+
+- name: "Check {{ cert_path }}/{{ ldap_cert }}"
+  fail: msg="{{ cert_path }}/{{ ldap_cert }} doesn't exists!"
+  when: not ldap_cert_ok.stat.exists
   
 - name: Update apt cache
   # apt: update_cache=yes
   apt: update_cache=yes cache_valid_time=86400
 
-- name: Install apt packages
+- name: Install common apt packages
   apt: name={{ item }} state=present
   with_items:
+    - git
+    - wget
     - ntp
-    - expat                 # jetty req
-    - libservlet3.1-java    # servlet common requirements
-    - libcommons-dbcp-java  # jetty requirement
-    - libcommons-pool2-java # jetty req
-    - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
-    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
-    - html2text
     - emacs24-nox
     - vim
     - ntp
-    - apache2
-    - openjdk-8-jre
-    - libapache2-mod-shib2  # sp
-    - shibboleth-sp2-utils  # sp
-    - shibboleth-sp2-common # sp
-    - libshibsp7            # sp
-    - libapache2-mod-php
 
-- name: "Install {{ tomcat_version }}"
-  apt: name={{ item }} state=present
-  with_items:
-    - "{{ tomcat_version }}"
-    - "{{ tomcat_version }}-admin"
-  when: servlet_container == "tomcat"
+#  when: httpd == "apache"
+#  when: httpd == "nginx"
+#  when: servlet_container == "tomcat"
   
 - name: Configure /etc/hosts
   template: 
     src: roles/common/templates/hosts 
     dest: /etc/hosts
-
-- name: get JAVA_HOME
-  shell: readlink -f /usr/bin/java | sed "s:bin/java::"
-  register: java_home
-
-- name: Configure /etc/environment
-  template: src=roles/common/templates/environment dest=/etc/environment
-
-- name: "Ensures {{ cert_path }} dir exists"
-  file: path="{{ cert_path }}" state=directory
 
 - name: Copy certs
   copy: 

@@ -43,10 +43,19 @@
     ldap_basedn: "ou=people,{{ ldap_basedc }}"
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
+
+    # webserver configuration, choose between apache and nginx
+    httpd: apache
+
+    # nginx
+    nginx_src_dir: /opt
+    nginx_version: nginx-1.14.0
+    nginx_dl_url: http://nginx.org/download/{{ nginx_version }}.tar.gz
     
-    # Servlet configuration, choose your preferred between tomcat and jetty. Default: tomcat.
+    # Servlet configuration, choose your preferred between tomcat and jetty
     servlet_container: jetty
     servlet_ram: 384m
+    servlet_port: 8080
     # Jetty configuration
     jetty_distribution: jetty-distribution-9.4.10.v20180503
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
@@ -71,8 +80,7 @@
     idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     idp_attr_resolver: attribute-resolver-full.v332.xml # in roles/shib2_configure/files
-    # TODO: Error creating bean with name 'shibboleth.AccessControlPolicies': Cannot create inner bean 'shibboleth.IPRangeAccessControl$child#4f0c1409'
-    # idp_status_acl: "192.168.3.34/24, 192.168.27.72/24"
+
     idp_disable_saml1: true
     
     # persistent id on rdbms, it will install mariadb
@@ -88,14 +96,18 @@
 
   roles:
     # apt dependencies and certificates
+    - { role: uninstall, tags: ["uninstall"] }
     - { role: common, tags: ["common"] }
+
+    # idp
     - { role: shib3idp_install, tags: ["idp_install"] }
-    
-    - { role: apache2_common, tags: ["apache2"] }
-    
-    # shibboleth-idp only configuration
     - { role: shib3idp_configure, tags: ["idp_configure"] }
 
-    - { role: apache2_shib_idp, tags: ["apache2"] }
-    - { role: apache2_shib_sp, tags: ["sp"] }
+    # sp
+    - { role: shib2sp, tags: ["sp"] }
+
+    # httpd
+    - { role: httpd, tags: ["httpd"] }
+
+    # federation
     - { role: sp_federation, tags: ["sp"] }

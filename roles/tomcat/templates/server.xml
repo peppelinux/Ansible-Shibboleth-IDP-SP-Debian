@@ -71,10 +71,11 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
     -->
-    <!-- IdPCOURSE: Disable HTTP connector -->
+    <!-- IdPCOURSE: Disable HTTP connector 
     <Connector port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"
                redirectPort="8443" />
+    -->
 
     <!-- A "Connector" using the shared thread pool-->
     <!--
@@ -125,7 +126,7 @@
     -->
 
     <!-- IdP-COURSE: Add AJP connector -->
-    <Connector port="8009" address="127.0.0.1" protocol="AJP/1.3"
+    <Connector port="{{ servlet_port }}" address="127.0.0.1" protocol="AJP/1.3"
 	       redirectPort="443" enableLookups="false"
 	       tomcatAuthentication="false"
 	       />

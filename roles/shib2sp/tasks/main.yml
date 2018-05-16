@@ -1,0 +1,22 @@
+# this must be done, general purpose certificates will not works -> ERROR OpenSSL : error code: 537346050 in bss_file.c, line 408
+- name: Create Shibboleth SP keys
+  shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth
+
+# TODO: less generalized permissions configuration here
+- file:
+    path: "/etc/shibboleth/sp-cert.pem"
+    owner: _shibd
+    group: _shibd
+    mode: 0644
+
+- name: Configure Shibboleth SP
+  template:
+    src: roles/{{ role_name }}/templates/shibboleth2.xml
+    dest: /etc/shibboleth/shibboleth2.xml
+    backup: yes
+
+- name: Configure Shibboleth SP Attribute Map
+  copy:
+    src: roles/{{ role_name }}/files/attribute-map.xml
+    dest: /etc/shibboleth/attribute-map.xml
+    backup: yes
