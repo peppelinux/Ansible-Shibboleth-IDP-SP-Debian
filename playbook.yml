@@ -45,14 +45,14 @@
     ldap_cert: slapd-cert.pem
 
     # webserver configuration, choose between apache and nginx
-    httpd: nginx
+    httpd: apache
 
     # nginx
     nginx_src_dir: /opt
     nginx_version: nginx-1.14.0
     nginx_dl_url: http://nginx.org/download/{{ nginx_version }}.tar.gz
     
-    # Servlet configuration, choose your preferred between tomcat and jetty. Default: tomcat.
+    # Servlet configuration, choose your preferred between tomcat and jetty
     servlet_container: jetty
     servlet_ram: 384m
     servlet_port: 8080

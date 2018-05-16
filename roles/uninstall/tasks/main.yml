@@ -101,7 +101,8 @@
 
 - name: Stop Nginx
   service: name=nginx state=stopped
-
+  ignore_errors: true
+  
 # purge nginx source installation
 - name: Purge NginX installation
   file: name={{ item }} state=absent

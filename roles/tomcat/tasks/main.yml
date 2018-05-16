@@ -14,6 +14,7 @@
     src: roles/tomcat/templates/{{ tomcat_version }}
     dest: /etc/default/{{ tomcat_version }}
 
+# remote
 # - name: Install JSTL-1.2 library
   # get_url:
     # url: https://repo1.maven.org/maven2/jstl/jstl/1.2/jstl-1.2.jar
@@ -33,6 +34,3 @@
   
 - name: Restart {{ tomcat_version }}
   service: name={{ tomcat_version }} state=restarted enabled=yes
-
-- set_fact:
-     servlet_port: 8009

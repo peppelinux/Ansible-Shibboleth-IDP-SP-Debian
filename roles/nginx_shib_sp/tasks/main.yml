@@ -14,6 +14,16 @@
     src: roles/{{ role_name }}/files/supervisor_shibd.conf
     dest: /etc/supervisor/conf.d/shib.conf
 
+- name: Install shib_clear_headers
+  copy:
+    src: roles/{{ role_name }}/files/shib_clear_headers
+    dest: /etc/nginx/
+
+- name: Install shib_fastcgi_params
+  copy:
+    src: roles/{{ role_name }}/files/shib_fastcgi_params
+    dest: /etc/nginx/
+
 - name: Restart Supervisor
   service: name=supervisor state=restarted enabled=yes
 
@@ -21,6 +31,12 @@
   template:
     src: roles/{{ role_name }}/templates/shib_sp.conf
     dest: /etc/nginx/sites-available/{{ sp_fqdn }}.conf
+
+- name: Enable SP Virtualhost
+  command: ln -s /etc/nginx/sites-available/{{ sp_fqdn }}.conf /etc/nginx/sites-enabled/
+
+- name: Disable nginx default site
+  file: name=/etc/nginx/sites-enabled/default state=absent
 
 # PHP Application (this will be changed with a Django application)
 - name: Site content for {{ sp_fqdn }}
@@ -42,5 +58,5 @@
     dest: /var/www/html/{{ sp_fqdn }}/css/bootstrap.min.css
 # END PHP Application
 
-# - name: Restart Nginx
-  # service: name=nginx state=restarted enabled=yes
+- name: Restart Nginx
+  service: name=nginx state=restarted enabled=yes

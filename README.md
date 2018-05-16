@@ -5,7 +5,7 @@ Shibboleth IDPv3 SP2 Debian 9
 Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
 
 - Servlet Container per IDP (tomcat8 o jetty9, default: tomcat8)
-- apache2    (HTTPS frontend)
+- Web server  (Apache o NginX come HTTPS frontend)
 - mod_shib2  (Application module for shibboleth sp)
 - shibboleth (Identity provider)
 - mariaDB    (IDP persistent store)
@@ -290,14 +290,17 @@ https://idp.testunical.it/Shibboleth.sso/Logout
 Todo
 ---------
 
+- [SP] Rimappatura/adattamento codice PHP di esempio per NginX FastCGI
+- Rimozione/disinstallazione: non più in un unico ruolo (roles/uninstall) ma contestualizzata nel ruolo di riferimento
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, interfacciamento a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
-- WebServer selezionabile: Apache2, NginX
 - NginX/Apache2/Tomcat2 hardening
 - implementare ruolo/opzioni per setup Attribute Authority, con e senza autenticazione
 - JRE selezionabile: openJDK, Oracle
 
-Special thanks
+Ringraziamenti 
 --------------
 
-IDEM GARR
+- Comunità IDEM GARR
+- Marco Malavolti (garr.it) per la documentazione di base
+- Marco Cappellacci (uniurb) per la documentazione NginX di base
