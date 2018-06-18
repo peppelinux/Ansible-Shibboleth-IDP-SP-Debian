@@ -5,7 +5,7 @@
         xsi:schemaLocation="urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd">
 
     <!-- Release some attributes to an SP. -->
-    <AttributeFilterPolicy id="example1">
+    <AttributeFilterPolicy id="{{ sp_fqdn }}">
 
 
         <PolicyRequirementRule xsi:type="Requester" value="https://{{ sp_fqdn }}/shibboleth" />
@@ -36,6 +36,7 @@
 <!--
     <AttributeFilterPolicy id="example2">
         <PolicyRequirementRule xsi:type="OR">
+            <Rule xsi:type="Requester" value="https://sp.example.org" />
             <Rule xsi:type="Requester" value="https://another.example.org/shibboleth" />
         </PolicyRequirementRule>
 

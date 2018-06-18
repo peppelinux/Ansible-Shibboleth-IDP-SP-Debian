@@ -47,10 +47,7 @@
     <logger name="org.opensaml.saml" level="${idp.loglevel.opensaml:-INFO}"/>
     
     <!-- Logs LDAP related messages -->
-    <logger name="org.ldaptive" level="${idp.loglevel.ldap:-INFO}"/>
-    
-    <!-- Logs LDAP user authentication messages -->
-    <logger name="org.ldaptive.auth.Authenticator" level="${idp.loglevel.ldap:-INFO}"/>
+    <logger name="org.ldaptive" level="${idp.loglevel.ldap:-WARN}"/>
     
     <!-- Logs inbound and outbound protocols messages at DEBUG level -->
     <logger name="PROTOCOL_MESSAGE" level="${idp.loglevel.messages:-INFO}" />
@@ -86,6 +83,18 @@
             <charset>UTF-8</charset>
             <Pattern>%date{ISO8601} - %level [%logger:%line] - %msg%n%ex{short}</Pattern>
         </encoder>
+
+        <!-- Ignore Velocity status page error. -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <matcher>
+                    <Name>VelocityStatusMatcher</Name>
+                    <regex>ResourceManager : unable to find resource 'status.vm' in any resource loader.</regex>
+                </matcher>
+                <expression>VelocityStatusMatcher.matches(formattedMessage)</expression>
+            </evaluator>
+            <OnMatch>DENY</OnMatch>
+        </filter>
     </appender>
 
     <appender name="ASYNC_PROCESS" class="ch.qos.logback.classic.AsyncAppender">
@@ -110,6 +119,18 @@
             <charset>UTF-8</charset>
             <Pattern>%date{ISO8601} - %level [%logger:%line] - %msg%n%ex{short}</Pattern>
         </encoder>
+        
+        <!-- Ignore Velocity status page error. -->
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <matcher>
+                    <Name>VelocityStatusMatcher</Name>
+                    <regex>ResourceManager : unable to find resource 'status.vm' in any resource loader.</regex>
+                </matcher>
+                <expression>VelocityStatusMatcher.matches(formattedMessage)</expression>
+            </evaluator>
+            <OnMatch>DENY</OnMatch>
+        </filter>
     </appender>
     
     <!-- Audit log. -->
