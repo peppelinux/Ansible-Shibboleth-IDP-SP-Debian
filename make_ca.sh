@@ -1,8 +1,9 @@
 #!/bin/bash
 export PEM_PATH="keys/pem"
 export CERT_PATH=`pwd`"/roles/common/files/certs"
-export IDP_FQDN="idp.testunical.it"
-export SP_FQDN="sp.testunical.it"
+export DOMAIN="testunical.it"
+export IDP_FQDN="idp.$DOMAIN"
+export SP_FQDN="sp.$DOMAIN"
 
 apt install easy-rsa -y
 rm -f easy-rsa
@@ -26,24 +27,31 @@ ln -s openssl-1.0.0.cnf openssl.cnf # won't works with CommonName
 . ./vars
 
 # override for speedup
-export KEY_ALTNAMES=$IDP_FQDN
-export KEY_OU=$IDP_FQDN
-export KEY_NAME=$IDP_FQDN
+export KEY_OU=$DOMAIN
+export KEY_NAME=$DOMAIN
+export KEY_CN=$DOMAIN
+export KEY_ALTNAMES="*.$DOMAIN"
 
 export KEY_COUNTRY="IT"
 export KEY_PROVINCE="CS"
 export KEY_CITY="Cosenza"
-export KEY_ORG="testunical.it"
-export KEY_EMAIL="me@testunical.it"
+export KEY_ORG="$DOMAIN"
+export KEY_EMAIL="me@$DOMAIN"
+
+# fixes validation error: “unsupported purpose”
+export EASYRSA_NS_SUPPORT="yes"
 
 ./clean-all
 
 ./build-ca
 ./build-dh
-./build-key $IDP_FQDN
+
+export KEY_NAME=$IDP_FQDN
+export KEY_CN=$IDP_FQDN
+export KEY_ALTNAMES="*.$DOMAIN"
+./build-key-server $IDP_FQDN
 
 mkdir -p $PEM_PATH
-
 openssl x509 -inform PEM -in keys/ca.crt > $PEM_PATH/$KEY_ORG-cacert.pem
 
 # IDP certs
@@ -51,10 +59,11 @@ openssl x509 -inform PEM -in keys/$IDP_FQDN.crt > $PEM_PATH/$IDP_FQDN-cert.pem
 openssl rsa -in keys/$IDP_FQDN.key -text > $PEM_PATH/$IDP_FQDN-key.pem
 
 # SP certs
+export KEY_CN=$SP_FQDN
 export KEY_ALTNAMES=$SP_FQDN
-export KEY_OU=$SP_FQDN
 export KEY_NAME=$SP_FQDN
-./build-key $SP_FQDN
+./build-key-server $SP_FQDN
+
 openssl x509 -inform PEM -in keys/$SP_FQDN.crt > $PEM_PATH/$SP_FQDN-cert.pem
 openssl rsa -in keys/$SP_FQDN.key -text > $PEM_PATH/$SP_FQDN-key.pem
 
