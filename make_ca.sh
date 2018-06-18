@@ -29,6 +29,7 @@ ln -s openssl-1.0.0.cnf openssl.cnf # won't works with CommonName
 export KEY_ALTNAMES=$IDP_FQDN
 export KEY_OU=$IDP_FQDN
 export KEY_NAME=$IDP_FQDN
+export KEY_CN=$SERVER_FQDN
 
 export KEY_COUNTRY="IT"
 export KEY_PROVINCE="CS"
