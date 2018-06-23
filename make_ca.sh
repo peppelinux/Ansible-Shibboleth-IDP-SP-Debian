@@ -44,7 +44,7 @@ export EASYRSA_NS_SUPPORT="yes"
 ./clean-all
 
 ./build-ca
-./build-dh
+#./build-dh
 
 export KEY_NAME=$IDP_FQDN
 export KEY_CN=$IDP_FQDN

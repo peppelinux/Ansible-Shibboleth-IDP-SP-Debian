@@ -170,9 +170,15 @@ Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in ce
 Soluzione: allineare i certificati e la corrispondenza commonName con l'hostname del server.
 
 
-Esclusivamente per scopo di test è possibile eludere la validazione del certificato con il seguente comando, al fine di escludere ulteriori variabili.
+Esclusivamente per scopo di test è possibile eludere la validazione del certificato con il seguente comando, solo per test di connettività.
 ````
 LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
+````
+
+OpenSSL check
+````
+openssl x509  -text -noout -in /etc/ssl/certs/testunical.it/slapd-cacert.pem
+openssl verify -verbose -CAfile /etc/ssl/certs/testunical.it/slapd-cacert.pem /etc/ssl/certs/testunical.it/slapd-cert.pem 
 ````
 
 Shibboleth Troubleshooting
@@ -297,6 +303,7 @@ Todo
 - NginX/Apache2/Tomcat2 hardening
 - implementare ruolo/opzioni per setup Attribute Authority, con e senza autenticazione
 - JRE selezionabile: openJDK, Oracle
+- Read [this](https://tuakiri.ac.nz/confluence/display/Tuakiri/Installing+a+Shibboleth+3.x+IdP#InstallingaShibboleth3.xIdP-ConfigureLDAPAuthentication)
 
 Ringraziamenti 
 --------------

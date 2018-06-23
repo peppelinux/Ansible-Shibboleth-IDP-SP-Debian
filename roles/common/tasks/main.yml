@@ -6,6 +6,16 @@
 - name: "Ensures {{ cert_path }} dir exists"
   file: path="{{ cert_path }}" state=directory
 
+- name: Copy certs
+  copy: 
+    src: "{{ item }}"
+    dest: "{{ cert_path }}/"
+    owner: root
+    group: ssl-cert
+    mode: 640
+  with_fileglob:
+    - roles/common/files/certs/*
+
 - name: "Ensures {{ cert_path }}/{{ ldap_cert }} exists"
   stat: path={{ cert_path }}/{{ ldap_cert }}
   register: ldap_cert_ok
@@ -36,16 +46,6 @@
   template: 
     src: roles/common/templates/hosts 
     dest: /etc/hosts
-
-- name: Copy certs
-  copy: 
-    src: "{{ item }}"
-    dest: "{{ cert_path }}/"
-    owner: root
-    group: ssl-cert
-    mode: 640
-  with_fileglob:
-    - roles/common/files/certs/*
 
 - name: "Ensures {{ tmp_upload_dir }} dir exists"
   file: path="{{ tmp_upload_dir }}" state=directory

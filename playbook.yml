@@ -79,7 +79,7 @@
     idp_fqdn: "idp.{{ domain }}"
     idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
-    idp_attr_resolver: attribute-resolver-full.v332.xml # in roles/shib2_configure/files
+    idp_attr_resolver: attribute-resolver-full.v332.saml2.light.xml # in roles/shib2_configure/files
 
     idp_disable_saml1: true
     
