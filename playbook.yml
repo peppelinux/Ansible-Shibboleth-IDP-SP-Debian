@@ -68,7 +68,7 @@
     # tomcat_manager_pw: tomcatsecret
 
     # Shibboleth IDP
-    shib_idp_version: "3.3.2"
+    shib_idp_version: "3.3.3"
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
     shib_dest_dir: "/opt"
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"

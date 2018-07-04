@@ -139,7 +139,7 @@
     <!-- Schema: SCHAC -->
     <AttributeDefinition xsi:type="Simple" id="schacPersonalUniqueID" sourceAttributeID="schacPersonalUniqueID">
         <Dependency ref="myLDAP" />
-        <AttributeEncoder xsi:type="SAML2String" name="1.3.6.1.4.1.1466.155.121.1.15" friendlyName="schacPersonalUniqueID" encodeType="false" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.3.6.1.4.1.25178.1.2.15" friendlyName="schacPersonalUniqueID" encodeType="false" />
     </AttributeDefinition>
 
 

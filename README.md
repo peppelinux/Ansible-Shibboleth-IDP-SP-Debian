@@ -40,6 +40,8 @@ Indice dei contenuti
            * [AttributeResolverGaugeSet](#attributeresolvergaugeset)
            * [No metadata returned for](#samlmetadatalookuphandler)
            * [PrescopedAttributeDefinition](#prescopedattributedefinition)
+   * #### Produzione
+        * [Produzione](#produzione)
    * [Hints](#hints)
    * [Todo](#todo)
    * [Ringraziamenti](#ringraziamenti)
@@ -281,6 +283,20 @@ net.shibboleth.idp.attribute.resolver.ResolutionException: Input attribute value
 ````
 Un attributo configurato per essere diviso (split) non risulta essere divisibile. Nel caso specifico eduPersonPrincipalName si aspetta un valore scoped, nello specifico nomeutente@struttura. Queste specificazioni le troviamo nel documento: [Specifiche tecniche Attributi IDEM GARR](https://www.eventi.garr.it/en/documenti/conferenza-garr-2016/riunione-idem/42-callofcomments-specifichetecnicheattributi-v3-0-20161005-it-it)
 
+
+Produzione
+----------
+
+````
+# ricaricare servizi singoli (eviti di riavviare il servlet container)
+# questi sono definiti in conf/services.xml
+
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeResolverService
+
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeFilterService
+
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.MetadataResolverResources
+````
 
 Hints
 -----
