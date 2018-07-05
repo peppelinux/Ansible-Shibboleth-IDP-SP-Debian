@@ -40,8 +40,7 @@ Indice dei contenuti
            * [AttributeResolverGaugeSet](#attributeresolvergaugeset)
            * [No metadata returned for](#samlmetadatalookuphandler)
            * [PrescopedAttributeDefinition](#prescopedattributedefinition)
-   * #### Produzione
-        * [Produzione](#produzione)
+   * [Produzione](#produzione)
    * [Hints](#hints)
    * [Todo](#todo)
    * [Ringraziamenti](#ringraziamenti)
