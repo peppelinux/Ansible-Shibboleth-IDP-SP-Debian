@@ -51,6 +51,7 @@
             --http-log-path=/var/log/nginx/access.log \
             --user=www-data \
             --group=www-data \
+            --with-debug \
             --with-http_ssl_module \
             --with-stream_geoip_module \
             --with-stream_realip_module \
@@ -101,7 +102,7 @@
     - "cp roles/{{ role_name }}/files/nginx-common.nginx.init /etc/init.d/nginx"
     - chmod 644 /etc/init.d/nginx
     - update-rc.d nginx defaults
-    #- update-rc.d nginx enable 2
+    - update-rc.d nginx enable 2
 
 - name: Restart Nginx
   service: name=nginx state=restarted enabled=yes
