@@ -20,9 +20,17 @@
    createhome: "no"
   tags: jetty
 
+- name: Stat Jetty tarball in /opt 
+  stat: path="{{ jetty_dl_path }}/{{ jetty_pkg }}"
+  register: jetty_tarball
+
+- name: "Download Jetty {{ jetty_version }}"
+  get_url: url={{ jetty_dl_url }} dest={{ jetty_dl_path }}
+  when: jetty_tarball.stat.exists == False
+
 - name: "Extract Jetty Package"
   unarchive:
-   src: "files/{{ jetty_pkg }}"
+   src: "{{ jetty_dl_path }}/{{ jetty_pkg }}"
    dest: "/usr/local/src"
    owner: "jetty"
    group: "jetty"

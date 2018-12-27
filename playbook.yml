@@ -36,7 +36,7 @@
     tmp_upload_dir: "/tmp/ansible-shibboleth-idp-sp-setup"
 
     # LDAP configuration
-    ldap_fqdn: "ldap.testunical.it"
+    ldap_fqdn: "ldap.{{ domain2 }}.{{ domain1 }}"
     ldap_basedc: "dc={{ domain2 }},dc={{ domain1 }}"
     ldap_binddn: "uid=idp,ou=applications,{{ ldap_basedc }}"
     ldap_pw: idpsecret
@@ -57,9 +57,12 @@
     servlet_ram: 384m
     servlet_port: 8080
     # Jetty configuration
-    jetty_distribution: jetty-distribution-9.4.10.v20180503
+    jetty_version: 9.4.14.v20181114
+    jetty_distribution: "jetty-distribution-{{ jetty_version }}"
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
-    jetty_path : /opt/jetty
+    jetty_dl_path: /opt
+    jetty_dl_url: "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/{{ jetty_version }}/{{ jetty_pkg }}"
+    jetty_path : "{{ jetty_dl_path }}/jetty"
     # Tomcat configuration
     tomcat_version: tomcat8
     
@@ -68,7 +71,7 @@
     # tomcat_manager_pw: tomcatsecret
 
     # Shibboleth IDP
-    shib_idp_version: "3.3.3"
+    shib_idp_version: "3.4.2"
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
     shib_dest_dir: "/opt"
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
@@ -79,8 +82,9 @@
     idp_fqdn: "idp.{{ domain }}"
     idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
-    idp_attr_resolver: attribute-resolver-full.v332.saml2.light.xml # in roles/shib2_configure/files
-
+    # idp_attr_resolver: attribute-resolver-full.v332.saml2.light.xml # in roles/shib2_configure/files
+    # malavolti:
+    idp_attr_resolver: attribute-resolver-v3_4-idem_TLS.xml
     idp_disable_saml1: true
     
     # persistent id on rdbms, it will install mariadb

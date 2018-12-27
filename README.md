@@ -324,5 +324,6 @@ Ringraziamenti
 --------------
 
 - Comunità IDEM GARR
-- Marco Malavolti (garr.it) per la documentazione di base
-- Marco Cappellacci (uniurb) per la documentazione NginX di base
+- Marco Malavolti (garr.it) per la documentazione di base;
+- Marco Cappellacci (uniurb) per la documentazione NginX di base;
+- Daniele Albrizio (unitrieste) per consigli, confronti e tecnicismi;
