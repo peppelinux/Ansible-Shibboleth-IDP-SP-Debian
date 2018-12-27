@@ -122,6 +122,20 @@
     replace: ''
     backup: yes
 
+# nuovi da 3.4.2 come guida Malavolti
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: 'validUntil=["TZ0-9\.\-\:]+'
+    replace: ''
+    backup: no
+
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://{{ idp_fqdn }}/idp/profile/Shibboleth/SSO"/>'
+    replace: "<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+              <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>"
+    backup: no
+# fine modifiche 3.4.2
 
 - name: "Configure idp.properties"
   import_tasks: properties.yml
