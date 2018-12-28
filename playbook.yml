@@ -45,7 +45,7 @@
     ldap_cert: slapd-cert.pem
 
     # webserver configuration, choose between apache and nginx
-    httpd: nginx
+    httpd: apache
 
     # nginx
     nginx_src_dir: /opt
