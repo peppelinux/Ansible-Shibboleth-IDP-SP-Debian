@@ -73,7 +73,7 @@
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
-        <AttributeRule attributeID="mail">
+        <AttributeRule attributeID="email">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 	
