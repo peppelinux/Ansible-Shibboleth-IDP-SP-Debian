@@ -17,6 +17,7 @@ apt install libboost-all-dev zlib1g-dev libssl1.0-dev libcurl4-openssl-dev \
             # the following commented out will be compiled from sources \
             # libxerces2-java libxerces-c-dev libxerces-c3.1 \
             # libxml-security-c-dev xml-security-c-utils
+````
 
 ##### Install log4shib
 ````
@@ -29,6 +30,7 @@ make install
 ````
 
 ##### Xerces-c
+````
 wget http://mirror.nohup.it/apache/xerces/c/3/sources/xerces-c-3.2.2.tar.bz2
 tar xjvf xerces-c-3.2.2.tar.bz2
 cd xerces-c-3.2.2
@@ -42,7 +44,6 @@ make install
 ````
 
 ##### Install xml-security-c
-
 ````
 apt install libxalan-c-dev
 
@@ -61,7 +62,6 @@ make install
 ````
 
 ##### Install xmltooling
-
 ````
 wget http://shibboleth.net/downloads/c++-opensaml/3.0.0/xmltooling-3.0.3.tar.bz2
 tar xjvf xmltooling-3.0.3.tar.bz2
@@ -79,7 +79,6 @@ make install
 ````
 
 ##### Install opensaml
-
 ````
 wget https://shibboleth.net/downloads/c++-opensaml/3.0.0/opensaml-3.0.0.tar.bz2
 tar xjvf opensaml-3.0.0.tar.bz2
@@ -92,8 +91,7 @@ make install
 ````
 
 #### install SP
-
-##### Configuration hints
+Configuration hints
 **--enable-apache-24** means Apache 2.4 module, you can also choose:
 ````
 # see ./configure -h
@@ -103,7 +101,7 @@ make install
   --enable-apache-24      enable the Apache 2.4 module
 ````
 
-##### Make it
+##### Compilation
 ````
 wget https://shibboleth.net/downloads/service-provider/latest/shibboleth-sp-3.0.3.tar.bz2
 tar xjvf shibboleth-sp-3.0.3.tar.bz2
@@ -119,7 +117,7 @@ export xmltooling_lite_CFLAGS=-I/opt/shibboleth-sp/include
 export xmltooling_lite_LIBS=-lxmltooling-lite
 
 export opensaml_CFLAGS=-I/opt/shibboleth-sp/include
-export opensaml_LIBS=-lopensaml
+export opensaml_LIBS=-lsaml
 
 ./configure --with-apxs=/usr/local/apache/bin/apxs \
             --enable-apache-24 \
