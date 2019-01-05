@@ -110,7 +110,7 @@ tar xjvf shibboleth-sp-3.0.3.tar.bz2
 cd shibboleth-sp-3.0.3
 
 #export PKG_CONFIG_PATH=/opt/shibboleth-sp/include
-#export PKG_CONFIG_LIBDIR=/opt/shibboleth-sp/include
+#export PKG_CONFIG_LIBDIR=/opt/shibboleth-sp/lib
 
 export xmltooling_CFLAGS=-I/opt/shibboleth-sp/include
 export xmltooling_LIBS=-lxmltooling
@@ -131,7 +131,7 @@ make install
 ````
 
 #### Configuration
-Some notes about running it in a production environment.
+Here: Some notes about running it in a production environment.
 
 #### Appendix: Common libraries knowledge
 ````
