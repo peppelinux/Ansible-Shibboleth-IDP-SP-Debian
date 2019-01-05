@@ -91,8 +91,9 @@ make install
 ````
 
 #### install SP
-Configuration hints
-**--enable-apache-24** means Apache 2.4 module, you can also choose:
+
+Configuration hint: 
+**--enable-apache-24** means Apache 2.4, you can also choose one ore more of the following:
 ````
 # see ./configure -h
   --enable-apache-13      enable the Apache 1.3 module
@@ -100,6 +101,7 @@ Configuration hints
   --enable-apache-22      enable the Apache 2.2 module
   --enable-apache-24      enable the Apache 2.4 module
 ````
+Check your installed apache version before running the configuration script.
 
 ##### Compilation
 ````
@@ -132,9 +134,6 @@ make install
 Some notes about running it in a production environment.
 
 #### Appendix: Common libraries knowledge
-Put some comments here!
-
-TODO HERE
 ````
 # for make , compilation
 export LIBRARY_PATH=$LIBRARY_PATH:/opt/shibboleth-sp/lib
