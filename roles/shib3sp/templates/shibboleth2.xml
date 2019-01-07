@@ -64,7 +64,7 @@
     instead of this mechanism, which is meant for IIS usage.
     -->
 
-<!--
+
 {% if httpd == 'nginx'  %}
     <RequestMapper type="XML">
         <RequestMap>
@@ -76,9 +76,7 @@
         </Host>
         </RequestMap>
     </RequestMapper>
-{% endif %}
--->
-
+{% else %}
     <RequestMapper type="Native">
         <RequestMap>
             <!--
@@ -98,6 +96,7 @@
             -->
         </RequestMap>
     </RequestMapper>
+{% endif %}
 
     <!--
     The ApplicationDefaults element is where most of Shibboleth's SAML bits are defined.
@@ -271,7 +270,8 @@
         </MetadataProvider>
         -->
         <MetadataProvider type="XML"
-			  file="/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml"/>
+         validate="true"
+         path="/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml"/>
         
         <!-- TrustEngines run in order to evaluate peer keys and certificates. -->
         <TrustEngine type="ExplicitKey"/>

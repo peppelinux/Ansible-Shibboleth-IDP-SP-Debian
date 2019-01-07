@@ -25,7 +25,7 @@ Indice dei contenuti
    * #### Installazione
       * [LDAP](#ldap)
       * [Configurazione di LDAP](#configurazione-di-ldap)
-      * [Installazione di Shibboleth IDPv3 e SPv2](#installazione-di-shibboleth-idpv3-e-spv2)
+      * [Installazione di Shibboleth IDPv3 e SPv3](#installazione-di-shibboleth-idpv3-e-spv3)
       * [Risultato](#risultato)
    * #### Troubleshooting
        * [Systems checks](#systems-checks)   
@@ -111,7 +111,7 @@ ldapsearch -H ldaps://10.87.7.104 -D "uid=idp,ou=applications,dc=testunical,dc=i
 
 ````
 
-## Installazione di Shibboleth IDPv3 e SPv2
+## Installazione di Shibboleth IDPv3 e SPv3
 
 ### Certificati SSL di shibboleth IDP e SP
 Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le variabili all'interno del file secondo le tue preferenze.
@@ -301,7 +301,7 @@ Hints
 -----
 
 #### idp logout standard url
-https://idp.testunical.it/Shibboleth.sso/Logout
+https://sp.testunical.it/Shibboleth.sso/Logout
 
 #### shibboleth log path
 /opt/shibboleth-idp/logs/
