@@ -25,11 +25,11 @@
 
 # MYSQL
 - name: "Destroy database {{ idp_rdbms_dbname }}"
-  shell: 'mysql -u {{ idp_rdbms_user }} --password={{ idp_rdbms_pw }} -e "DROP DATABASE IF EXISTS {{ idp_rdbms_dbname }}"'
+  shell: 'mariadb -u {{ idp_rdbms_user }} --password={{ idp_rdbms_pw }} -e "DROP DATABASE IF EXISTS {{ idp_rdbms_dbname }}"'
   ignore_errors: yes
 
-- name: Stop mysql-server
-  service: name=mysql state=stopped enabled=false
+- name: Stop mariadb-server
+  service: name=mariadb state=stopped enabled=false
   ignore_errors: yes
 
 # HTTPD
@@ -42,7 +42,7 @@
   ignore_errors: yes
 
 - name: Stop Supervisor
-  service: name="suopervisor" state=stopped enabled=false
+  service: name="supervisor" state=stopped enabled=false
   ignore_errors: yes
 
 # CLEANUP DEPENDENCIES
@@ -52,31 +52,34 @@
   ignore_errors: yes
 
 - name: Uninstall packages
-  apt: name={{ item }} state=absent purge=yes
-  with_items:
-    - ntp
-    - expat                 # jetty req
-    - libservlet3.1-java    # servlet common requirements
-    - libcommons-dbcp-java  # jetty requirement
-    - libcommons-pool2-java # jetty req
-    - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
-    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
-    - html2text
-    - emacs24-nox
-    - vim
-    - ntp
-    - apache2
-    - openjdk-8-jre
-    - libapache2-mod-shib2  # sp
-    - shibboleth-sp2-utils  # sp
-    - shibboleth-sp2-common # sp
-    - libshibsp7            # sp
-    - libapache2-mod-php
-    - apache2-utils
-    - apache2-data
-    - apache2-bin
-    #- nginx
-    - supervisor
+  apt:
+    pkg:
+        - ntp
+        - expat                     # jetty req
+        - libservlet3.1-java        # servlet common requirements
+        - libcommons-dbcp-java      # jetty requirement
+        - libcommons-pool2-java     # jetty req
+        - libmariadb-java           # servlet req contains: /usr/share/java/mariadb-java-client.jar
+        - libjsonp-java             # servlet req contains: javax.json-1.0.4.jar
+        - html2text
+        - emacs24-nox
+        - vim
+        - ntp
+        - apache2
+        - openjdk-11-jre
+        - libapache2-mod-php
+        - apache2-utils
+        - apache2-data
+        - apache2-bin
+        - supervisor
+        - shibboleth-sp-utils 
+        - shibboleth-sp-common 
+        - libshibsp8
+        - libshibresolver2
+        - nginx
+    state: absent
+    purge: yes
+
 
 - name: Cleanup Apache2 Configuration
   file: path="/etc/apache2" state=absent

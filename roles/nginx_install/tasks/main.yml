@@ -1,17 +1,20 @@
 - name: Install NginX apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    # it will be compiled from source
-    #- nginx
-    - build-essential
-    - libssl-dev
-    - supervisor
-    - libpcre3
-    - libpcre3-dev
-    - libssl-dev
-    - zlib1g-dev
-    - libgd-dev
-    - libgeoip-dev
+  apt:
+    state: present
+    pkg:
+        # it will be compiled from source
+        #- nginx
+        - build-essential
+        - libssl-dev
+        - supervisor
+        - libpcre3
+        - libpcre3-dev
+        - libssl-dev
+        - zlib1g-dev
+        - libgd-dev
+        - libgeoip-dev
+        - libxslt1-dev
+        - libxslt1.1
 
 - name: Stat NginX tarball in /opt 
   stat: path="{{ nginx_src_dir }}/{{ nginx_version }}.tar.gz"

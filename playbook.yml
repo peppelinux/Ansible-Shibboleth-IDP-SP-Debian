@@ -43,9 +43,11 @@
     ldap_basedn: "ou=people,{{ ldap_basedc }}"
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
-
+    # choose between: starttls, tls, plain
+    ldap_auth: starttls
+    
     # webserver configuration, choose between apache and nginx
-    httpd: apache
+    httpd: nginx
 
     # nginx
     nginx_src_dir: /opt
@@ -108,7 +110,7 @@
     - { role: shib3idp_configure, tags: ["idp_configure"] }
 
     # sp
-    - { role: shib2sp, tags: ["sp"] }
+    - { role: shib3sp, tags: ["sp"] }
 
     # httpd
     - { role: httpd, tags: ["httpd"] }

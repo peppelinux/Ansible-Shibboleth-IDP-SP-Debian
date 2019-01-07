@@ -1,8 +1,8 @@
 #### [Ansible playbook] 
-Shibboleth IDPv3 SP2 Debian 9 
+Shibboleth IDPv3 e SP3 su Debian 10 (buster)
 =============================
 
-Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
+Setup in locale di ShibbolethIdP 3 e Shibboleth SP 3.0.3 con i seguenti servizi:
 
 - Servlet Container per IDP (tomcat8 o jetty9, default: jetty)
 - Web server  (Apache o NginX come HTTPS frontend)
@@ -10,7 +10,7 @@ Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
 - Shibboleth (Identity provider)
 - mariaDB    (IDP persistent store)
 
-La versione di Java utilizzata è OpenJDK 8.
+La versione di Java utilizzata è OpenJDK 11.
 
 #### Documentazione di riferimento
 Il contenuto di questo playbook è stato perlopiù ricavato dalla seguente documentazione:

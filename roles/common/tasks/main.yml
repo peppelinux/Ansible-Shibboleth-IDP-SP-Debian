@@ -14,7 +14,7 @@
     group: ssl-cert
     mode: 640
   with_fileglob:
-    - roles/common/files/certs/*
+    - certs/*
 
 - name: "Ensures {{ cert_path }}/{{ ldap_cert }} exists"
   stat: path={{ cert_path }}/{{ ldap_cert }}
@@ -29,19 +29,16 @@
   apt: update_cache=yes cache_valid_time=86400
 
 - name: Install common apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    - git
-    - wget
-    - ntp
-    - emacs24-nox
-    - vim
-    - ntp
+  apt:
+      pkg:
+        - git
+        - wget
+        - ntp
+        - emacs24-nox
+        - vim
+        - ntp
+      state: present
 
-#  when: httpd == "apache"
-#  when: httpd == "nginx"
-#  when: servlet_container == "tomcat"
-  
 - name: Configure /etc/hosts
   template: 
     src: roles/common/templates/hosts 

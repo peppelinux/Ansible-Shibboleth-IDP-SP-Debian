@@ -1,15 +1,16 @@
 - name: Install Shibboleth apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    - expat                 # jetty req
-    - libservlet3.1-java    # servlet common requirements
-    - libcommons-dbcp-java  # jetty requirement
-    - libcommons-pool2-java # jetty req
-    - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
-    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
-    - html2text
-    - emacs24-nox
-    - openjdk-8-jre
+  apt:
+    pkg:
+        - expat                 # jetty req
+        - libservlet3.1-java    # servlet common requirements
+        - libcommons-dbcp-java  # jetty requirement
+        - libcommons-pool2-java # jetty req
+        - libmariadb-java         # servlet req contains: /usr/share/java/mariadb-java-client.jar
+        - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
+        - html2text
+        - emacs24-nox
+        - openjdk-11-jre
+    state: present
 
 - name: get JAVA_HOME
   shell: readlink -f /usr/bin/java | sed "s:bin/java::"
@@ -22,13 +23,6 @@
 - name: "Run {{ servlet_container }} role"
   include_role:
     name: "{{ servlet_container }}"
-
-- name: Install Shibboleth apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    - shibboleth-sp2-utils  # sp
-    - shibboleth-sp2-common # sp
-    - libshibsp7            # sp
 
 - name: Stat Shibboleth IdP tarball in /opt 
   stat: path="{{ shib_dest_dir }}/{{ shib_idp_package }}"
