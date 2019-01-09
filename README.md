@@ -120,7 +120,7 @@ nano make_ca.sh
 bash make_ca.sh
 ````
 
-**Ricordati** di leggere attentamente il contenuto di playbook.yml e di creare server.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
+**Ricordati** di leggere attentamente il contenuto di playbook.yml e di creare server_ip.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
 
 Il seguente esempio considera una esecuzione in locale del playbook:
 ````
