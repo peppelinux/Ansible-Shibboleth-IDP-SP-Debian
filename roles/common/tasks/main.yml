@@ -39,16 +39,23 @@
         - ntp
       state: present
 
+# /etc/hosts optional definitions
 - name: Check that server_ip.yml exists
   stat:
-    path: server_ip.yml
+    path: ./server_ip.yml
   register: hosts_file
 
+- name: Include server_ip.yml definitions
+  include_vars:
+    file: ./server_ip.yml
+  when: hosts_file.stat.exists == True 
+  
 - name: Configure /etc/hosts
   template: 
     src: roles/common/templates/hosts 
     dest: /etc/hosts
   when: hosts_file.stat.exists == True 
-  
+# END: /etc/hosts optional definitions
+
 - name: "Ensures {{ tmp_upload_dir }} dir exists"
   file: path="{{ tmp_upload_dir }}" state=directory

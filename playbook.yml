@@ -8,8 +8,8 @@
   hosts: all
   become: yes
   
-  vars_files:
-    - server_ip.yml
+  # vars_files:
+    # - server_ip.yml
 
   vars:
     domain2: testunical

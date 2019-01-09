@@ -62,7 +62,7 @@ pip3 install ansible
 Parametri utili
 ---------------
 
-- shib_idp_version: 3.3.2. Testato anche con 3.2.1, richiede attribute-resolver.v3-idem.xml
+- shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata
 - idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP
 - idp_persistent_id_rdbms: true. Configura lo storage dei Persistent ID su MariaDB e ottine REMOTE_USER nella diagnostica della pagina SP
 - servlet_container: tomcat | jetty.
@@ -107,7 +107,7 @@ ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdse
 ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
 # dal server IDP
-ldapsearch -H ldaps://10.87.7.104 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
+ldapsearch -H ldaps://ldap.testunical.it -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
 ````
 
@@ -119,6 +119,8 @@ Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le var
 nano make_ca.sh
 bash make_ca.sh
 ````
+
+Ricordati di leggere attentamente il contenuto di playbook.yml e di creare server_ip.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
 
 Il seguente esempio considera una esecuzione in locale del playbook:
 ````
