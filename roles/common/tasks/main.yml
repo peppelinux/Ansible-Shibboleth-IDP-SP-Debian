@@ -39,10 +39,16 @@
         - ntp
       state: present
 
+- name: Check that server_ip.yml exists
+  stat:
+    path: server_ip.yml
+  register: hosts_file
+
 - name: Configure /etc/hosts
   template: 
     src: roles/common/templates/hosts 
     dest: /etc/hosts
-
+  when: hosts_file.stat.exists == True 
+  
 - name: "Ensures {{ tmp_upload_dir }} dir exists"
   file: path="{{ tmp_upload_dir }}" state=directory
