@@ -50,7 +50,7 @@ Requisiti
 ---------
 
 - Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
-- Utente LDAP abilitato per le ricerche nella uo di interesse (esempio consultabile in ldap/idp_user.ldiff)
+- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldiff)
 - ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldiff)
 - Installazione delle seguenti dipendenze
 
@@ -62,12 +62,12 @@ pip3 install ansible
 Parametri utili
 ---------------
 
-- shib_idp_version: 3.3.2. Testato anche con 3.2.1, richiede attribute-resolver.v3-idem.xml
-- idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP
-- idp_persistent_id_rdbms: true. Configura lo storage dei Persistent ID su MariaDB e ottine REMOTE_USER nella diagnostica della pagina SP
-- servlet_container: tomcat | jetty.
-- idp_disable_saml1: disabilita il supporto a SAML versione 1
-- servlet_ram: 384m. Quanta ram destinare al servlet container
+- shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata;
+- idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP;
+- idp_persistent_id_rdbms: true. Configura lo storage dei Persistent ID su MariaDB e ottiene REMOTE_USER nella diagnostica della pagina SP;
+- servlet_container: tomcat | jetty;
+- idp_disable_saml1: disabilita il supporto a SAML versione 1;
+- servlet_ram: 384m. Quanta ram destinare al servlet container;
 
 Installazione
 -------------
@@ -107,7 +107,7 @@ ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdse
 ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
 # dal server IDP
-ldapsearch -H ldaps://10.87.7.104 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
+ldapsearch -H ldaps://ldap.testunical.it -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
 ````
 
@@ -301,7 +301,7 @@ Hints
 -----
 
 #### idp logout standard url
-https://idp.testunical.it/Shibboleth.sso/Logout
+https://sp.testunical.it/Shibboleth.sso/Logout
 
 #### shibboleth log path
 /opt/shibboleth-idp/logs/
