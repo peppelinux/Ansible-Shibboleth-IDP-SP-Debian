@@ -12,7 +12,7 @@
     dest: "{{ cert_path }}/"
     owner: root
     group: ssl-cert
-    mode: 640
+    # mode: 640
   with_fileglob:
     - certs/*
 
@@ -37,6 +37,7 @@
         - emacs24-nox
         - vim
         - ntp
+        - ca-certificates
       state: present
 
 # /etc/hosts optional definitions

@@ -49,11 +49,11 @@
     dest: "{{ idp_path }}/conf/ldap.properties" 
     backup: yes
 
-- name: Configure Enhanced Logging
-  copy: 
-    src: roles/shib3idp_configure/files/logback.xml 
-    dest: "{{ idp_path }}/conf/logback.xml"
-    backup: yes
+# - name: Configure Enhanced Logging
+  # copy: 
+    # src: roles/shib3idp_configure/files/logback.xml 
+    # dest: "{{ idp_path }}/conf/logback.xml"
+    # backup: yes
 
 # - name: Configure IdP attribute-filter.xml 
   # template: 
@@ -139,6 +139,9 @@
 
 - name: "Configure idp.properties"
   import_tasks: properties.yml
+
+- name: "Download Shibboleth IT messages"
+  get_url: url={{ idp_localized_message_url }} dest="{{ idp_path }}/messages/messages_it.properties"
 
 - name: Restart Jetty
   service: name="jetty" state=restarted
