@@ -49,11 +49,11 @@ fastcgi_param Remote-User $shib_remote_user;
 shib_request_set $shib_eppn $upstream_http_variable_eppn;
 fastcgi_param eppn $shib_eppn;
 
-# shib_request_set $shib_affliation $upstream_http_variable_affiliation;
-# fastcgi_param Affiliation $shib_affiliation;
+#shib_request_set $shib_affliation $upstream_http_variable_affiliation;
+#fastcgi_param Affiliation $shib_affiliation;
 
-# shib_request_set $shib_unscoped_affliation $upstream_http_variable_unscoped_affiliation;
-# fastcgi_param Unscoped-Affiliation $shib_unscoped_affiliation;
+#shib_request_set $shib_unscoped_affliation $upstream_http_variable_unscoped_affiliation;
+#fastcgi_param Unscoped-Affiliation $shib_unscoped_affiliation;
 
 shib_request_set $shib_entitlement $upstream_http_variable_entitlement;
 fastcgi_param Entitlement $shib_entitlement;
@@ -73,8 +73,15 @@ fastcgi_param Commonname $shib_commonname;
 shib_request_set $shib_displayname $upstream_http_variable_displayname;
 fastcgi_param DisplayName $shib_displayname;
 
-shib_request_set $shib_email $upstream_http_variable_email;
-fastcgi_param Email $shib_email;
+shib_request_set $shib_mail $upstream_http_variable_mail;
+fastcgi_param Email $shib_mail;
 
 shib_request_set $shib_organizationname $upstream_http_variable_organizationname;
 fastcgi_param OrganizationName $shib_organizationname;
+
+# SCHAC - TODO
+shib_request_set $shib_schacpersonaluniqueid  $upstream_http_variable_schacpersonaluniqueid;
+fastcgi_param schacPersonalUniqueID $shib_schacpersonalUniqueid;
+
+# eduPERSON - TODO
+
