@@ -50,7 +50,7 @@ Requisiti
 ---------
 
 - Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
-- Utente LDAP abilitato per le ricerche nella uo di interesse (esempio consultabile in ldap/idp_user.ldiff)
+- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldiff)
 - ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldiff)
 - Installazione delle seguenti dipendenze
 
