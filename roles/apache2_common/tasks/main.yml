@@ -1,9 +1,10 @@
 - name: Install Apache apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    - apache2
-    - libapache2-mod-shib2  # sp
-    - libapache2-mod-php
+  apt:
+    state : present
+    pkg:
+        - apache2
+        - libapache2-mod-shib2  # sp
+        - libapache2-mod-php
 
 - name: Remove Default Index file
   file: path=/var/www/html/index.html state=absent

@@ -23,13 +23,6 @@
   include_role:
     name: "{{ servlet_container }}"
 
-- name: Install Shibboleth apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    - shibboleth-sp2-utils  # sp
-    - shibboleth-sp2-common # sp
-    - libshibsp7            # sp
-
 - name: Stat Shibboleth IdP tarball in /opt 
   stat: path="{{ shib_dest_dir }}/{{ shib_idp_package }}"
   register: shib_tarball

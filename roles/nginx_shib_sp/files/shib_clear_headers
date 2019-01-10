@@ -19,14 +19,14 @@ more_clear_input_headers
     Remote-User;
 
 # more_clear_input_headers
-   # EPPN
-   # Affiliation
-   # Unscoped-Affiliation
-   # Entitlement
-   # Targeted-Id
-   # Persistent-Id
-   # Transient-Name
-   # Commonname
-   # DisplayName
-   # Email
-   # OrganizationName;
+   EPPN
+   Affiliation
+   Unscoped-Affiliation
+   Entitlement
+   Targeted-Id
+   Persistent-Id
+   Transient-Name
+   Commonname
+   DisplayName
+   Email
+   OrganizationName;

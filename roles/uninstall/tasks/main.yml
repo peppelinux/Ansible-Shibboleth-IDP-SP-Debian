@@ -42,7 +42,7 @@
   ignore_errors: yes
 
 - name: Stop Supervisor
-  service: name="suopervisor" state=stopped enabled=false
+  service: name="supervisor" state=stopped enabled=false
   ignore_errors: yes
 
 # CLEANUP DEPENDENCIES
