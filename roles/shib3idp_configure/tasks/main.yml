@@ -1,3 +1,6 @@
+- name: Test if idpuser can query LDAP server
+  shell: "ldapsearch -H ldap://{{ ldap_fqdn }} -D 'uid=idp,ou=applications,dc={{ domain2 }},dc={{ domain1 }}' -w {{ idp_secret }}  -b '{{ ldap_basedn }}'"
+
 - name: Generate salt for persistentId generator
   shell: openssl rand -base64 36
   register: persId_salt
