@@ -3,4 +3,4 @@ JETTY_BASE=/opt/jetty
 JETTY_USER=jetty
 TMPDIR=/opt/jetty/tmp
 JETTY_START_LOG=/var/log/jetty/start.log
-JAVA_OPTIONS="-Djava.awt.headless=true -Djetty.http.port={{ servlet_port }} -XX:+DisableExplicitGC -XX:+UseParallelOldGC -Xms{{ servlet_ram }} -Xmx2g -Djava.security.egd=file:/dev/./urandom -Didp.home={{ idp_path }}"
+JAVA_OPTIONS="-Djava.awt.headless=true -XX:+DisableExplicitGC -XX:+UseParallelOldGC -Xms{{ servlet_ram }} -Xmx2g -Djava.security.egd=file:/dev/./urandom -Didp.home={{ idp_path }}"

@@ -58,6 +58,7 @@
     servlet_container: jetty
     servlet_ram: 384m
     servlet_port: 8080
+    servlet_host: 127.0.0.1
     # Jetty configuration
     jetty_version: 9.4.14.v20181114
     jetty_distribution: "jetty-distribution-{{ jetty_version }}"
