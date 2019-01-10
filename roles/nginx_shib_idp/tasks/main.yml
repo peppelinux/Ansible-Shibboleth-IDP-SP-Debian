@@ -10,6 +10,13 @@
   copy: src=roles/{{ role_name }}/files/{{ item }} dest=/etc/nginx/conf.d/
   with_items:
     - ssl_hardening.conf
+
+# server_tokens off;
+- replace:
+    path: "/etc/nginx/nginx.conf"
+    regexp: '# server_tokens off;'
+    replace: 'server_tokens off;'
+    backup: no
   
 - name: Restart Nginx
   service: name=nginx state=restarted enabled=yes
