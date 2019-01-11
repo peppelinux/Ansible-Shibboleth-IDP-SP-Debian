@@ -38,6 +38,7 @@
         - vim
         - ntp
         - ca-certificates
+        - ldap-utils
       state: present
 
 # /etc/hosts optional definitions
