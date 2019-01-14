@@ -57,6 +57,7 @@ fastcgi_param eppn $shib_eppn;
 
 shib_request_set $shib_entitlement $upstream_http_variable_entitlement;
 fastcgi_param Entitlement $shib_entitlement;
+fastcgi_param entitlement $shib_entitlement;
 
 shib_request_set $shib_targeted_id $upstream_http_variable_targeted_id;
 fastcgi_param Targeted-Id $shib_targeted_id;
@@ -69,12 +70,19 @@ fastcgi_param Transient-Name $shib_transient_name;
 
 shib_request_set $shib_commonname $upstream_http_variable_commonname;
 fastcgi_param Commonname $shib_commonname;
+shib_request_set $shib_cn $upstream_http_variable_cn;
+fastcgi_param cn $shib_cn;
+
+shib_request_set $shib_surname $upstream_http_variable_surname;
+fastcgi_param Surname $shib_surname;
+shib_request_set $shib_sn $upstream_http_variable_sn;
+fastcgi_param sn $shib_sn;
 
 shib_request_set $shib_displayname $upstream_http_variable_displayname;
 fastcgi_param DisplayName $shib_displayname;
 
 shib_request_set $shib_mail $upstream_http_variable_mail;
-fastcgi_param Email $shib_mail;
+fastcgi_param mail $shib_mail;
 
 shib_request_set $shib_organizationname $upstream_http_variable_organizationname;
 fastcgi_param OrganizationName $shib_organizationname;
