@@ -41,6 +41,7 @@ Indice dei contenuti
            * [No metadata returned for](#samlmetadatalookuphandler)
            * [PrescopedAttributeDefinition](#prescopedattributedefinition)
    * [Produzione](#produzione)
+   * [Personalizzazione](#personalizzazione)
    * [Hints](#hints)
    * [Todo](#todo)
    * [Ringraziamenti](#ringraziamenti)
@@ -303,10 +304,20 @@ Hints
 -----
 
 #### idp logout standard url
-https://sp.testunical.it/Shibboleth.sso/Logout
+- https://sp.testunical.it/Shibboleth.sso/Logout
 
 #### shibboleth log path
-/opt/shibboleth-idp/logs/
+- /opt/shibboleth-idp/logs/
+
+Personalizzazione
+-----------------
+
+E' possibile personalizzare la pagina web di ShibbolethIDP modificando i seguenti files.
+Le modifiche non richiedono il riavvio del servizio.
+
+- messages/, modifica labels e stringhe globali o per lingua (_it e ed eventuali altri);
+- views/, modifica la struttura HTML dei template (file con estensione .vm);
+- edit-webapp/, modifica CSS e immagini a cui puntano i template;
 
 
 Todo
