@@ -1,3 +1,12 @@
+- name: Install Shibboleth SP apt packages
+  apt:
+    state: present
+    pkg:
+        - shibboleth-sp2-utils 
+        - shibboleth-sp2-common 
+        - libshibsp7
+        - libshibresolver1
+
 # this must be done, general purpose certificates will not works -> ERROR OpenSSL : error code: 537346050 in bss_file.c, line 408
 - name: Create Shibboleth SP keys
   shell: /usr/sbin/shib-keygen -f -h {{ sp_fqdn }} -e https://{{ sp_fqdn }}/shibboleth
