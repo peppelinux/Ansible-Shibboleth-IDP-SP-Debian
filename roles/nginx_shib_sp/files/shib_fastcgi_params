@@ -86,6 +86,12 @@ fastcgi_param schacPersonalUniqueID $shib_schacpersonalUniqueid;
 # example for a custom AttributeResolver Transformation (see /etc/shibboleth2.xml)
 shib_request_set $shib_codicefiscale $upstream_http_variable_codicefiscale;
 fastcgi_param codice_fiscale $shib_codicefiscale;
+<<<<<<< HEAD
+=======
+
+
+# eduPERSON - TODO
+>>>>>>> 46cf827... Extract and process schacPersonalUniqueCode attribute
 
 
 # eduPERSON - TODO
