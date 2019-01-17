@@ -109,11 +109,20 @@
         <!-- Use a SAML query if no attributes are supplied during SSO. -->
         <AttributeResolver type="Query" subjectMatch="true"/>
         
-        <!-- example of a custom attribute extracted from a default value from IDP -->
+        <!-- examples of a custom attribute extracted from a default value from IDP -->
         <AttributeResolver type="Transform" source="schacPersonalUniqueID">
             <Regex match="^urn:schac:personalUniqueID:IT:CF:(.+)$" dest="codice_fiscale">$1</Regex>
         </AttributeResolver>
-
+        
+        <AttributeResolver type="Transform" source="schacPersonalUniqueCode">
+            <Regex match="^urn:schac:personalUniqueCode:IT:unical.it:studente:(.+)$" dest="matricola_studente">$1</Regex>
+        </AttributeResolver>
+        
+        <AttributeResolver type="Transform" source="schacPersonalUniqueCode">
+            <Regex match="^urn:schac:personalUniqueCode:IT:unical.it:dipendente:(.+)$" dest="matricola_dipendente">$1</Regex>
+        </AttributeResolver>
+        <!-- end examples of a custom attribute extracted from a default value from IDP -->
+        
         <!-- Default filtering policy for recognized attributes, lets other data pass. -->
         <AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
 

@@ -91,5 +91,10 @@ fastcgi_param OrganizationName $shib_organizationname;
 shib_request_set $shib_schacpersonaluniqueid  $upstream_http_variable_schacpersonaluniqueid;
 fastcgi_param schacPersonalUniqueID $shib_schacpersonalUniqueid;
 
+# example for a custom AttributeResolver Transformation (see /etc/shibboleth2.xml)
+shib_request_set $shib_codicefiscale $upstream_http_variable_codicefiscale;
+fastcgi_param codice_fiscale $shib_codicefiscale;
+
+
 # eduPERSON - TODO
 
