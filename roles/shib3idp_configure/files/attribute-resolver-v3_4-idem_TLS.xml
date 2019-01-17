@@ -19,7 +19,16 @@
         <DisplayDescription xml:lang="it">Identificativo Univoco Legale associato alla persona</DisplayDescription>
         <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.3.6.1.4.1.25178.1.2.15" friendlyName="schacPersonalUniqueID" encodeType="false" />
     </AttributeDefinition>
-
+    
+    <AttributeDefinition xsi:type="Simple" id="schacPersonalUniqueCode">
+        <InputDataConnector ref="myLDAP" attributeNames="schacPersonalUniqueCode" />
+        <DisplayName xml:lang="en">Personal Unique Code</DisplayName>
+        <DisplayName xml:lang="it">Codice Personale Univoco</DisplayName>
+        <DisplayDescription xml:lang="en">Unique Personale Code of a person</DisplayDescription>
+        <DisplayDescription xml:lang="it">Codice Personale Univoco associato alla persona</DisplayDescription>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.3.6.1.4.1.25178.1.2.14" friendlyName="schacPersonalUniqueCode" encodeType="false" />
+    </AttributeDefinition>
+    
     <AttributeDefinition xsi:type="Simple" id="surname"> 
         <InputDataConnector ref="myLDAP" attributeNames="sn"/>
         <DisplayName xml:lang="en">Surname</DisplayName>
