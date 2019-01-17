@@ -19,6 +19,12 @@
     file, and the https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPRequestMapHowTo topic.
     -->
 
+    <OutOfProcess>
+        <Extensions>
+            <Library path="plugins.so" fatal="true"/>
+        </Extensions>
+    </OutOfProcess>
+
 {% if httpd == 'nginx'  %}
     <RequestMapper type="XML">
         <RequestMap>
@@ -102,6 +108,11 @@
         
         <!-- Use a SAML query if no attributes are supplied during SSO. -->
         <AttributeResolver type="Query" subjectMatch="true"/>
+        
+        <!-- example of a custom attribute extracted from a default value from IDP -->
+        <AttributeResolver type="Transform" source="schacPersonalUniqueID">
+            <Regex match="^urn:schac:personalUniqueID:IT:CF:(.+)$" dest="codice_fiscale">$1</Regex>
+        </AttributeResolver>
 
         <!-- Default filtering policy for recognized attributes, lets other data pass. -->
         <AttributeFilter type="XML" validate="true" path="attribute-policy.xml"/>
