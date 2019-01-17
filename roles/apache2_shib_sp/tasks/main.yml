@@ -34,11 +34,6 @@
     src: roles/{{ role_name }}/files/webroot/bootstrap.min.css
     dest: /var/www/css/bootstrap.min.css
 
-- name: Parse {{ domain }} in attributes_map.php
-  template:
-    src: roles/{{ role_name }}/files/webroot/sp.example.org/secure/attributes_map.php
-    dest: /var/www/html/{{ sp_fqdn }}/secure/attributes_map.php
-
 - name: Enable SP Virtualhost
   command: a2ensite {{ sp_fqdn }}.conf
   args:
