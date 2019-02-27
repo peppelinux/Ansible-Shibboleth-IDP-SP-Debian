@@ -51,8 +51,8 @@ Requisiti
 ---------
 
 - Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
-- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldiff)
-- ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldiff)
+- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldif)
+- ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldif)
 - Installazione delle seguenti dipendenze
 
 ````    
@@ -98,10 +98,10 @@ nano /etc/hosts
 TLS_CACERT /etc/ssl/certs/testunical.it/slapd-cacert.pem
 
 # aggiungi l'utente idp sul server LDAP
-ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldiff
+ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldif
 
 # aggiungi una ACL per consentire la connessione e la ricerca all'utente idp
-ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldiff
+ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldif
 
 # testiamo che l'utente idp possa interrogare il server LDAP
 # dal server locale di LDAP
