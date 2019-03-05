@@ -36,9 +36,9 @@
     tmp_upload_dir: "/tmp/ansible-shibboleth-idp-sp-setup"
 
     # LDAP configuration
-    ldap_fqdn: "ldap.{{ domain2 }}.{{ domain1 }}"
+    ldap_fqdn: "ldap1.{{ domain2 }}.{{ domain1 }}"
     ldap_basedc: "dc={{ domain2 }},dc={{ domain1 }}"
-    ldap_binddn: "uid=idp,ou=applications,{{ ldap_basedc }}"
+    ldap_binddn: "uid=idp,ou=idp,{{ ldap_basedc }}"
     ldap_pw: idpsecret
     ldap_basedn: "ou=people,{{ ldap_basedc }}"
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
