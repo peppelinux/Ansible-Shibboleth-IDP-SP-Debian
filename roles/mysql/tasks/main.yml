@@ -6,7 +6,7 @@
 - name: Set debconf mysql root password
   debconf: name=mysql-server question="mysql-server/root_password" value="{{ idp_rdbms_pw }}" vtype="password"
   when: debconf.stdout == "1"
-    
+
 - name: Set debconf mysql root password again
   debconf: name=mysql-server question="mysql-server/root_password_again" value="{{ idp_rdbms_pw }}" vtype="password"
   when: debconf.stdout == "1"
@@ -14,11 +14,49 @@
 - name: Install Mysql
   apt: name=mysql-server state=present
 
+- name: stop mysqld_safe
+  service: name=mysql state=stopped
+
+- name: hard-stop mysql
+  shell: "ps ax | grep mysql | awk -F' ' {'print $1'} | xargs echo | xargs kill -KILL;"
+  ignore_errors: yes
+
+- name: Enable root passwordless access (execute mysqld_safe)
+  shell:
+    cmd: |
+        mkdir /var/run/mysqld/;
+        chown mysql /var/run/mysqld/ -R;
+        mysqld_safe --skip-grant-tables &
+
+
+- name: Enable root passwordless access (change default root pwd)
+  shell:
+    cmd: |
+        mysql -u root -p{{ idp_rdbms_pw }} <<EOF
+        use mysql;
+        update user set authentication_string=PASSWORD('{{ idp_rdbms_pw }}') where User='root';
+        flush privileges;
+        quit
+        EOF
+
+- name: Enable root passwordless access
+  shell:
+    cmd: |
+        mysql -u root -p{{idp_rdbms_pw}} <<EOF
+        ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+        flush privileges;
+        quit
+        EOF
+
+- name: stop mysqld_safe
+  service: name=mysql state=stopped
+
+
 - name: Run Mysql
   service: name=mysql state=started enabled=yes
 
 - name: upload sql datatabse
-  template: 
+  template:
     src: roles/mysql/templates/shibboleth.sql
     dest: "{{ tmp_upload_dir }}/shibboleth.sql"
 

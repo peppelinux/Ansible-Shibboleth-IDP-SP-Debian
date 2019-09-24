@@ -6,7 +6,7 @@
     - libcommons-dbcp-java  # jetty requirement
     - libcommons-pool2-java # jetty req
     - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
-    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
+    - libjson-java         # servlet req contains: javax.json-1.0.4.jar
     - html2text
     - emacs24-nox
     - openjdk-8-jre

@@ -5,6 +5,7 @@
         - apache2
         - libapache2-mod-shib2  # sp
         - libapache2-mod-php
+        - libapache2-mpm-itk
 
 - name: Remove Default Index file
   file: path=/var/www/html/index.html state=absent
@@ -47,7 +48,7 @@
 # Considering conflict php5 for php7.0:
 # Enabling module php7.0.
 
-- name: Disable PHP 7.0 conflicting Apache2 modules 
+- name: Disable PHP 7.0 conflicting Apache2 modules
   apache2_module: name={{ item }} state=absent
   with_items:
     - php7.0

@@ -8,19 +8,19 @@
   tags: jetty
 
 - name: "Create 'jetty' group"
-  group: 
+  group:
    name: "jetty"
    state: present
   tags: jetty
 
 - name: "Create 'jetty' user"
-  user: 
+  user:
    name: "jetty"
    groups: "jetty"
    createhome: "no"
   tags: jetty
 
-- name: Stat Jetty tarball in /opt 
+- name: Stat Jetty tarball in /opt
   stat: path="{{ jetty_dl_path }}/{{ jetty_pkg }}"
   register: jetty_tarball
 
@@ -38,7 +38,7 @@
 
 - name: "Create 'jetty-src' link"
   file:
-   src: "{{ item.src }}" 
+   src: "{{ item.src }}"
    dest: "{{ item.dest }}"
    owner: "jetty"
    group: "jetty"
@@ -50,7 +50,7 @@
 
 - name: "Create '/etc/init.d/jetty' link"
   file:
-   src: "{{ item.src }}" 
+   src: "{{ item.src }}"
    dest: "{{ item.dest }}"
    owner: "jetty"
    group: "jetty"
@@ -76,7 +76,7 @@
    - "{{ jetty_path }}/tmp"
    - /var/log/jetty
   tags: jetty
-  
+
 - name: "Configure Jetty"
   template:
    src: "{{ item.src }}"
@@ -101,21 +101,27 @@
 
 - name: Enable jetty libs
   file:
-   src: "{{ item.src }}" 
+   src: "{{ item.src }}"
    dest: "{{ item.dest }}"
    state: link
   with_items:
    - { src: '/usr/share/java/mysql.jar' , dest: '{{ jetty_path }}/lib/ext/mysql.jar' }
    - { src: '/usr/share/java/commons-pool.jar' , dest: '{{ jetty_path }}/lib/ext/commons-pool.jar' }
    - { src: '/usr/share/java/commons-dbcp.jar' , dest: '{{ jetty_path }}/lib/ext/commons-dbcp.jar' }
-   - { src: '/usr/share/java/javax.json-1.0.4.jar' , dest: '{{ jetty_path }}/lib/ext/javax.json-1.0.4.jar' }
+   #- { src: '/usr/share/java/javax.json-1.0.4.jar' , dest: '{{ jetty_path }}/lib/ext/javax.json-1.0.4.jar' }
   tags: jetty
+
+- name: download additional jetty libs
+  get_url: url="http://repo1.maven.org/maven2/org/glassfish/javax.json/1.1/javax.json-1.1.jar" dest=/opt/jetty/lib/ext/
 
 - set_fact:
      servlet_port: 8080
 
+- name: Enable systemctl jetty
+  shell: "systemctl daemon-reload; systemctl enable jetty"
+
 # - name: "Stop jetty after an upgrade of its package"
-  # systemd: 
+  # systemd:
    # name: "jetty"
    # state: stopped
   # when:
@@ -123,7 +129,7 @@
   # tags: jetty
 
 # - name: "Start jetty by re-reading configs (2.4 and above)"
-  # systemd: 
+  # systemd:
    # name: "jetty"
    # daemon_reload: True
    # state: started

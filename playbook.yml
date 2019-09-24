@@ -7,7 +7,7 @@
 - name: Install Shibboleth IDP and SP
   hosts: all
   become: yes
-  
+
   # vars_files:
     # - server_ip.yml
 
@@ -17,18 +17,18 @@
     domain: "{{ domain2 }}.{{ domain1 }}"
 
     server_admin: "root@{{ domain }}"
-    
+
     # If True it will uninstall and purge existing applications and configurations
     # DO NOT USE THIS IN PRODUCTION ENVIRONMENT, it will destroy everything!
     purge: true
-    
+
     # if idp and sp have the same ip: apache's <VirtualHost ip:port> must be configured as <VirtualHost *:port>
     # otherwise exception "[SSL: WRONG_VERSION_NUMBER] wrong version number (_ssl.c:661)" will be raised
     # otherwise exception SSL_ERROR_RX_RECORD_TOO_LONG will be raised or other, exception message depends by the client.
 
     # modify this in server_ip.yml
-    # ldap_ip: "10.87.7.104" 
-    # idp_ip:   "10.87.7.235" 
+    # ldap_ip: "10.87.7.104"
+    # idp_ip:   "10.87.7.235"
     # sp_ip:    "{{ idp_ip }}" # everything on the same vm
 
     # Commons
@@ -36,7 +36,7 @@
     tmp_upload_dir: "/tmp/ansible-shibboleth-idp-sp-setup"
 
     # LDAP configuration
-    ldap_fqdn: "ldap1.{{ domain2 }}.{{ domain1 }}"
+    ldap_fqdn: "ldap.{{ domain2 }}.{{ domain1 }}"
     ldap_basedc: "dc={{ domain2 }},dc={{ domain1 }}"
     ldap_binddn: "uid=idp,ou=idp,{{ ldap_basedc }}"
     ldap_pw: idpsecret
@@ -53,7 +53,7 @@
     nginx_src_dir: /opt
     nginx_version: nginx-1.14.2
     nginx_dl_url: http://nginx.org/download/{{ nginx_version }}.tar.gz
-    
+
     # Servlet configuration, choose your preferred between tomcat and jetty
     servlet_container: jetty
     servlet_ram: 384m
@@ -67,7 +67,7 @@
     jetty_path : "{{ jetty_dl_path }}/jetty"
     # Tomcat configuration
     tomcat_version: tomcat8
-    
+
     # TODO: tomcat_common
     # tomcat_admin_pw: tomcatsecret
     # tomcat_manager_pw: tomcatsecret
@@ -88,10 +88,10 @@
     # idp_attr_resolver: attribute-resolver-full.v332.saml2.light.xml # in roles/shib2_configure/files
     idp_attr_resolver: attribute-resolver-v3_4-idem_TLS.xml
     idp_disable_saml1: true
-    
+
     # persistent id on rdbms, it will install mariadb
     idp_persistent_id_rdbms: true
-    
+
     # Shibboleth IDP RDBMS per persistentID
     idp_rdbms_dbname: shibboleth
     idp_rdbms_user: "{{ idp_rdbms_dbname }}"
@@ -116,4 +116,4 @@
     - { role: httpd, tags: ["httpd"] }
 
     # federation
-    - { role: sp_federation, tags: ["sp"] }
+    - { role: sp_federation, tags: ["federation"] }

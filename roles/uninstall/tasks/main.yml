@@ -29,8 +29,15 @@
   ignore_errors: yes
 
 - name: Stop mysql-server
-  service: name=mysql state=stopped enabled=false
+  shell:
+    cmd: |
+        /etc/init.d/mysql stop;
+        ps ax | grep mysql | awk -F' ' {'print $1'} | xargs echo | xargs kill -KILL;
   ignore_errors: yes
+
+# - name: Stop mysql-server
+  # service: name=mysql state=stopped enabled=false
+  # ignore_errors: yes
 
 # HTTPD
 - name: Stop Apache2
@@ -70,8 +77,9 @@
     - libapache2-mod-shib2  # sp
     - shibboleth-sp2-utils  # sp
     - shibboleth-sp2-common # sp
-    - libshibsp7            # sp
+    - libshibsp6            # sp
     - libapache2-mod-php
+    - libapache2-mpm-itk
     - apache2-utils
     - apache2-data
     - apache2-bin
@@ -102,7 +110,7 @@
 - name: Stop Nginx
   service: name=nginx state=stopped
   ignore_errors: true
-  
+
 # purge nginx source installation
 - name: Purge NginX installation
   file: name={{ item }} state=absent

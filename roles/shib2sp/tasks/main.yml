@@ -2,9 +2,9 @@
   apt:
     state: present
     pkg:
-        - shibboleth-sp2-utils 
-        - shibboleth-sp2-common 
-        - libshibsp7
+        - shibboleth-sp2-utils
+        - shibboleth-sp2-common
+        - libshibsp6
         - libshibresolver1
 
 # this must be done, general purpose certificates will not works -> ERROR OpenSSL : error code: 537346050 in bss_file.c, line 408
