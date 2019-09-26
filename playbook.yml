@@ -60,7 +60,7 @@
     servlet_port: 8080
     servlet_host: 127.0.0.1
     # Jetty configuration
-    jetty_version: 9.4.14.v20181114
+    jetty_version: 9.4.20.v20190813
     jetty_distribution: "jetty-distribution-{{ jetty_version }}"
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_dl_path: /opt
