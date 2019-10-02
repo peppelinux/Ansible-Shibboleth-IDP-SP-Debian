@@ -6,5 +6,5 @@ add: olcAccess
 olcAccess: to * 
  by self write 
  by anonymous auth 
- by dn.children="ou=applications,dc=testunical,dc=it" read 
+ by dn.children="ou=idp,dc=testunical,dc=it" read 
  by * none 

@@ -10,7 +10,7 @@ olcAccess: {1}to attrs=userPassword,shadowLastChange,mail by self write
  by anonymous auth 
  by * break
 olcAccess: {2}to dn.subtree="ou=people,dc=testunical,dc=it"  
- by dn.exact="uid=idp,ou=applications,dc=testunical,dc=it" read 
+ by dn.exact="uid=idp,ou=idp,dc=testunical,dc=it" read 
  by self read 
  by * none
 olcAccess: {3}to * 
