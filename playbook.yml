@@ -60,7 +60,7 @@
     servlet_port: 8080
     servlet_host: 127.0.0.1
     # Jetty configuration
-    jetty_version: 9.4.20.v20190813
+    jetty_version: 9.4.21.v20190926
     jetty_distribution: "jetty-distribution-{{ jetty_version }}"
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_dl_path: /opt
@@ -74,7 +74,7 @@
     # tomcat_manager_pw: tomcatsecret
 
     # Shibboleth IDP
-    shib_idp_version: "3.4.2"
+    shib_idp_version: "3.4.4"
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
     shib_dest_dir: "/opt"
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
