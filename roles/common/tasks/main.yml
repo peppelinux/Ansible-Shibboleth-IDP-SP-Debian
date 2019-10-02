@@ -14,7 +14,7 @@
     group: ssl-cert
     # mode: 640
   with_fileglob:
-    - certs/*
+    - "{{ src_cert_path }}/*"
 
 - name: "Ensures {{ cert_path }}/{{ ldap_cert }} exists"
   stat: path={{ cert_path }}/{{ ldap_cert }}
