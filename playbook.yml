@@ -32,6 +32,7 @@
     # sp_ip:    "{{ idp_ip }}" # everything on the same vm
 
     # Commons
+    src_cert_path: certs/
     cert_path: "/etc/ssl/certs/{{ domain }}"
     tmp_upload_dir: "/tmp/ansible-shibboleth-idp-sp-setup"
 
