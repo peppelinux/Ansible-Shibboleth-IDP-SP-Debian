@@ -25,19 +25,19 @@
   when: servlet_container == "tomcat"
 
 - name: Install the IdP WAR
-  template: 
-    src: roles/shib3idp_configure/templates/idp-jetty.xml 
+  template:
+    src: roles/shib3idp_configure/templates/idp-jetty.xml
     dest: "{{ jetty_path }}/webapps/idp.xml"
   when: servlet_container == "jetty"
 
 - name: Install the IdP WAR
-  template: 
-    src: roles/shib3idp_configure/templates/idp-tomcat.xml 
+  template:
+    src: roles/shib3idp_configure/templates/idp-tomcat.xml
     dest: "/etc/{{ tomcat_version }}/Catalina/localhost/idp.xml"
   when: servlet_container == "tomcat"
 
 - name: Copy certs
-  copy: 
+  copy:
     src: "{{ item }}"
     dest: "{{ idp_path}}/credentials/"
     owner: root
@@ -47,32 +47,32 @@
     - /etc/ssl/certs/{{ domain }}/{{ ldap_cert }}
 
 - name: Configure LDAP Auth
-  template: 
-    src: roles/shib3idp_configure/templates/ldap.properties 
-    dest: "{{ idp_path }}/conf/ldap.properties" 
+  template:
+    src: roles/shib3idp_configure/templates/ldap.properties
+    dest: "{{ idp_path }}/conf/ldap.properties"
     backup: yes
 
 # - name: Configure Enhanced Logging
-  # copy: 
-    # src: roles/shib3idp_configure/files/logback.xml 
+  # copy:
+    # src: roles/shib3idp_configure/files/logback.xml
     # dest: "{{ idp_path }}/conf/logback.xml"
     # backup: yes
 
-# - name: Configure IdP attribute-filter.xml 
-  # template: 
+# - name: Configure IdP attribute-filter.xml
+  # template:
     # src: roles/shib3idp_configure/templates/attribute-filter.xml
     # dest: "{{ idp_path }}/conf/attribute-filter.xml"
     # backup: yes
 
-- name: Configure IdP attribute-filter.xml 
-  copy: 
+- name: Configure IdP attribute-filter.xml
+  copy:
     src: roles/shib3idp_configure/files/attribute-filter.xml
     dest: "{{ idp_path }}/conf/attribute-filter.xml"
     backup: yes
 
 # wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
 - name: Copy configured {{ idp_attr_resolver }} in attribute-resolver.xml
-  copy: 
+  copy:
     src: "roles/shib3idp_configure/files/{{ idp_attr_resolver }}"
     dest: "{{ idp_path }}/conf/attribute-resolver.xml"
     backup: yes
@@ -102,18 +102,18 @@
 
 # additionals to add
 # - name: Add attribute-resolver.xml to services.xml
-  # copy: 
+  # copy:
     # src: roles/shib3idp_configure/files/services.xml
     # dest: "{{ idp_path }}/conf/services.xml"
 
 # TODO: Error creating bean with name 'shibboleth.AccessControlPolicies': Cannot create inner bean 'shibboleth.IPRangeAccessControl$child#4f0c1409'
-# - name: Configure access-control.xml for /status page 
-  # template: 
+# - name: Configure access-control.xml for /status page
+  # template:
     # src: roles/shib3idp_configure/templates/access-control.xml
     # dest: "{{ idp_path }}/conf/access-control.xml"
 
 - name: Add metadata providers
-  template: 
+  template:
     src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
     dest: "{{ idp_path }}/conf/metadata-providers.xml"
     backup: yes
@@ -145,6 +145,10 @@
 
 - name: "Download Shibboleth IT messages"
   get_url: url={{ idp_localized_message_url }} dest="{{ idp_path }}/messages/messages_it.properties"
+
+- name: "Configure eduGAIN federation"
+  import_tasks: edugain_federation.yml
+  when: edugain_federation == true
 
 - name: Restart Jetty
   service: name="jetty" state=restarted
