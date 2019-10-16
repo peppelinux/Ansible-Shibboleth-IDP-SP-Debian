@@ -1,0 +1,40 @@
+- name: Add attribute-filter-v3-RS-CoCo
+  copy:
+    src: roles/{{ role_name }}/files/attribute-filter-v3-RS-CoCo.xml
+    dest:  "{{ idp_path }}/conf/attribute-filter-v3-RS-CoCo.xml"
+
+- name: Add metadata-providers-eduGAIN.xml
+  copy:
+    src: roles/{{ role_name }}/files/metadata-providers-eduGAIN.xml
+    dest:  "{{ idp_path }}/conf/metadata-providers-eduGAIN.xml"
+
+- name: Add federation-cert
+  copy:
+    src: roles/{{ role_name }}/files/federation-cert.pem
+    dest:  "{{ idp_path }}/metadata/federation-cert.pem"
+
+- name: Add idem-signer-20220121.pem
+  copy:
+    src: roles/{{ role_name }}/files/idem-signer-20220121.pem
+    dest:  "{{ idp_path }}/metadata/idem-signer-20220121.pem"
+
+- name: Configure saml-nameid.properties (dataStore and persistentId)
+  template:
+    src: roles/{{ role_name }}/templates/saml-nameid.properties
+    dest: "{{ idp_path }}/conf/saml-nameid.properties"
+    backup: yes
+
+#  add filters and md providers in services
+- replace:
+    path: "{{ idp_path }}/conf/services.xml"
+    regexp: '<value>%{idp.home}/conf/metadata-providers.xml</value>'
+    replace: '<value>%{idp.home}/conf/metadata-providers-eduGAIN.xml</value>
+              <value>%{idp.home}/conf/metadata-providers.xml</value>'
+    backup: yes
+
+- replace:
+    path: "{{ idp_path }}/conf/services.xml"
+    regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
+    replace: '<value>%{idp.home}/conf/attribute-filter.xml</value>
+              <value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>'
+    backup: yes

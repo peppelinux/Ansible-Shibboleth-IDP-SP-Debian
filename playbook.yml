@@ -101,6 +101,9 @@
     # Shibboleth SP
     sp_fqdn: "sp.{{ domain }}"
 
+    # enable edugain attr filter and md providers
+    edugain_federation: true
+
   roles:
     # apt dependencies and certificates
     - { role: uninstall, tags: ["uninstall"] }
