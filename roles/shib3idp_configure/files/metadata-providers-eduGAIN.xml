@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetadataProvider id="ShibbolethMetadata" xsi:type="ChainingMetadataProvider"
+    xmlns="urn:mace:shibboleth:2.0:metadata"
+    xmlns:resource="urn:mace:shibboleth:2.0:resource"
+    xmlns:security="urn:mace:shibboleth:2.0:security"
+    xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="urn:mace:shibboleth:2.0:metadata http://shibboleth.net/schema/idp/shibboleth-metadata.xsd
+                        urn:mace:shibboleth:2.0:resource http://shibboleth.net/schema/idp/shibboleth-resource.xsd
+                        urn:mace:shibboleth:2.0:security http://shibboleth.net/schema/idp/shibboleth-security.xsd
+                        urn:oasis:names:tc:SAML:2.0:metadata http://docs.oasis-open.org/security/saml/v2.0/saml-schema-metadata-2.0.xsd">
+
+    <!-- IDEM Test Federation -->
+    <MetadataProvider
+       id="URLMD-IDEM-Federation"
+       xsi:type="FileBackedHTTPMetadataProvider"
+       backingFile="%{idp.home}/metadata/idem-test-metadata-sha256.xml"
+       metadataURL="http://md.idem.garr.it/metadata/idem-test-metadata-sha256.xml">
+
+       <MetadataFilter xsi:type="SignatureValidation" requireSignedRoot="true" certificateFile="${idp.home}/metadata/federation-cert.pem" />
+       <MetadataFilter xsi:type="RequiredValidUntil" maxValidityInterval="P10D"/>
+       <MetadataFilter xsi:type="EntityRoleWhiteList">
+         <RetainedRole>md:SPSSODescriptor</RetainedRole>
+       </MetadataFilter>
+    </MetadataProvider>
+
+    <!-- IDEM Federation -->
+    <MetadataProvider id="IDEM-Federation"
+                      xsi:type="FileBackedHTTPMetadataProvider"
+                      metadataURL="http://md.idem.garr.it/metadata/edugain2idem-metadata-sha256.xml"
+                      backingFile="%{idp.home}/metadata/edugain2idem-metadata-sha256.xml"
+                      minRefreshDelay="PT5M"
+                      maxRefreshDelay="PT1H"
+                      refreshDelayFactor="0.75">
+
+        <MetadataFilter xsi:type="SignatureValidation" requireSignedRoot="true" certificateFile="${idp.home}/metadata/idem-signer-20220121.pem">
+        </MetadataFilter>
+        <MetadataFilter xsi:type="RequiredValidUntil" maxValidityInterval="P10D"/>
+        <MetadataFilter xsi:type="EntityRoleWhiteList">
+            <RetainedRole>md:SPSSODescriptor</RetainedRole>
+        </MetadataFilter>
+    </MetadataProvider>
+
+</MetadataProvider>
