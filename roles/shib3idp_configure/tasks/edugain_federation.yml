@@ -7,7 +7,7 @@
   get_url: url="https://md.idem.garr.it/certs/idem-signer-20220121.pem" dest="{{ idp_path }}/metadata"
 
 - name: "http://md.idem.garr.it/metadata/edugain2idem-metadata-sha256.xml"
-  get_url: url="http://md.idem.garr.it/metadata/edugain2idem-metadata-sha256.xml" dest="{{ idp_path }}/metadata"
+  get_url: url="http://md.idem.garr.it/metadata/edugain2idem-metadata-sha256.xml" dest="{{ idp_path }}/metadata"  mode=777
 
 - name: Add metadata-providers-eduGAIN.xml
   copy:
@@ -20,7 +20,7 @@
     dest: "{{ idp_path }}/metadata/federation-cert.pem"
 
 - name: "http://md.idem.garr.it/metadata/idem-test-metadata-sha256.xml"
-  get_url: url="http://md.idem.garr.it/metadata/idem-test-metadata-sha256.xml" dest="{{ idp_path }}/metadata"
+  get_url: url="http://md.idem.garr.it/metadata/idem-test-metadata-sha256.xml" dest="{{ idp_path }}/metadata" mode=777
 
 - name: Configure saml-nameid.properties (dataStore and persistentId)
   template:
