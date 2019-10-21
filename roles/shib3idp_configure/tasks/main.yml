@@ -151,7 +151,7 @@
   when: edugain_federation == true
 
 - name: Restart Jetty
-  service: name="jetty" state=restarted
+  service: name="jetty" state=restarted enabled=True
   when: servlet_container == "jetty"
 
 - name: Restart Tomcat
