@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ESEMPIO di Policy per il rilascio degli attributi agli SP R&S -->
+<AttributeFilterPolicyGroup id="ShibbolethFilterPolicy" xmlns="urn:mace:shibboleth:2.0:afp"
+                            xmlns:basic="urn:mace:shibboleth:2.0:afp:mf:basic"
+                            xmlns:saml="urn:mace:shibboleth:2.0:afp:mf:saml"
+                            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xsi:schemaLocation="urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd
+                                                urn:mace:shibboleth:2.0:afp:mf:basic classpath:/schema/shibboleth-2.0-afp-mf-basic.xsd
+                                                urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd">
+
+    <!-- Attribute Filter Policy Dinamica e compliant con la R&S Entity Category -->
+
+    <AttributeFilterPolicy id="releaseDynamicSubsetRandSAttributeBundle">
+
+      <PolicyRequirementRule xsi:type="saml:EntityAttributeExactMatch"
+          attributeName="http://macedir.org/entity-category"
+          attributeValue="http://refeds.org/category/research-and-scholarship"/>
+
+      <!-- Sottoinsieme dinamico di attributi per la Research & Scholarship -->
+      <!-- rilascia ePPN, ePTID, email, displayName, givenName, surname a tutti gli SP R&S -->
+      <AttributeRule attributeID="eduPersonPrincipalName">
+          <PermitValueRule xsi:type="ANY"/>
+      </AttributeRule>
+      <AttributeRule attributeID="eduPersonTargetedID">
+          <PermitValueRule xsi:type="ANY" />
+      </AttributeRule>
+
+      <!-- l'attributo "email" indica l'attributo "mail" proveniente dalla directory -->
+      <AttributeRule attributeID="email">
+          <PermitValueRule xsi:type="ANY"/>
+      </AttributeRule>
+      <AttributeRule attributeID="displayName">
+          <PermitValueRule xsi:type="ANY" />
+      </AttributeRule>
+      <AttributeRule attributeID="givenName">
+          <PermitValueRule xsi:type="ANY" />
+      </AttributeRule>
+      <AttributeRule attributeID="surname">
+          <PermitValueRule xsi:type="ANY" />
+      </AttributeRule>
+
+    </AttributeFilterPolicy>
+
+</AttributeFilterPolicyGroup>

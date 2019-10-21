@@ -3,6 +3,12 @@
     src: roles/{{ role_name }}/files/attribute-filter-v3-RS-CoCo.xml
     dest:  "{{ idp_path }}/conf/attribute-filter-v3-RS-CoCo.xml"
 
+- name: "https://md.idem.garr.it/certs/idem-signer-20220121.pem"
+  get_url: url="https://md.idem.garr.it/certs/idem-signer-20220121.pem" dest="{{ idp_path }}/metadata"
+
+- name: "http://md.idem.garr.it/metadata/edugain2idem-metadata-sha256.xml"
+  get_url: url="http://md.idem.garr.it/metadata/edugain2idem-metadata-sha256.xml" dest="{{ idp_path }}/metadata"
+
 - name: Add metadata-providers-eduGAIN.xml
   copy:
     src: roles/{{ role_name }}/files/metadata-providers-eduGAIN.xml
@@ -10,13 +16,11 @@
 
 - name: Add federation-cert
   copy:
-    src: roles/{{ role_name }}/files/federation-cert.pem
-    dest:  "{{ idp_path }}/metadata/federation-cert.pem"
+    src: "roles/{{ role_name }}/files/federation-cert.pem"
+    dest: "{{ idp_path }}/metadata/federation-cert.pem"
 
-- name: Add idem-signer-20220121.pem
-  copy:
-    src: roles/{{ role_name }}/files/idem-signer-20220121.pem
-    dest:  "{{ idp_path }}/metadata/idem-signer-20220121.pem"
+- name: "http://md.idem.garr.it/metadata/idem-test-metadata-sha256.xml"
+  get_url: url="http://md.idem.garr.it/metadata/idem-test-metadata-sha256.xml" dest="{{ idp_path }}/metadata"
 
 - name: Configure saml-nameid.properties (dataStore and persistentId)
   template:
@@ -32,9 +36,18 @@
               <value>%{idp.home}/conf/metadata-providers.xml</value>'
     backup: yes
 
+- name: "http://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
+  get_url: url="http://www.garr.it/idem-conf/attribute-filter-v3-required.xml" dest="{{ idp_path }}/conf"
+
+- name: "http://www.garr.it/idem-conf/attribute-filter-v3-idem.xml"
+  get_url: url="http://www.garr.it/idem-conf/attribute-filter-v3-idem.xml" dest="{{ idp_path }}/conf"
+
+
 - replace:
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
-    replace: '<value>%{idp.home}/conf/attribute-filter.xml</value>
-              <value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>'
+    replace: '<value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>
+              <value>%{idp.home}/conf/attribute-filter-v3-idem.xml</value>
+              <value>%{idp.home}/conf/attribute-filter-v3-required.xml</value>
+              <value>%{idp.home}/conf/attribute-filter.xml</value>'
     backup: yes

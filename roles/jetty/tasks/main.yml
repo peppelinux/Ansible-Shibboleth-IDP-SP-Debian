@@ -1,6 +1,3 @@
----
-# https://github.com/ConsortiumGARR/idem-tutorials/blob/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/Ubuntu/HOWTO%20Install%20and%20Configure%20a%20Shibboleth%20IdP%20v3.2.1%20on%20Ubuntu%20Linux%20LTS%2016.04%20with%20Apache2%20%2B%20Jetty9.md
-
 - name: "Check what Java version is installed and store the result on 'java_version' ansible variable"
   shell: java -version 2>&1 | grep -i version | sed 's/.*version ".*\.\(.*\)\..*"/\1/; 1q'
   register: java_version
@@ -8,19 +5,19 @@
   tags: jetty
 
 - name: "Create 'jetty' group"
-  group: 
+  group:
    name: "jetty"
    state: present
   tags: jetty
 
 - name: "Create 'jetty' user"
-  user: 
+  user:
    name: "jetty"
    groups: "jetty"
    createhome: "no"
   tags: jetty
 
-- name: Stat Jetty tarball in /opt 
+- name: Stat Jetty tarball in /opt
   stat: path="{{ jetty_dl_path }}/{{ jetty_pkg }}"
   register: jetty_tarball
 
@@ -38,7 +35,7 @@
 
 - name: "Create 'jetty-src' link"
   file:
-   src: "{{ item.src }}" 
+   src: "{{ item.src }}"
    dest: "{{ item.dest }}"
    owner: "jetty"
    group: "jetty"
@@ -50,7 +47,7 @@
 
 - name: "Create '/etc/init.d/jetty' link"
   file:
-   src: "{{ item.src }}" 
+   src: "{{ item.src }}"
    dest: "{{ item.dest }}"
    owner: "jetty"
    group: "jetty"
@@ -76,7 +73,7 @@
    - "{{ jetty_path }}/tmp"
    - /var/log/jetty
   tags: jetty
-  
+
 - name: "Configure Jetty"
   template:
    src: "{{ item.src }}"
@@ -101,7 +98,7 @@
 
 - name: Enable jetty libs
   file:
-   src: "{{ item.src }}" 
+   src: "{{ item.src }}"
    dest: "{{ item.dest }}"
    state: link
   with_items:
@@ -115,7 +112,7 @@
      servlet_port: 8080
 
 # - name: "Stop jetty after an upgrade of its package"
-  # systemd: 
+  # systemd:
    # name: "jetty"
    # state: stopped
   # when:
@@ -123,7 +120,7 @@
   # tags: jetty
 
 # - name: "Start jetty by re-reading configs (2.4 and above)"
-  # systemd: 
+  # systemd:
    # name: "jetty"
    # daemon_reload: True
    # state: started

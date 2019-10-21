@@ -91,7 +91,7 @@
     idp_disable_saml1: true
 
     # persistent id on rdbms, it will install mariadb
-    idp_persistent_id_rdbms: true
+    idp_persistent_id_rdbms: false
 
     # Shibboleth IDP RDBMS per persistentID
     idp_rdbms_dbname: shibboleth
