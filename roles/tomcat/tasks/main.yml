@@ -26,10 +26,10 @@
     dest: /usr/share/{{ tomcat_version }}/lib
   ignore_errors: yes
   
-- name: Link mysql-java library
+- name: Link mariadb-java-client.jar library
   file:
-    src: /usr/share/java/mysql.jar
-    dest: /usr/share/{{ tomcat_version }}/lib/mysql.jar
+    src: /usr/share/java/mariadb-java-client.jar
+    dest: /usr/share/{{ tomcat_version }}/lib/mariadb-java-client.jar
     state: link
   
 - name: Restart {{ tomcat_version }}

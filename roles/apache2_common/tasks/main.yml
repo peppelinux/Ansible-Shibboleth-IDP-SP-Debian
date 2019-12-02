@@ -47,17 +47,17 @@
 # Considering conflict php5 for php7.0:
 # Enabling module php7.0.
 
-- name: Disable PHP 7.0 conflicting Apache2 modules 
+- name: Disable PHP 7.3 conflicting Apache2 modules 
   apache2_module: name={{ item }} state=absent
   with_items:
-    - php7.0
+    - php7.3
     # - mpm_worker
     - mpm_prefork
     - mpm_event
   ignore_errors: true
 
-- name: Enable PHP 7.0
-  command: a2enmod php7.0
+- name: Enable PHP 7.3
+  command: a2enmod php7.3
 
 - name: Restart Apache2
   service: name=apache2 state=restarted enabled=yes

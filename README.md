@@ -1,15 +1,25 @@
+<<<<<<< HEAD
 #### [Ansible playbook]
 Shibboleth IDPv3 SP2 Debian 9
+=======
+#### [Ansible playbook] 
+Shibboleth IDPv3 e SP3 su Debian 10 (buster)
+>>>>>>> Debian10
 =============================
 
-Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
+Setup in locale di ShibbolethIdP 3 e Shibboleth SP 3.0.3 con i seguenti servizi:
 
 - Servlet Container per IDP (tomcat8 o jetty9, default: jetty)
 - Web server  (Apache o NginX come HTTPS frontend)
 - mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
 - Shibboleth (Identity provider)
 - mariaDB    (IDP persistent store)
+<<<<<<< HEAD
 - Java (OpenJDK 9 oppure Amazon Corretto 8)
+=======
+
+La versione di Java utilizzata è OpenJDK 11.
+>>>>>>> Debian10
 
 #### Documentazione di riferimento
 Il contenuto di questo playbook è stato perlopiù ricavato dalla seguente documentazione:
@@ -24,7 +34,7 @@ Indice dei contenuti
    * #### Installazione
       * [LDAP](#ldap)
       * [Configurazione di LDAP](#configurazione-di-ldap)
-      * [Installazione di Shibboleth IDPv3 e SPv2](#installazione-di-shibboleth-idpv3-e-spv2)
+      * [Installazione di Shibboleth IDPv3 e SPv3](#installazione-di-shibboleth-idpv3-e-spv3)
       * [Risultato](#risultato)
    * #### Troubleshooting
        * [Systems checks](#systems-checks)
@@ -40,6 +50,7 @@ Indice dei contenuti
            * [No metadata returned for](#samlmetadatalookuphandler)
            * [PrescopedAttributeDefinition](#prescopedattributedefinition)
    * [Produzione](#produzione)
+   * [Personalizzazione](#personalizzazione)
    * [Hints](#hints)
    * [Todo](#todo)
    * [Ringraziamenti](#ringraziamenti)
@@ -49,8 +60,13 @@ Requisiti
 ---------
 
 - Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
+<<<<<<< HEAD
 - Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldiff)
 - ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldiff)
+=======
+- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldif)
+- ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldif)
+>>>>>>> Debian10
 - Installazione delle seguenti dipendenze
 
 ````
@@ -61,6 +77,7 @@ pip3 install ansible
 Parametri utili
 ---------------
 
+<<<<<<< HEAD
 - shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata;
 - idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP;
 - idp_persistent_id_rdbms: false. Configura lo storage dei Persistent ID su MariaDB;
@@ -69,6 +86,14 @@ Parametri utili
 - servlet_ram: 384m. Quanta ram destinare al servlet container;
 - edugain_federation: true. Abilita metadati, resolvers e filtri tipici sugli attributi per un IdP di federazione IDEM EduGAIN;
 - java_jdk: amazon_8. Che distribuzione Java JDK da utilizzare, supporta anche openjdk-8-jre.
+=======
+- shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata
+- idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP
+- idp_persistent_id_rdbms: true. Configura lo storage dei Persistent ID su MariaDB e ottine REMOTE_USER nella diagnostica della pagina SP
+- servlet_container: tomcat | jetty.
+- idp_disable_saml1: disabilita il supporto a SAML versione 1
+- servlet_ram: 384m. Quanta ram destinare al servlet container
+>>>>>>> Debian10
 
 Installazione
 -------------
@@ -98,10 +123,10 @@ nano /etc/hosts
 TLS_CACERT /etc/ssl/certs/testunical.it/slapd-cacert.pem
 
 # aggiungi l'utente idp sul server LDAP
-ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldiff
+ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldif
 
 # aggiungi una ACL per consentire la connessione e la ricerca all'utente idp
-ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldiff
+ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldif
 
 # testiamo che l'utente idp possa interrogare il server LDAP
 # dal server locale di LDAP
@@ -112,7 +137,7 @@ ldapsearch -H ldaps://ldap.testunical.it -D "uid=idp,ou=applications,dc=testunic
 
 ````
 
-## Installazione di Shibboleth IDPv3 e SPv2
+## Installazione di Shibboleth IDPv3 e SPv3
 
 ### Certificati SSL di shibboleth IDP e SP
 Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le variabili all'interno del file secondo le tue preferenze.
@@ -121,7 +146,11 @@ nano make_ca.sh
 bash make_ca.sh
 ````
 
+<<<<<<< HEAD
 **Ricordati** di leggere attentamente il contenuto di playbook.yml e di creare server_ip.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
+=======
+Ricordati di leggere attentamente il contenuto di playbook.yml e di creare server_ip.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
+>>>>>>> Debian10
 
 Il seguente esempio considera una esecuzione in locale del playbook:
 ````
@@ -304,10 +333,24 @@ Hints
 -----
 
 #### idp logout standard url
+<<<<<<< HEAD
 https://sp.testunical.it/Shibboleth.sso/Logout
+=======
+- https://sp.testunical.it/Shibboleth.sso/Logout
+>>>>>>> Debian10
 
 #### shibboleth log path
-/opt/shibboleth-idp/logs/
+- /opt/shibboleth-idp/logs/
+
+Personalizzazione
+-----------------
+
+E' possibile personalizzare la pagina web di ShibbolethIDP modificando i seguenti files.
+Le modifiche non richiedono il riavvio del servizio.
+
+- messages/, modifica labels e stringhe globali o per lingua (_it e ed eventuali altri);
+- views/, modifica la struttura HTML dei template (file con estensione .vm);
+- edit-webapp/, modifica CSS e immagini a cui puntano i template;
 
 
 Todo

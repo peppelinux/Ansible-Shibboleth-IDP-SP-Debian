@@ -1,8 +1,8 @@
 - name: Install Java packages OpenJDK
   apt: name={{ item }} state=present
   with_items:
-    - openjdk-8-jre
-  when: java_jdk == "openjdk-8-jre"
+    - openjdk-11-jre
+  when: java_jdk == "openjdk-11-jre"
 
 - name: Install Java dependencies packages Amazon Corretto
   apt: name={{ item }} state=present
@@ -23,16 +23,17 @@
   when: java_jdk == "amazon_8"
 
 - name: Install Shibboleth apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    - expat                 # jetty req
-    - libservlet3.1-java    # servlet common requirements
-    - libcommons-dbcp-java  # jetty requirement
-    - libcommons-pool2-java # jetty req
-    - libmariadb-java       # servlet req contains: /usr/share/java/mariadb.jar
-    - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
-    - html2text
-    - emacs24-nox
+  apt:
+    pkg:
+        - expat                 # jetty req
+        - libservlet3.1-java    # servlet common requirements
+        - libcommons-dbcp-java  # jetty requirement
+        - libcommons-pool2-java # jetty req
+        - libmariadb-java         # servlet req contains: /usr/share/java/mariadb-java-client.jar
+        - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
+        - html2text
+        - emacs24-nox
+    state: present
 
 - name: get JAVA_HOME
   shell: readlink -f /usr/bin/java | sed "s:bin/java::"

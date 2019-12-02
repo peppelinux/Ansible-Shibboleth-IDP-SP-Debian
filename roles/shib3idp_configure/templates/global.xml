@@ -50,8 +50,8 @@
     -->
     
     <bean id="MyDataSource" class="org.apache.commons.dbcp.BasicDataSource"
-      p:driverClassName="com.mysql.jdbc.Driver"
-      p:url="jdbc:mysql://localhost:3306/{{ idp_rdbms_dbname }}?autoReconnect=true"
+      p:driverClassName="org.mariadb.jdbc.Driver"
+      p:url="jdbc:mariadb://localhost:3306/{{ idp_rdbms_dbname }}?autoReconnect=true"
       p:username="{{ idp_rdbms_user }}"
       p:password="{{ idp_rdbms_pw }}"
       p:maxActive="10"

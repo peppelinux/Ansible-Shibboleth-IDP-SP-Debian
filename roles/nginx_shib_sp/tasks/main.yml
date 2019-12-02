@@ -2,12 +2,13 @@
   file: name=/etc/shibboleth/metadata state=directory
 
 - name: Install Shibboleth apt packages
-  apt: name={{ item }} state=present
-  with_items:
-    - shibboleth-sp2-utils  # sp
-    - shibboleth-sp2-common # sp
-    - libshibsp7            # sp
-    - php-fpm               # php
+  apt:
+    state: present
+    pkg:
+        # - shibboleth-sp2-utils
+        # - shibboleth-sp2-common
+        # - libshibsp8
+        - php-fpm               # php
 
 - name: Install SP Supervisor processes
   copy:

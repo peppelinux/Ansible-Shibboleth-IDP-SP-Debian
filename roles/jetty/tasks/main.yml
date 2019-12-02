@@ -102,7 +102,7 @@
    dest: "{{ item.dest }}"
    state: link
   with_items:
-   - { src: '/usr/share/java/mysql.jar' , dest: '{{ jetty_path }}/lib/ext/mysql.jar' }
+   - { src: '/usr/share/java/mariadb-java-client.jar' , dest: '{{ jetty_path }}/lib/ext/mariadb-java-client.jar' }
    - { src: '/usr/share/java/commons-pool.jar' , dest: '{{ jetty_path }}/lib/ext/commons-pool.jar' }
    - { src: '/usr/share/java/commons-dbcp.jar' , dest: '{{ jetty_path }}/lib/ext/commons-dbcp.jar' }
    - { src: '/usr/share/java/javax.json-1.0.4.jar' , dest: '{{ jetty_path }}/lib/ext/javax.json-1.0.4.jar' }

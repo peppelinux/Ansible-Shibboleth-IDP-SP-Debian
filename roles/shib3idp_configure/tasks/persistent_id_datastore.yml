@@ -1,6 +1,6 @@
 - name: "Run MariaDB role"
   include_role:
-    name: "mysql"
+    name: "mariadb"
 
 # the sourceAttribute MUST BE an attribute, or a list of comma-separated attributes, that uniquely identify the subject of the generated persistent-id. It MUST BE: Stable, Permanent and Not-reassignable
 - name: Configure saml-nameid.properties (dataStore and persistentId)
