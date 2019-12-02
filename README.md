@@ -1,5 +1,5 @@
-#### [Ansible playbook] 
-Shibboleth IDPv3 SP2 Debian 9 
+#### [Ansible playbook]
+Shibboleth IDPv3 SP2 Debian 9
 =============================
 
 Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
@@ -9,8 +9,7 @@ Setup in locale di ShibbolethIdP 3 e Shibboleth SP 2 con i seguenti servizi:
 - mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
 - Shibboleth (Identity provider)
 - mariaDB    (IDP persistent store)
-
-La versione di Java utilizzata è OpenJDK 8.
+- Java (OpenJDK 9 oppure Amazon Corretto 8)
 
 #### Documentazione di riferimento
 Il contenuto di questo playbook è stato perlopiù ricavato dalla seguente documentazione:
@@ -28,7 +27,7 @@ Indice dei contenuti
       * [Installazione di Shibboleth IDPv3 e SPv2](#installazione-di-shibboleth-idpv3-e-spv2)
       * [Risultato](#risultato)
    * #### Troubleshooting
-       * [Systems checks](#systems-checks)   
+       * [Systems checks](#systems-checks)
        * [LDAP Troubleshooting](#ldap-troubleshooting)
        * [Shibboleth Troubleshooting](#shibboleth-troubleshooting)
            * [Injected service was null or not an AttributeResolver](#injected-service-was-null-or-not-an-attributeresolver)
@@ -54,7 +53,7 @@ Requisiti
 - ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldiff)
 - Installazione delle seguenti dipendenze
 
-````    
+````
 apt install -y python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev ldap-utils
 pip3 install ansible
 ````
@@ -64,10 +63,12 @@ Parametri utili
 
 - shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata;
 - idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP;
-- idp_persistent_id_rdbms: true. Configura lo storage dei Persistent ID su MariaDB e ottiene REMOTE_USER nella diagnostica della pagina SP;
+- idp_persistent_id_rdbms: false. Configura lo storage dei Persistent ID su MariaDB;
 - servlet_container: tomcat | jetty;
 - idp_disable_saml1: disabilita il supporto a SAML versione 1;
 - servlet_ram: 384m. Quanta ram destinare al servlet container;
+- edugain_federation: true. Abilita metadati, resolvers e filtri tipici sugli attributi per un IdP di federazione IDEM EduGAIN;
+- java_jdk: amazon_8. Che distribuzione Java JDK da utilizzare, supporta anche openjdk-8-jre.
 
 Installazione
 -------------
@@ -85,7 +86,7 @@ ansible-playbook -i "localhost," -c local playbook.yml
 ### Configurazione di LDAP
 se non possiedi certificati autorevoli modifica le variabili di make_ca.sh prima di creare le chiavi, specialmente l'hostname del server ldap altrimenti le connessioni SSL falliranno!
 ````
-nano make_ca.sh 
+nano make_ca.sh
 bash make_ca.sh
 
 # testare la connessione LDAP da un client remoto
@@ -148,9 +149,9 @@ service jetty check
 # apache2 configuration test
 apache2ctl configtest
 
-# You can test that the IdP is properly installed and is at least running successfully in the container with the status command line utility 
+# You can test that the IdP is properly installed and is at least running successfully in the container with the status command line utility
 export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
-/opt/shibboleth-idp/bin/status.sh 
+/opt/shibboleth-idp/bin/status.sh
 
 # shibboleth sp test
 shibd -t
@@ -181,7 +182,7 @@ LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,
 OpenSSL check
 ````
 openssl x509  -text -noout -in /etc/ssl/certs/testunical.it/slapd-cacert.pem
-openssl verify -verbose -CAfile /etc/ssl/certs/testunical.it/slapd-cacert.pem /etc/ssl/certs/testunical.it/slapd-cert.pem 
+openssl verify -verbose -CAfile /etc/ssl/certs/testunical.it/slapd-cacert.pem /etc/ssl/certs/testunical.it/slapd-cert.pem
 ````
 
 Shibboleth Troubleshooting
@@ -197,10 +198,10 @@ In tomcat8/jetty logs: la connessione al datasource fallisce (ldap/mysql connect
 #### FatalProfileException
 ````
 opensaml::FatalProfileException
-Error from identity provider: 
+Error from identity provider:
 Status: urn:oasis:names:tc:SAML:2.0:status:Responder
 ````
-Probabilmente manca la chiave pubblica dell'SP presso l'IDP, oppure le chiavi presentano, localmente, permessi di 
+Probabilmente manca la chiave pubblica dell'SP presso l'IDP, oppure le chiavi presentano, localmente, permessi di
 lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo errore si presenta e i certificati sono stati adeguatamente definiti in shibboleth2.xml... Hai ricordato di riavviare shibd? :)
 
 
@@ -209,7 +210,7 @@ lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo
 "Request failed: <urlopen error ('_ssl.c:565: The handshake operation timed out',)>"
 ````
 TASK [mod-shib2 : Add IdP Metadata to Shibboleth SP]
-libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su jessie 8.0 aggiornata a 8.7). 
+libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su jessie 8.0 aggiornata a 8.7).
 Verificare la presenza di questi altrimenti ripopolare la directory
 
 
@@ -225,9 +226,9 @@ cd /etc/shibboleth/metadata
 wget --no-check-certificate https://idp.testunical.it/idp/shibboleth
 
 # verificare che siano effettivamente differenti !
-diff shibboleth idp.testunical.it-metadata.xml 
-rm idp.testunical.it-metadata.xml 
-mv shibboleth idp.testunical.it-metadata.xml 
+diff shibboleth idp.testunical.it-metadata.xml
+rm idp.testunical.it-metadata.xml
+mv shibboleth idp.testunical.it-metadata.xml
 # nessun riavvio è richiesto
 
 # controllare inoltre che i certificati del sp siano leggibili da _shibd
@@ -322,7 +323,7 @@ Todo
 - JRE selezionabile: openJDK, Oracle
 - Read [this](https://tuakiri.ac.nz/confluence/display/Tuakiri/Installing+a+Shibboleth+3.x+IdP#InstallingaShibboleth3.xIdP-ConfigureLDAPAuthentication)
 
-Ringraziamenti 
+Ringraziamenti
 --------------
 
 - Comunità IDEM GARR

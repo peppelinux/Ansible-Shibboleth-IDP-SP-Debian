@@ -157,3 +157,6 @@
 - name: Restart Tomcat
   service: name="{{ tomcat_version }}" state=restarted
   when: servlet_container == "tomcat"
+
+- name: Update GIT repository with a branch of the configured Shib IdP
+  shell: "cd {{ idp_path }} && git checkout -b configuration && git add -A && git commit -am 'Shibboleth IdP configured'"

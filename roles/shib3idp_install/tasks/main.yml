@@ -1,3 +1,27 @@
+- name: Install Java packages OpenJDK
+  apt: name={{ item }} state=present
+  with_items:
+    - openjdk-8-jre
+  when: java_jdk == "openjdk-8-jre"
+
+- name: Install Java dependencies packages Amazon Corretto
+  apt: name={{ item }} state=present
+  with_items:
+    - java-common
+  when: java_jdk == "amazon_8"
+
+- name: "Stat Java packages Amazon Corretto in {{ shib_dest_dir }}"
+  stat: path="{{ shib_dest_dir }}/{{ java_amazon_package }}"
+  register: "java_amazon_deb"
+
+- name: "Download Amazon Corretto {{ java_amazon_package }}"
+  get_url: url={{ java_amazon_dl }} dest="{{ shib_dest_dir }}"
+  when: java_amazon_deb.stat.exists == False
+
+- name: "Install Java Amazon Corretto {{ java_amazon_package }}"
+  shell: "dpkg -i {{ shib_dest_dir }}/{{ java_amazon_package }}"
+  when: java_jdk == "amazon_8"
+
 - name: Install Shibboleth apt packages
   apt: name={{ item }} state=present
   with_items:
@@ -5,11 +29,10 @@
     - libservlet3.1-java    # servlet common requirements
     - libcommons-dbcp-java  # jetty requirement
     - libcommons-pool2-java # jetty req
-    - libmysql-java         # servlet req contains: /usr/share/java/mysql.jar
+    - libmariadb-java       # servlet req contains: /usr/share/java/mariadb.jar
     - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
     - html2text
     - emacs24-nox
-    - openjdk-8-jre
 
 - name: get JAVA_HOME
   shell: readlink -f /usr/bin/java | sed "s:bin/java::"
@@ -23,33 +46,33 @@
   include_role:
     name: "{{ servlet_container }}"
 
-- name: Stat Shibboleth IdP tarball in /opt 
+- name: "Stat Shibboleth IdP tarball in {{ shib_dest_dir }}"
   stat: path="{{ shib_dest_dir }}/{{ shib_idp_package }}"
   register: shib_tarball
 
 - name: "Download Shibboleth {{ shib_idp_version }} IdP"
-  get_url: url={{ idp_dl_url }} dest=/opt
+  get_url: url={{ idp_dl_url }} dest={{ shib_dest_dir }}
   when: shib_tarball.stat.exists == False
 
-- name: Stat Shibboleth IdP source dir in /opt 
+- name: "Stat Shibboleth IdP source dir in {{ shib_dest_dir }}"
   stat: path="{{ idp_path }}"
   register: shib_dir_source
 
 - name: Unarchive Shibboleth IdP
   unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
-  # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 
+  # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived
 
 - name: Prepare properties for Shibboleth IdP install
-  template: 
-    src: roles/{{ role_name }}/templates/shib-install.properties 
+  template:
+    src: roles/{{ role_name }}/templates/shib-install.properties
     dest: "{{ tmp_upload_dir }}/shib-install.properties"
 
-- name: Stat Shibboleth IdP dest dir in /opt
+- name: "Stat Shibboleth IdP dest dir in {{ shib_dest_dir }}"
   stat: path="{{ idp_path }}/metadata"
   register: shib_dir_dest
 
 - name: Install Shibboleth Idp
-  environment: 
+  environment:
     JAVA_HOME: "{{ java_home.stdout }}"
   command: "{{ shib_setup_folder }}/bin/install.sh \
             -Didp.sealer.password={{ idp_secret }} \
@@ -59,4 +82,7 @@
             -Didp.host.name={{ idp_fqdn }} \
             -Didp.target.dir={{ idp_path }} \
             -Didp.merge.properties={{ tmp_upload_dir }}/shib-install.properties"
-  when: shib_dir_dest.stat.exists == False 
+  when: shib_dir_dest.stat.exists == False
+
+- name: Create GIT repository with a fresh ShibIdP installation
+  shell: "cd {{ idp_path }} && git init . && git add -A && git commit -am 'Shibboleth IdP installed'"
