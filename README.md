@@ -1,11 +1,5 @@
-<<<<<<< HEAD
 #### [Ansible playbook]
-Shibboleth IDPv3 SP2 Debian 9
-=======
-#### [Ansible playbook] 
 Shibboleth IDPv3 e SP3 su Debian 10 (buster)
->>>>>>> Debian10
-=============================
 
 Setup in locale di ShibbolethIdP 3 e Shibboleth SP 3.0.3 con i seguenti servizi:
 
@@ -14,15 +8,13 @@ Setup in locale di ShibbolethIdP 3 e Shibboleth SP 3.0.3 con i seguenti servizi:
 - mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
 - Shibboleth (Identity provider)
 - mariaDB    (IDP persistent store)
-<<<<<<< HEAD
 - Java (OpenJDK 9 oppure Amazon Corretto 8)
-=======
 
-La versione di Java utilizzata è OpenJDK 11.
->>>>>>> Debian10
+# La versione di Java utilizzata è OpenJDK 11.
+
 
 #### Documentazione di riferimento
-Il contenuto di questo playbook è stato perlopiù ricavato dalla seguente documentazione:
+Questo playbook è stato realizzato per mezzo della seguente documentazione:
 - https://github.com/ConsortiumGARR/idem-tutorials
 
 Indice dei contenuti
@@ -60,13 +52,8 @@ Requisiti
 ---------
 
 - Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
-<<<<<<< HEAD
-- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldiff)
-- ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldiff)
-=======
 - Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldif)
 - ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldif)
->>>>>>> Debian10
 - Installazione delle seguenti dipendenze
 
 ````
@@ -77,7 +64,6 @@ pip3 install ansible
 Parametri utili
 ---------------
 
-<<<<<<< HEAD
 - shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata;
 - idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP;
 - idp_persistent_id_rdbms: false. Configura lo storage dei Persistent ID su MariaDB;
@@ -86,14 +72,6 @@ Parametri utili
 - servlet_ram: 384m. Quanta ram destinare al servlet container;
 - edugain_federation: true. Abilita metadati, resolvers e filtri tipici sugli attributi per un IdP di federazione IDEM EduGAIN;
 - java_jdk: amazon_8. Che distribuzione Java JDK da utilizzare, supporta anche openjdk-8-jre.
-=======
-- shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata
-- idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP
-- idp_persistent_id_rdbms: true. Configura lo storage dei Persistent ID su MariaDB e ottine REMOTE_USER nella diagnostica della pagina SP
-- servlet_container: tomcat | jetty.
-- idp_disable_saml1: disabilita il supporto a SAML versione 1
-- servlet_ram: 384m. Quanta ram destinare al servlet container
->>>>>>> Debian10
 
 Installazione
 -------------
@@ -146,11 +124,7 @@ nano make_ca.sh
 bash make_ca.sh
 ````
 
-<<<<<<< HEAD
-**Ricordati** di leggere attentamente il contenuto di playbook.yml e di creare server_ip.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
-=======
 Ricordati di leggere attentamente il contenuto di playbook.yml e di creare server_ip.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
->>>>>>> Debian10
 
 Il seguente esempio considera una esecuzione in locale del playbook:
 ````
@@ -332,12 +306,9 @@ Produzione
 Hints
 -----
 
-#### idp logout standard url
-<<<<<<< HEAD
-https://sp.testunical.it/Shibboleth.sso/Logout
-=======
+#### idp global logout
+
 - https://sp.testunical.it/Shibboleth.sso/Logout
->>>>>>> Debian10
 
 #### shibboleth log path
 - /opt/shibboleth-idp/logs/

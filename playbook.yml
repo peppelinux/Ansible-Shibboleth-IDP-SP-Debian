@@ -7,11 +7,7 @@
 - name: Install Shibboleth IDP and SP
   hosts: all
   become: yes
-<<<<<<< HEAD
 
-=======
-  
->>>>>>> Debian10
   # vars_files:
     # - server_ip.yml
 
@@ -50,11 +46,6 @@
     ldap_cert: slapd-cert.pem
     # choose between: starttls, tls, plain
     ldap_auth: starttls
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> Debian10
     # webserver configuration, choose between apache and nginx
     httpd: nginx
 
@@ -73,12 +64,9 @@
     servlet_ram: 384m
     servlet_port: 8080
     servlet_host: 127.0.0.1
+
     # Jetty configuration
-<<<<<<< HEAD
     jetty_version: 9.4.24.v20191120
-=======
-    jetty_version: 9.4.21.v20190926
->>>>>>> Debian10
     jetty_distribution: "jetty-distribution-{{ jetty_version }}"
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_dl_path: /opt
