@@ -9,7 +9,8 @@
     - include
     - negotiation
     - ssl
-    - shib2
+    - shib
+  ignore_errors: true
 
 - name: Install SP Virtualhost configuration
   template:
@@ -27,9 +28,9 @@
     dest: /var/www/html/{{ sp_fqdn }}/index.html
 
 - name: Create CSS directory for SP webserver
-  file: name=/var/www/css state=directory 
+  file: name=/var/www/css state=directory
 
-- name: Install Bootstrap Min CSS 
+- name: Install Bootstrap Min CSS
   copy:
     src: roles/{{ role_name }}/files/webroot/bootstrap.min.css
     dest: /var/www/css/bootstrap.min.css

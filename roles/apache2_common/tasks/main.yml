@@ -3,7 +3,7 @@
     state : present
     pkg:
         - apache2
-        - libapache2-mod-shib2  # sp
+        - libapache2-mod-shib  # sp
         - libapache2-mod-php
 
 - name: Remove Default Index file
@@ -21,40 +21,17 @@
     src: roles/apache2_common/files/ports.conf
     dest: /etc/apache2/ports.conf
 
-# - name: Install Apache default servers
-  # template:
-    # src: "roles/apache2/templates/default.conf"
-    # dest: /etc/apache2/sites-available/default.conf
-  # force: yes
-
-# - name: Install Apache default-ssl servers
-  # template:
-    # src: "roles/apache2/templates/default-ssl.conf"
-    # dest: /etc/apache2/sites-available/default-ssl.conf
-  # force: yes
-
-# - name: Enable default-ssl site configuration
-  # command: a2ensite default
-
-# - name: Enable default-ssl site configuration
-  # command: a2ensite default-ssl
-
-# Apache2 with PHP 7.0 on Debian9 could drive us crazy with something like:
-# Considering dependency mpm_prefork for php7.0:
-# Considering conflict mpm_event for mpm_prefork:
-# Considering conflict mpm_worker for mpm_prefork:
-# Enabling module mpm_prefork.
-# Considering conflict php5 for php7.0:
-# Enabling module php7.0.
-
-- name: Disable PHP 7.3 conflicting Apache2 modules 
+- name: Disable PHP 7.3 conflicting Apache2 modules
   apache2_module: name={{ item }} state=absent
   with_items:
     - php7.3
-    # - mpm_worker
+    - mpm_worker
     - mpm_prefork
     - mpm_event
   ignore_errors: true
+
+- name: Enable SSL
+  command: a2enmod ssl
 
 - name: Enable PHP 7.3
   command: a2enmod php7.3

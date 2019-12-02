@@ -92,6 +92,48 @@
     replace: 'idp.persistentId.salt = {{ persId_salt.stdout }}'
   when: idp_persistent_id_rdbms == false
 
+- name: "Run MariaDB role"
+  include_role:
+    name: "mariadb"
+
+# DataStore
+# the sourceAttribute MUST BE an attribute, or a list of comma-separated attributes, that uniquely identify the subject of the generated persistent-id. It MUST BE: Stable, Permanent and Not-reassignable
+- name: Configure saml-nameid.properties (dataStore and persistentId)
+  template:
+    src: roles/{{ role_name }}/templates/saml-nameid.properties
+    dest: "{{ idp_path }}/conf/saml-nameid.properties"
+    backup: yes
+
+- name: Configure saml-nameid.xml (persistentId)
+  copy:
+    src: roles/{{ role_name }}/files/saml-nameid.xml
+    dest:  "{{ idp_path }}/conf/saml-nameid.xml"
+    backup: yes
+
+
+# Remove the comment to the bean called "c14n/SAML2Persistent"
+- name: Configure subject-c14n.xml (persistentId)
+  copy:
+    src: roles/{{ role_name }}/files/subject-c14n.xml
+    dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
+    backup: yes
+
+
+- name: Configure relying-party.xml (persistentId)
+  template:
+    src: roles/{{ role_name }}/templates/relying-party.xml
+    dest:  "{{ idp_path }}/conf/relying-party.xml"
+    backup: yes
+
+
+- name: Configure global.xml (dataStore and persistentId)
+  template:
+    src: roles/{{ role_name }}/templates/global.xml
+    dest:  "{{ idp_path }}/conf/global.xml"
+    backup: yes
+# DataStore
+
+
 - name: "Persistent ID Datastore (mariaDB)"
   import_tasks: persistent_id_datastore.yml
   when: idp_persistent_id_rdbms == true

@@ -16,7 +16,7 @@
         - libxslt1-dev
         - libxslt1.1
 
-- name: Stat NginX tarball in /opt 
+- name: Stat NginX tarball in /opt
   stat: path="{{ nginx_src_dir }}/{{ nginx_version }}.tar.gz"
   register: nginx_tarball
 
@@ -29,7 +29,7 @@
 
 - name: Unarchive NginX
   unarchive: src="{{ nginx_src_dir }}/{{ nginx_version }}.tar.gz" dest="{{ nginx_src_dir }}/nginx_setup" copy=no
-  # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived 
+  # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived
 
 - name: Get additional modules
   command: "{{ item }}"
@@ -38,7 +38,7 @@
     - "git clone https://github.com/nginx-shib/nginx-http-shibboleth.git {{ nginx_src_dir }}/nginx_setup/http-shib"
     - "git clone https://github.com/openresty/headers-more-nginx-module.git {{ nginx_src_dir }}/nginx_setup/headers-more"
   ignore_errors: true
-  
+
 - name: Compile NginX
   shell:
     chdir: "{{ nginx_src_dir }}/nginx_setup/{{ nginx_version }}"
@@ -104,8 +104,8 @@
     - systemctl daemon-reload
     - "cp roles/{{ role_name }}/files/nginx-common.nginx.init /etc/init.d/nginx"
     - chmod 644 /etc/init.d/nginx
-    - update-rc.d nginx defaults
-    - update-rc.d nginx enable 2
+    - /sbin/update-rc.d nginx defaults
+    - /sbin/update-rc.d nginx enable 2
 
 - name: Restart Nginx
   service: name=nginx state=restarted enabled=yes

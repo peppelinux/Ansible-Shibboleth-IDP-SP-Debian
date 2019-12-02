@@ -27,9 +27,10 @@
     # otherwise exception SSL_ERROR_RX_RECORD_TOO_LONG will be raised or other, exception message depends by the client.
 
     # modify this in server_ip.yml
+    # this help up to a test deploy without any FQDN involved
     # ldap_ip: "10.87.7.104"
     # idp_ip:   "10.87.7.235"
-    # sp_ip:    "{{ idp_ip }}" # everything on the same vm
+    # sp_ip:    "{{ idp_ip }}"
 
     # Commons
     src_cert_path: certs/
@@ -47,7 +48,7 @@
     # choose between: starttls, tls, plain
     ldap_auth: starttls
     # webserver configuration, choose between apache and nginx
-    httpd: nginx
+    httpd: apache
 
     # nginx
     nginx_src_dir: /opt

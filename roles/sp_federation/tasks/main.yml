@@ -3,7 +3,7 @@
 # Marco Malavolti consiglia una regexp sul log di avvio di tomcat/jetty relativo all'idp, funziona bene!
 - name: "Wait until the string 'RemoteUserAuthServlet will process REMOTE_USER' appears in {{ idp_path }}/logs/idp-process.log"
   wait_for:
-    path: "{{ idp_path }}/logs/idp-process.log" 
+    path: "{{ idp_path }}/logs/idp-process.log"
     search_regex: "RemoteUserAuthServlet will process REMOTE_USER"
   when: servlet_container == "tomcat"
 
@@ -42,3 +42,6 @@
 - name: Restart Tomcat
   service: name="{{ tomcat_version }}" state=restarted enabled=yes
   when: servlet_container == "tomcat"
+
+- name: Update GIT repository with a branch for this kind of federation
+  shell: "cd {{ idp_path }} && git checkout -b federation && git add -A && git commit -am 'Shibboleth SP federated'"

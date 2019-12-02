@@ -1,21 +1,23 @@
-#### [Ansible playbook]
-Shibboleth IDPv3 e SP3 su Debian 10 (buster)
+# Ansible Shibboleth IDPv3 e SP3 Debian 10 (buster)
 
-Setup in locale di ShibbolethIdP 3 e Shibboleth SP 3.0.3 con i seguenti servizi:
+Ansible playbook è una procedura automatizzata per predisporre sistemi complessi.
+Questo playbook è stato realizzato per automatizzare l'installazione e la configurazione
+di uno Shibboleth Identity Provider e uno di Shibboleth Service Provider, secondo quanto documentato nelle [guida ufficiale
+della Federazione IDEM](https://github.com/ConsortiumGARR/idem-tutorials).
 
+Questa procedura è rivolta a tutti coloro i quali:
+- vogliano imparare ad installare e configurare Shibboleth IdP ed SP
+- per coloro i quali già amministrano un servizio SAML2 ma necessitano di una procedura di prototipazione immediata e riproducibile
+- per coloro i quali debbano clonare configurazioni e avanzare di versione dei sistemi già in produzione.
+
+Questa procedurà produrrà un Setup in locale di ShibbolethIdP 3 e Shibboleth SP 3.0.3 con i seguenti applicativi:
 - Servlet Container per IDP (tomcat8 o jetty9, default: jetty)
 - Web server  (Apache o NginX come HTTPS frontend)
 - mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
 - Shibboleth (Identity provider)
 - mariaDB    (IDP persistent store)
-- Java (OpenJDK 9 oppure Amazon Corretto 8)
+- Java (OpenJDK 11 oppure Amazon Corretto 8)
 
-# La versione di Java utilizzata è OpenJDK 11.
-
-
-#### Documentazione di riferimento
-Questo playbook è stato realizzato per mezzo della seguente documentazione:
-- https://github.com/ConsortiumGARR/idem-tutorials
 
 Indice dei contenuti
 -----------------
@@ -52,10 +54,18 @@ Requisiti
 ---------
 
 - Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
-- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldif)
+- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldif). Si consiglia di testare una ricerca LDAP con le credenziali da utilizzare in `ldap.properties`.
+  Esempio: `ldapsearch -H ldap://ldap.testunical.it -D 'uid=idp,ou=idp,dc=testunical,dc=it' -w idpsecret  -b 'ou=people,dc=testunical,dc=it'`
 - ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldif)
 - Installazione delle seguenti dipendenze
 
+Se non possiedi certificati autorevoli modifica le variabili di make_ca.sh ed eseguilo per costruire una CA privata di test.
+````
+nano make_ca.sh
+bash make_ca.sh
+````
+
+Installare le seguenti dipendenze:
 ````
 apt install -y python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev ldap-utils
 pip3 install ansible
@@ -64,6 +74,15 @@ pip3 install ansible
 Parametri utili
 ---------------
 
+La configurazione della nostra installazione è contenuta all'interno del file `playbook.yml`.
+Parametri quali `domain1`, `domain2` e `domain` determinano in aggiunta l'entityID e i certificati da utilizzare.
+Questi ultimi possono risiedere nella directory `/certs` o in altra directory definibile con la variabile `src_cert_path`.
+I certificati dovranno avere dei nomi simili a questi:
+
+- fqdn-cert.pem e fqdn-key.pem
+
+Altri parametri utili possono essere:
+
 - shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata;
 - idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP;
 - idp_persistent_id_rdbms: false. Configura lo storage dei Persistent ID su MariaDB;
@@ -71,13 +90,13 @@ Parametri utili
 - idp_disable_saml1: disabilita il supporto a SAML versione 1;
 - servlet_ram: 384m. Quanta ram destinare al servlet container;
 - edugain_federation: true. Abilita metadati, resolvers e filtri tipici sugli attributi per un IdP di federazione IDEM EduGAIN;
-- java_jdk: amazon_8. Che distribuzione Java JDK da utilizzare, supporta anche openjdk-8-jre.
+- java_jdk: amazon_8. La distribuzione Java JDK da utilizzare, supporta anche openjdk-8-jre.
 
 Installazione
 -------------
 
 ## LDAP
-Se non hai una installazione funzionante di LDAP puoi crearne una utilizzando questo playbook:
+Se non hai una installazione funzionante di LDAP puoi crearne una utilizzando [questo playbook](https://github.com/peppelinux/ansible-slapd-eduperson2016):
 ````
 git clone https://github.com/peppelinux/ansible-slapd-eduperson2016
 cd ansible-slapd-eduperson2016
@@ -87,11 +106,7 @@ ansible-playbook -i "localhost," -c local playbook.yml
 ````
 
 ### Configurazione di LDAP
-se non possiedi certificati autorevoli modifica le variabili di make_ca.sh prima di creare le chiavi, specialmente l'hostname del server ldap altrimenti le connessioni SSL falliranno!
 ````
-nano make_ca.sh
-bash make_ca.sh
-
 # testare la connessione LDAP da un client remoto
 # accertati che l'hostname del server LDAP sia presente in /etc/hosts oppure che questo possa essere risolto dal tuo DNS.
 nano /etc/hosts
@@ -118,11 +133,6 @@ ldapsearch -H ldaps://ldap.testunical.it -D "uid=idp,ou=applications,dc=testunic
 ## Installazione di Shibboleth IDPv3 e SPv3
 
 ### Certificati SSL di shibboleth IDP e SP
-Puoi creare delle chiavi firmate di esempio con make_ca.sh, basta editare le variabili all'interno del file secondo le tue preferenze.
-````
-nano make_ca.sh
-bash make_ca.sh
-````
 
 Ricordati di leggere attentamente il contenuto di playbook.yml e di creare server_ip.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
 
@@ -327,14 +337,10 @@ Le modifiche non richiedono il riavvio del servizio.
 Todo
 ---------
 
-- [SP] Riqualifica codice PHP di esempio per NginX FastCGI e Apache2 secondo:
-  https://wiki.geant.org/display/eduGAIN/How+to+configure+Shibboleth+SP+attribute+checker
+- [SP Attribute Checker](https://wiki.geant.org/display/eduGAIN/How+to+configure+Shibboleth+SP+attribute+checker)
 - Rimozione/disinstallazione: non più in un unico ruolo (roles/uninstall) ma contestualizzata nel ruolo di riferimento
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, interfacciamento a livello idp)
 - Implementare multiple sources per attributi da RDBMS differenti
-- NginX/Apache2/Tomcat2 hardening
-- implementare ruolo/opzioni per setup Attribute Authority, con e senza autenticazione
-- JRE selezionabile: openJDK, Oracle
 - Read [this](https://tuakiri.ac.nz/confluence/display/Tuakiri/Installing+a+Shibboleth+3.x+IdP#InstallingaShibboleth3.xIdP-ConfigureLDAPAuthentication)
 
 Ringraziamenti
@@ -342,5 +348,3 @@ Ringraziamenti
 
 - Comunità IDEM GARR
 - Marco Malavolti (garr.it) per la documentazione di base;
-- Marco Cappellacci (uniurb) per la documentazione NginX di base;
-- Daniele Albrizio (unitrieste) per consigli, confronti e tecnicismi;
