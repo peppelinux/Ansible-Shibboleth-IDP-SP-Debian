@@ -2,6 +2,16 @@
     path: "{{ idp_path }}/conf/idp.properties"
     regexp: '#idp.cookie.secure = false'
     replace: 'idp.cookie.secure = true'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.storage.htmlLocalStorage = false'
+    replace: 'idp.storage.htmlLocalStorage = true'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.consent.StorageService = shibboleth.ClientPersistentStorageService'
+    replace: 'idp.consent.StorageService = shibboleth.ClientPersistentStorageService'
     backup: yes
 
 # Sconsigliato da Daniele Albrizio, di fatto consentirebbe solo agli SP all'interno del dominio di secondo livello di comunicare

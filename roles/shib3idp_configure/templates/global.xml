@@ -8,7 +8,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
-                           
+
        default-init-method="initialize"
        default-destroy-method="destroy">
 
@@ -19,7 +19,7 @@
     these empty or commented and use the system defaults, but you can override those defaults using these lists.
     Each <value> element is an algorithm URI, or you can use <util:constant> elements in place of literal values.
     -->
-    
+
     <!--
     <util:list id="shibboleth.SignatureWhitelist">
     </util:list>
@@ -38,17 +38,17 @@
     If you need to define and inject custom Java object(s) into the various views used throughout the
     system (errors, login, logout, etc.), you can uncomment and define the bean below to be of any
     type required. It will appear in the view scope as a variable named "custom".
-    
+
     The example below defines the bean as a map, which allows you to inject multiple objects under
     named keys to expand the feature to support multiple injected objects.
     -->
-    
+
     <!--
     <util:map id="shibboleth.CustomViewContext">
         <entry key="foo" value="bar"/>
     </util:map>
     -->
-    
+
     <bean id="MyDataSource" class="org.apache.commons.dbcp.BasicDataSource"
       p:driverClassName="org.mariadb.jdbc.Driver"
       p:url="jdbc:mariadb://localhost:3306/{{ idp_rdbms_dbname }}?autoReconnect=true"
@@ -60,13 +60,13 @@
       p:testOnBorrow="true"
       p:validationQuery="select 1"
       p:validationQueryTimeout="5" />
-    
+
     <bean id="shibboleth.JPAStorageService" class="org.opensaml.storage.impl.JPAStorageService"
-	  p:cleanupInterval="%{idp.storage.cleanupInterval:PT10M}"
-	  c:factory-ref="shibboleth.JPAStorageService.entityManagerFactory"/>
+      p:cleanupInterval="%{idp.storage.cleanupInterval:PT10M}"
+      c:factory-ref="shibboleth.JPAStorageService.entityManagerFactory"/>
 
     <bean id="shibboleth.JPAStorageService.entityManagerFactory"
-	  class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+      class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
       <property name="packagesToScan" value="org.opensaml.storage.impl"/>
       <property name="dataSource" ref="MyDataSource"/>
       <property name="jpaVendorAdapter" ref="shibboleth.JPAStorageService.JPAVendorAdapter"/>
@@ -75,9 +75,9 @@
       </property>
     </bean>
 
-    <bean id="shibboleth.JPAStorageService.JPAVendorAdapter" 
-	  class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+    <bean id="shibboleth.JPAStorageService.JPAVendorAdapter"
+      class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
       <property name="database" value="MYSQL" />
     </bean>
-    
+
 </beans>

@@ -4,4 +4,5 @@
   <Set name="extractWAR">false</Set>
   <Set name="copyWebDir">false</Set>
   <Set name="copyWebInf">true</Set>
+  <Set name="persistTempDirectory">false</Set>
 </Configure>

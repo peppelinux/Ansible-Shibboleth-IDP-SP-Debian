@@ -57,6 +57,7 @@
 
     # which java version to use (optional: openjdk-8-jre)
     java_jdk: amazon_8
+    #java_jdk: openjdk-8-jre
     java_amazon_package: java-1.8.0-amazon-corretto-jdk_8.232.09-1_amd64.deb
     java_amazon_dl: "https://d3pxv6yz143wms.cloudfront.net/8.232.09.1/{{ java_amazon_package }}"
 
