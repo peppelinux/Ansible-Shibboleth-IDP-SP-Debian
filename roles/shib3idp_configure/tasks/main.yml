@@ -58,17 +58,17 @@
     # dest: "{{ idp_path }}/conf/logback.xml"
     # backup: yes
 
-# - name: Configure IdP attribute-filter.xml
-  # template:
-    # src: roles/shib3idp_configure/templates/attribute-filter.xml
-    # dest: "{{ idp_path }}/conf/attribute-filter.xml"
-    # backup: yes
-
 - name: Configure IdP attribute-filter.xml
-  copy:
-    src: roles/shib3idp_configure/files/attribute-filter.xml
+  template:
+    src: roles/shib3idp_configure/templates/attribute-filter.xml
     dest: "{{ idp_path }}/conf/attribute-filter.xml"
     backup: yes
+
+# - name: Configure IdP attribute-filter.xml
+  # copy:
+    # src: roles/shib3idp_configure/files/attribute-filter.xml
+    # dest: "{{ idp_path }}/conf/attribute-filter.xml"
+    # backup: yes
 
 # wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
 - name: Copy configured {{ idp_attr_resolver }} in attribute-resolver.xml

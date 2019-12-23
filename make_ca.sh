@@ -1,6 +1,6 @@
 #!/bin/bash
 export CERT_PATH=`pwd`"/certs"
-export DOMAIN="testunical.it"
+export DOMAIN="aai-test.garr.it"
 export IDP_FQDN="idp.$DOMAIN"
 export SP_FQDN="sp.$DOMAIN"
 
@@ -8,24 +8,6 @@ apt install easy-rsa -y
 rm -fR easy-rsa
 cp -Rp /usr/share/easy-rsa/ .
 cd easy-rsa
-
-# link easy-rsa ssl config defaults
-# You can also edit it to change some informations about issuer and remove EASY-Rsa messages
-#ln -s openssl-easyrsa.cnf openssl.cnf # won't works with CommonName
-
-
-# using original openssl file (needs more customizations)
-# cp /etc/ssl/openssl.cnf openssl.cnf
-# sed -i '1s/^/# For use with easy-rsa version 2.0 and OpenSSL 1.0.0*\n/' openssl.cnf
-
-#cp vars.example vars
-# customize informations in vars file (or override them later with env VAR)
-# remember to configure "Common Name (your server's hostname)" in your certs 
-# to let your client avoids "does not match common name in certificate"
-# nano vars
-
-# then source it
-#. ./vars
 
 # override for speedup
 export EASYRSA_CMD="./easyrsa --batch"
@@ -45,25 +27,25 @@ export EASYRSA_NS_SUPPORT="yes"
 export EASYRSA_NS_COMMENT="Private CA Generated Certificate"
 
 $EASYRSA_CMD init-pki
-$EASYRSA_CMD build-ca --req-cn=$EASYRSA_REQ_CN \
-                      --req-c=$EASYRSA_REQ_COUNTRY \
-                      --req-st=$EASYRSA_REQ_NAME \
-                      --req-city=$EASYRSA_REQ_CITY \
-                      --req-org=$EASYRSA_REQ_ORG \
-                      --req-email=$EASYRSA_REQ_EMAIL \
-                      --req-ou=$EASYRSA_REQ_NAME \
-                      --subject-alt-name=$EASYRSA_REQ_ALTNAMES \
-                      --copy-ext
+$EASYRSA_CMD build-ca nopass --req-cn=$EASYRSA_REQ_CN \
+                             --req-c=$EASYRSA_REQ_COUNTRY \
+                             --req-st=$EASYRSA_REQ_NAME \
+                             --req-city=$EASYRSA_REQ_CITY \
+                             --req-org=$EASYRSA_REQ_ORG \
+                             --req-email=$EASYRSA_REQ_EMAIL \
+                             --req-ou=$EASYRSA_REQ_NAME \
+                             --subject-alt-name=$EASYRSA_REQ_ALTNAMES \
+                             --copy-ext
 # read output
 openssl x509 -in pki/ca.crt -text -noout
 
-$EASYRSA_CMD gen-dh
+# $EASYRSA_CMD gen-dh
 
 export EASYRSA_REQ_NAME=$IDP_FQDN
 export EASYRSA_REQ_CN=$IDP_FQDN
 export EASYRSA_REQ_ALTNAMES="*.$DOMAIN"
-$EASYRSA_CMD build-server-full $IDP_FQDN
-openssl x509 -in pki/issued/$EASYRSA_REQ_NAME.crt -text -noout 
+$EASYRSA_CMD build-server-full $IDP_FQDN nopass
+openssl x509 -in pki/issued/$EASYRSA_REQ_NAME.crt -text -noout
 
 mkdir -p $CERT_PATH
 openssl x509 -inform PEM -in pki/ca.crt > $CERT_PATH/$EASYRSA_REQ_ORG-cacert.pem
@@ -76,7 +58,7 @@ openssl rsa -in pki/private/$IDP_FQDN.key -text > $CERT_PATH/$IDP_FQDN-key.pem
 export EASYRSA_REQ_CN=$SP_FQDN
 export EASYRSA_REQ_ALTNAMES=$SP_FQDN
 export EASYRSA_REQ_NAME=$SP_FQDN
-$EASYRSA_CMD build-server-full $SP_FQDN
+$EASYRSA_CMD build-server-full $SP_FQDN nopass
 
 openssl x509 -inform PEM -in pki/issued/$SP_FQDN.crt > $CERT_PATH/$SP_FQDN-cert.pem
 openssl rsa -in pki/private/$SP_FQDN.key -text > $CERT_PATH/$SP_FQDN-key.pem

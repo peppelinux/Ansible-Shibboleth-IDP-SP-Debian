@@ -12,9 +12,11 @@
     # - server_ip.yml
 
   vars:
-    domain2: testunical
+    org: garr
+    domain3: aai-test
+    domain2: garr
     domain1: it
-    domain: "{{ domain2 }}.{{ domain1 }}"
+    domain: "{{ domain3 }}.{{ domain2 }}.{{ domain1 }}"
 
     server_admin: "root@{{ domain }}"
 
@@ -38,9 +40,9 @@
     tmp_upload_dir: "/tmp/ansible-shibboleth-idp-sp-setup"
 
     # LDAP configuration
-    ldap_fqdn: "ldap.{{ domain2 }}.{{ domain1 }}"
-    ldap_basedc: "dc={{ domain2 }},dc={{ domain1 }}"
-    ldap_binddn: "uid=idp,ou=idp,{{ ldap_basedc }}"
+    ldap_fqdn: "ldap.{{ domain }}"
+    ldap_basedc: "dc={{ domain3 }},dc={{ domain2 }},dc={{ domain1 }}"
+    ldap_binddn: "uid=idpuser,ou=idp,{{ ldap_basedc }}"
     ldap_pw: idpsecret
     ldap_basedn: "ou=people,{{ ldap_basedc }}"
     # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/

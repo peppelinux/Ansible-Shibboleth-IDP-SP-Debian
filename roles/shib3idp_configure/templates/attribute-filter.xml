@@ -7,7 +7,7 @@
     <!-- Release some attributes to an SP. -->
     <AttributeFilterPolicy id="educational_standard">
 
-        <PolicyRequirementRule xsi:type="Requester" value="https://sp.testunical.it/shibboleth" />
+        <PolicyRequirementRule xsi:type="Requester" value="https://sp.{{ domain }}/shibboleth" />
 
         <AttributeRule attributeID="eduPersonPrincipalName">
             <PermitValueRule xsi:type="ANY" />
@@ -64,15 +64,15 @@
         <AttributeRule attributeID="shacHomeOrganizationType">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
-        
+
         <AttributeRule attributeID="eduPersonPersonalUniqueId">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
-        
+
         <AttributeRule attributeID="schacPersonalUniqueCode">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
-        
+
         <AttributeRule attributeID="schacPersonalUniqueID">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
@@ -80,14 +80,14 @@
         <AttributeRule attributeID="email">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
-	
-	<!--
+
+    <!--
     Nel caso in cui alcuni attributi presenti su un DB rdmbs debbano comporre i ns attributi
-    
-	    <AttributeRule attributeID="VEDI id ATTRIBUTO DEFINITO in attribute-resolver-myRdbms.xml">
+
+        <AttributeRule attributeID="VEDI id ATTRIBUTO DEFINITO in attribute-resolver-myRdbms.xml">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
-	-->	
+    -->
 
     </AttributeFilterPolicy>
 

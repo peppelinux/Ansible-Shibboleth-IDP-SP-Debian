@@ -55,7 +55,7 @@ Requisiti
 
 - Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
 - Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldif). Si consiglia di testare una ricerca LDAP con le credenziali da utilizzare in `ldap.properties`.
-  Esempio: `ldapsearch -H ldap://ldap.testunical.it -D 'uid=idp,ou=idp,dc=testunical,dc=it' -w idpsecret  -b 'ou=people,dc=testunical,dc=it'`
+  Esempio: `ldapsearch -H ldap://ldap.aai-test.garr.it -D 'uid=idp,ou=idp,dc=aai-test,dc=garr,dc=it' -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'`
 - ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldif)
 - Installazione delle seguenti dipendenze
 
@@ -110,23 +110,23 @@ ansible-playbook -i "localhost," -c local playbook.yml
 # testare la connessione LDAP da un client remoto
 # accertati che l'hostname del server LDAP sia presente in /etc/hosts oppure che questo possa essere risolto dal tuo DNS.
 nano /etc/hosts
-# 10.87.7.104 ldap.testunical.it
+# 10.87.7.104 ldap.aai-test.garr.it
 
 # accertati che in /etc/ldap/ldap.conf sia stato configurato TLS_CACERT con il certificato del tuo CA, esempio:
-TLS_CACERT /etc/ssl/certs/testunical.it/slapd-cacert.pem
+TLS_CACERT /etc/ssl/certs/aai-test.garr.it/slapd-cacert.pem
 
 # aggiungi l'utente idp sul server LDAP
-ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=aai-test,dc=garr,dc=it" -w slapdsecret -f ldap/idp_user.ldif
 
 # aggiungi una ACL per consentire la connessione e la ricerca all'utente idp
-ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldif
+ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=aai-test,dc=garr,dc=it" -w slapdsecret -f ldap/idp_acl.ldif
 
 # testiamo che l'utente idp possa interrogare il server LDAP
 # dal server locale di LDAP
-ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
+ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idp,ou=applications,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'
 
 # dal server IDP
-ldapsearch -H ldaps://ldap.testunical.it -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
+ldapsearch -H ldaps://ldap.aai-test.garr.it -D "uid=idp,ou=applications,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'
 
 ````
 
@@ -170,8 +170,8 @@ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 shibd -t
 
 # idp and sp https checks
-openssl s_client -connect sp.testunical.it:443
-openssl s_client -connect idp.testunical.it:443
+openssl s_client -connect sp.aai-test.garr.it:443
+openssl s_client -connect idp.aai-test.garr.it:443
 ````
 
 LDAP Troubleshooting
@@ -181,21 +181,21 @@ E' sempre meglio testare la connessione ad LDAP prima del setup.
 Da verificare oltre ai certificati anche le ACL di slapd.
 
 ````
-ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
+ldapsearch  -H ldaps://ldap.aai-test.garr.it:636 -D "uid=idp,ou=applications,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=aai-test,dc=garr,dc=it' -d 220
 ````
-Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.testunical.it).
+Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.aai-test.garr.it).
 Soluzione: allineare i certificati e la corrispondenza commonName con l'hostname del server.
 
 
 Esclusivamente per scopo di test è possibile eludere la validazione del certificato con il seguente comando, solo per test di connettività.
 ````
-LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idp,ou=applications,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
+LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.aai-test.garr.it:636 -D "uid=idp,ou=applications,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=aai-test,dc=garr,dc=it' -d 220
 ````
 
 OpenSSL check
 ````
-openssl x509  -text -noout -in /etc/ssl/certs/testunical.it/slapd-cacert.pem
-openssl verify -verbose -CAfile /etc/ssl/certs/testunical.it/slapd-cacert.pem /etc/ssl/certs/testunical.it/slapd-cert.pem
+openssl x509  -text -noout -in /etc/ssl/certs/aai-test.garr.it/slapd-cacert.pem
+openssl verify -verbose -CAfile /etc/ssl/certs/aai-test.garr.it/slapd-cacert.pem /etc/ssl/certs/aai-test.garr.it/slapd-cert.pem
 ````
 
 Shibboleth Troubleshooting
@@ -236,16 +236,16 @@ L'SP ha i metadati dell'IDP errati/disallineati. Soluzione:
 
 ````
 cd /etc/shibboleth/metadata
-wget --no-check-certificate https://idp.testunical.it/idp/shibboleth
+wget --no-check-certificate https://idp.aai-test.garr.it/idp/shibboleth
 
 # verificare che siano effettivamente differenti !
-diff shibboleth idp.testunical.it-metadata.xml
-rm idp.testunical.it-metadata.xml
-mv shibboleth idp.testunical.it-metadata.xml
+diff shibboleth idp.aai-test.garr.it-metadata.xml
+rm idp.aai-test.garr.it-metadata.xml
+mv shibboleth idp.aai-test.garr.it-metadata.xml
 # nessun riavvio è richiesto
 
 # controllare inoltre che i certificati del sp siano leggibili da _shibd
-chown _shibd /etc/shibboleth/sp.testunical.it-*
+chown _shibd /etc/shibboleth/sp.aai-test.garr.it-*
 
 ````
 
@@ -283,9 +283,9 @@ Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'�
 
 #### SAMLMetadataLookupHandler
 ````
-2018-03-05 13:38:13,259 - INFO [org.opensaml.saml.common.binding.impl.SAMLMetadataLookupHandler:128] - Message Handler:  No metadata returned for https://sp.testunical.it/shibboleth in role {urn:oasis:names:tc:SAML:2.0:metadata}SPSSODescriptor with protocol urn:oasis:names:tc:SAML:2.0:protocol
+2018-03-05 13:38:13,259 - INFO [org.opensaml.saml.common.binding.impl.SAMLMetadataLookupHandler:128] - Message Handler:  No metadata returned for https://sp.aai-test.garr.it/shibboleth in role {urn:oasis:names:tc:SAML:2.0:metadata}SPSSODescriptor with protocol urn:oasis:names:tc:SAML:2.0:protocol
 ````
-Copiare i metadati dell'SP (wget --no-check-certificate https://sp.testunical.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
+Copiare i metadati dell'SP (wget --no-check-certificate https://sp.aai-test.garr.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
 
 
 #### PrescopedAttributeDefinition
@@ -318,7 +318,7 @@ Hints
 
 #### idp global logout
 
-- https://sp.testunical.it/Shibboleth.sso/Logout
+- https://sp.aai-test.garr.it/Shibboleth.sso/Logout
 
 #### shibboleth log path
 - /opt/shibboleth-idp/logs/
