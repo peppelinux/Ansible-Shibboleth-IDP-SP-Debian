@@ -1,9 +1,9 @@
 # Remove the comment to the bean called "c14n/SAML2Persistent"
-- name: Configure subject-c14n.xml (persistentId)
-  copy:
-    src: roles/{{ role_name }}/files/subject-c14n.xml
-    dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
-    backup: yes
+# - name: Configure subject-c14n.xml (persistentId)
+  # copy:
+    # src: roles/{{ role_name }}/files/subject-c14n.xml
+    # dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
+    # backup: yes
 
 - replace:
     path: "{{ idp_path }}/conf/saml-nameid.properties"
