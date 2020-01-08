@@ -1,8 +1,8 @@
 #!/bin/bash
 export CERT_PATH=`pwd`"/certs"
 export DOMAIN="aai-test.garr.it"
-export IDP_FQDN="idp.$DOMAIN"
-export SP_FQDN="sp.$DOMAIN"
+export IDP_FQDN="shib-idp.$DOMAIN"
+export SP_FQDN="shib-sp.$DOMAIN"
 
 apt install easy-rsa -y
 rm -fR easy-rsa

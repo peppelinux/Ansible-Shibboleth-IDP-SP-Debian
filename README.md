@@ -170,8 +170,8 @@ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 shibd -t
 
 # idp and sp https checks
-openssl s_client -connect sp.aai-test.garr.it:443
-openssl s_client -connect idp.aai-test.garr.it:443
+openssl s_client -connect shib-sp.aai-test.garr.it:443
+openssl s_client -connect shib-idp.aai-test.garr.it:443
 ````
 
 LDAP Troubleshooting
@@ -236,12 +236,12 @@ L'SP ha i metadati dell'IDP errati/disallineati. Soluzione:
 
 ````
 cd /etc/shibboleth/metadata
-wget --no-check-certificate https://idp.aai-test.garr.it/idp/shibboleth
+wget --no-check-certificate https://shib-idp.aai-test.garr.it/idp/shibboleth
 
 # verificare che siano effettivamente differenti !
-diff shibboleth idp.aai-test.garr.it-metadata.xml
-rm idp.aai-test.garr.it-metadata.xml
-mv shibboleth idp.aai-test.garr.it-metadata.xml
+diff shibboleth shib-idp.aai-test.garr.it-metadata.xml
+rm shib-idp.aai-test.garr.it-metadata.xml
+mv shibboleth shib-idp.aai-test.garr.it-metadata.xml
 # nessun riavvio è richiesto
 
 # controllare inoltre che i certificati del sp siano leggibili da _shibd
@@ -318,7 +318,7 @@ Hints
 
 #### idp global logout
 
-- https://sp.aai-test.garr.it/Shibboleth.sso/Logout
+- https://shib-sp.aai-test.garr.it/Shibboleth.sso/Logout
 
 #### shibboleth log path
 - /opt/shibboleth-idp/logs/

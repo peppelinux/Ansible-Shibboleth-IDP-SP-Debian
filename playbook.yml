@@ -91,8 +91,8 @@
     shib_setup_folder: "{{ shib_dest_dir }}/shibboleth-identity-provider-{{ shib_idp_version }}"
     idp_dl_url: "https://shibboleth.net/downloads/identity-provider/{{ shib_idp_version }}/{{ shib_idp_package }}"
     idp_web_folder: /idp/shibboleth
+    idp_fqdn: "shib-idp.{{ domain }}"
     idp_entity_id: "https://{{ idp_fqdn }}{{ idp_web_folder }}"
-    idp_fqdn: "idp.{{ domain }}"
     idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     idp_localized_message_url: "https://wiki.shibboleth.net/confluence/download/attachments/21660022/messages_it.properties?version=2&modificationDate=1541061867323&api=v2"
@@ -109,7 +109,7 @@
     idp_rdbms_pw: "{{ idp_secret }}"
 
     # Shibboleth SP
-    sp_fqdn: "sp.{{ domain }}"
+    sp_fqdn: "shib-sp.{{ domain }}"
 
     # enable edugain attr filter and md providers
     edugain_federation: true

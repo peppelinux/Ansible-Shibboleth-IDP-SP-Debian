@@ -7,7 +7,7 @@
     <!-- Release some attributes to an SP. -->
     <AttributeFilterPolicy id="educational_standard">
 
-        <PolicyRequirementRule xsi:type="Requester" value="https://sp.{{ domain }}/shibboleth" />
+        <PolicyRequirementRule xsi:type="Requester" value="https://{{ sp_fqdn }}/shibboleth" />
 
         <AttributeRule attributeID="eduPersonPrincipalName">
             <PermitValueRule xsi:type="ANY" />
