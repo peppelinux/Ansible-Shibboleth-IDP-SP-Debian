@@ -1,5 +1,4 @@
 playbook.production.yml
 playbook.retry
 easy-rsa/
-server_ip.yml
 playbook.production.retry
