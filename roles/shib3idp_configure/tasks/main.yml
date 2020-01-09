@@ -76,11 +76,26 @@
     dest: "{{ idp_path }}/conf/{{ idp_attr_resolver }}"
     backup: yes
 
-- replace:
+- name: Copy configured attribute-resolver-custom.xml
+  copy:
+    src: "roles/shib3idp_configure/files/attribute-resolver-custom.xml"
+    dest: "{{ idp_path }}/conf/attribute-resolver-custom.xml"
+    backup: yes
+
+# - name: Copy configured attribute-resolver-sample.xml
+  # copy:
+    # src: "roles/shib3idp_configure/files/attribute-resolver-sample.xml"
+    # dest: "{{ idp_path }}/conf/attribute-resolver-sample.xml"
+    # backup: yes
+
+- name: Update services.xml
+  replace:
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
-    replace: '<value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>
-              <value>%{idp.home}/conf/attribute-resolver.xml</value>'
+    replace: '<!-- <value>%{idp.home}/conf/attribute-resolver.xml</value> -->
+              <!-- <value>%{idp.home}/conf/attribute-resolver-sample.xml</value> -->
+              <value>%{idp.home}/conf/attribute-resolver-custom.xml</value>
+              <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>'
     backup: yes
 
 # these replace will be overwritten by next task if idp_persistent_id_rdbms == true
@@ -178,10 +193,10 @@
 # fine modifiche 3.4.2
 
 # diff conf malavolti
-- replace:
-    path: "{{ idp_path }}/conf/c14n/subject-c14n.xml"
-    regexp: '<!-- <ref bean="c14n/SAML2Persistent" /> -->'
-    replace: '<ref bean="c14n/SAML2Persistent" />'
+# - replace:
+    # path: "{{ idp_path }}/conf/c14n/subject-c14n.xml"
+    # regexp: '<!-- <ref bean="c14n/SAML2Persistent" /> -->'
+    # replace: '<ref bean="c14n/SAML2Persistent" />'
 
 - replace:
     path: "{{ idp_path }}/conf/saml-nameid.xml"
