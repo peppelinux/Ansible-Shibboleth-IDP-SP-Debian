@@ -6,9 +6,13 @@
   register: persId_salt
   when: persId_salt is not defined
 
+- name: "Ensures {{ idp_path }}/tmp dir exists"
+  file: path="{{ idp_path }}/tmp" state=directory
+
 - name: jetty user for idp dirs
   file: name="{{ item }}" owner="jetty" recurse=yes
   with_items:
+    - "{{ idp_path }}/tmp"
     - "{{ idp_path }}/conf"
     - "{{ idp_path }}/logs"
     - "{{ idp_path }}/metadata"
@@ -18,6 +22,7 @@
 - name: tomcat user for idp dirs
   file: name="{{ item }}" owner="{{ tomcat_version }}" recurse=yes
   with_items:
+    - "{{ idp_path }}/tmp"
     - "{{ idp_path }}/conf"
     - "{{ idp_path }}/logs"
     - "{{ idp_path }}/metadata"
