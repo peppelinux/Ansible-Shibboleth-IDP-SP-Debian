@@ -28,8 +28,8 @@
   replace:
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/metadata-providers.xml</value>'
-    replace: '<value>%{idp.home}/conf/metadata-providers.xml</value>\n
-              \t<value>%{idp.home}/conf/metadata-providers-eduGAIN.xml</value>'
+    replace: '<value>%{idp.home}/conf/metadata-providers-eduGAIN.xml</value>\n
+              \t<value>%{idp.home}/conf/metadata-providers.xml</value>'
     backup: yes
 
 - name: Add attribute-filter-v3-RS-CoCo
