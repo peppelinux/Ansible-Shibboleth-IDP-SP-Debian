@@ -3,11 +3,14 @@
     # name: "uninstall"
   # when: uninstall == 'true'
 
+- name: Test if idpuser can query LDAP server
+  shell: "ldapsearch -H ldap://{{ ldap_fqdn }} -D '{{ ldap_binddn }}' -w {{ idp_secret }}  -b '{{ ldap_basedn }}'"
+
 - name: "Ensures {{ cert_path }} dir exists"
   file: path="{{ cert_path }}" state=directory
 
 - name: Copy certs
-  copy: 
+  copy:
     src: "{{ item }}"
     dest: "{{ cert_path }}/"
     owner: root
@@ -23,7 +26,7 @@
 - name: "Check {{ cert_path }}/{{ ldap_cert }}"
   fail: msg="{{ cert_path }}/{{ ldap_cert }} doesn't exists!"
   when: not ldap_cert_ok.stat.exists
-  
+
 - name: Update apt cache
   # apt: update_cache=yes
   apt: update_cache=yes cache_valid_time=86400
@@ -50,13 +53,13 @@
 - name: Include server_ip.yml definitions
   include_vars:
     file: ./server_ip.yml
-  when: hosts_file.stat.exists == True 
-  
+  when: hosts_file.stat.exists == True
+
 - name: Configure /etc/hosts
-  template: 
-    src: roles/common/templates/hosts 
+  template:
+    src: roles/common/templates/hosts
     dest: /etc/hosts
-  when: hosts_file.stat.exists == True 
+  when: hosts_file.stat.exists == True
 # END: /etc/hosts optional definitions
 
 - name: "Ensures {{ tmp_upload_dir }} dir exists"

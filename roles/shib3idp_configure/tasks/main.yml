@@ -76,10 +76,10 @@
     dest: "{{ idp_path }}/conf/{{ idp_attr_resolver }}"
     backup: yes
 
-- name: Copy configured attribute-resolver-custom.xml
+- name: Copy configured attribute-resolver-dynamic.xml
   copy:
-    src: "roles/shib3idp_configure/files/attribute-resolver-custom.xml"
-    dest: "{{ idp_path }}/conf/attribute-resolver-custom.xml"
+    src: "roles/shib3idp_configure/files/attribute-resolver-dynamic.xml"
+    dest: "{{ idp_path }}/conf/attribute-resolver-dynamic.xml"
     backup: yes
 
 # - name: Copy configured attribute-resolver-sample.xml
@@ -92,10 +92,10 @@
   replace:
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
-    replace: '<!-- <value>%{idp.home}/conf/attribute-resolver.xml</value> -->
-              <!-- <value>%{idp.home}/conf/attribute-resolver-sample.xml</value> -->
-              <value>%{idp.home}/conf/attribute-resolver-custom.xml</value>
-              <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>'
+    replace: '<!-- <value>%{idp.home}/conf/attribute-resolver.xml</value> -->\n
+              <!-- <value>%{idp.home}/conf/attribute-resolver-sample.xml</value> -->\n
+              <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>\n
+              <value>%{idp.home}/conf/attribute-resolver-dynamic.xml</value>'
     backup: yes
 
 # these replace will be overwritten by next task if idp_persistent_id_rdbms == true
