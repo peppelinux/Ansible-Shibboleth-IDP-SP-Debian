@@ -98,7 +98,7 @@ Installazione
 ## LDAP
 Se non hai una installazione funzionante di LDAP puoi crearne una utilizzando [questo playbook](https://github.com/peppelinux/ansible-slapd-eduperson2016):
 ````
-git clone https://github.com/peppelinux/ansible-slapd-eduperson2016
+git clone https://github.com/ConsortiumGARR/ansible-slapd-eduperson2016
 cd ansible-slapd-eduperson2016
 
 # modifica a tuo piacimento le variabili in playbook.yml prima di eseguire il seguente:
