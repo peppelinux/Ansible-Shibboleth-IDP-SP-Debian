@@ -65,12 +65,12 @@
 
     # Servlet configuration, choose your preferred between tomcat and jetty
     servlet_container: jetty
-    servlet_ram: 384m
+    servlet_ram: 512m
     servlet_port: 8080
     servlet_host: 127.0.0.1
 
     # Jetty configuration
-    jetty_version: 9.4.24.v20191120
+    jetty_version: 9.4.25.v20191220
     jetty_distribution: "jetty-distribution-{{ jetty_version }}"
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_dl_path: /opt

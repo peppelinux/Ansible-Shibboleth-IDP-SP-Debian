@@ -24,11 +24,12 @@
     backup: yes
 
 #  add filters and md providers in services
-- replace:
+- name: Add federation metadata provilders
+  replace:
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/metadata-providers.xml</value>'
-    replace: '<value>%{idp.home}/conf/metadata-providers-eduGAIN.xml</value>
-              <value>%{idp.home}/conf/metadata-providers.xml</value>'
+    replace: '<value>%{idp.home}/conf/metadata-providers.xml</value>\n
+              \t<value>%{idp.home}/conf/metadata-providers-eduGAIN.xml</value>'
     backup: yes
 
 - name: Add attribute-filter-v3-RS-CoCo
@@ -58,13 +59,23 @@
            c:backingFile="%{idp.home}/conf/attribute-filter-v3-required.xml"/>
     # backup: yes
 
+# - name: Add Attribute-filters in services.xml
+  # blockinfile:
+    # path: "{{ idp_path }}/conf/services.xml"
+    # insertafter: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
+    # marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    # block: |8
+            # <value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>
+            # <ref bean="IDEM-Default-Filter"/>
+            # <ref bean="IDEM-Production-Filter"/>
+    # backup: yes
+
 - name: Add Attribute-filters in services.xml
-  blockinfile:
+  replace:
     path: "{{ idp_path }}/conf/services.xml"
-    insertafter: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
-    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->\n"
-    block: |
-            <value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>
-            <ref bean="IDEM-Default-Filter"/>
-            <ref bean="IDEM-Production-Filter"/>
+    regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
+    replace: '<value>%{idp.home}/conf/attribute-filter.xml</value>\n
+              \t<value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>\n
+              \t<ref bean="IDEM-Default-Filter"/>\n
+              \t<ref bean="IDEM-Production-Filter"/>'
     backup: yes

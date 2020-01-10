@@ -17,7 +17,7 @@
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
     replace: '<value>%{idp.home}/conf/attribute-filter.xml</value>\n
-              <value>%{idp.home}/conf/attribute-filter-local.xml</value>'
+              \t<value>%{idp.home}/conf/attribute-filter-local.xml</value>'
     backup: yes
 
 # the old one

@@ -63,11 +63,13 @@
     # dest: "{{ idp_path }}/conf/logback.xml"
     # backup: yes
 
-# - name: Configure IdP attribute-filter.xml
-  # copy:
-    # src: roles/shib3idp_configure/files/attribute-filter.xml
-    # dest: "{{ idp_path }}/conf/attribute-filter.xml"
-    # backup: yes
+- name: Add Enhanched logging on users Authentication
+  blockinfile:
+    path: "{{ idp_path }}/conf/logback.xml"
+    insertbefore: '<!-- Logs LDAP related messages -->'
+    marker: "<!-- Logs on LDAP user authentication - ADDED -->"
+    block: |8
+            <logger name="org.ldaptive.auth.Authenticator" level="INFO" />
 
 # wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
 - name: Copy configured {{ idp_attr_resolver }} in attribute-resolver-v3-idem.xml
@@ -82,20 +84,14 @@
     dest: "{{ idp_path }}/conf/attribute-resolver-dynamic.xml"
     backup: yes
 
-# - name: Copy configured attribute-resolver-sample.xml
-  # copy:
-    # src: "roles/shib3idp_configure/files/attribute-resolver-sample.xml"
-    # dest: "{{ idp_path }}/conf/attribute-resolver-sample.xml"
-    # backup: yes
-
 - name: Update services.xml
-  replace:
+  blockinfile:
     path: "{{ idp_path }}/conf/services.xml"
-    regexp: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
-    replace: '<!-- <value>%{idp.home}/conf/attribute-resolver.xml</value> -->\n
-              <!-- <value>%{idp.home}/conf/attribute-resolver-sample.xml</value> -->\n
-              <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>\n
-              <value>%{idp.home}/conf/attribute-resolver-dynamic.xml</value>'
+    insertafter: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
+    marker: "<!-- Attribute resolvers -->"
+    block: |8
+              <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>
+              <value>%{idp.home}/conf/attribute-resolver-dynamic.xml</value>
     backup: yes
 
 # these replace will be overwritten by next task if idp_persistent_id_rdbms == true
@@ -158,12 +154,6 @@
   # copy:
     # src: roles/shib3idp_configure/files/services.xml
     # dest: "{{ idp_path }}/conf/services.xml"
-
-# TODO: Error creating bean with name 'shibboleth.AccessControlPolicies': Cannot create inner bean 'shibboleth.IPRangeAccessControl$child#4f0c1409'
-# - name: Configure access-control.xml for /status page
-  # template:
-    # src: roles/shib3idp_configure/templates/access-control.xml
-    # dest: "{{ idp_path }}/conf/access-control.xml"
 
 # - name: Add metadata providers
   # template:
