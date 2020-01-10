@@ -306,12 +306,13 @@ Produzione
 # ricaricare servizi singoli (eviti di riavviare il servlet container)
 # questi sono definiti in conf/services.xml
 
-/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeResolverService
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeResolverService -u http://localhost:8080/idp
 
-/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeFilterService
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeFilterService -u http://localhost:8080/idp
 
-/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.MetadataResolverResources
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.MetadataResolverResources -u http://localhost:8080/idp
 ````
+
 
 Hints
 -----
@@ -322,6 +323,13 @@ Hints
 
 #### shibboleth log path
 - /opt/shibboleth-idp/logs/
+
+
+#### test Attribute release
+
+````
+/opt/shibboleth-idp/bin/aacli.sh -n luigi -r https://shib-sp.aai-test.garr.it/shibboleth --saml2 -u http://localhost:8080/idp
+````
 
 Personalizzazione
 -----------------
