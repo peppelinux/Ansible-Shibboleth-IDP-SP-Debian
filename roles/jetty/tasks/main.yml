@@ -83,7 +83,7 @@
   with_items:
    - { src: "files/java/jetty", dest: '/etc/default/jetty' }
    - { src: "files/java/start.ini", dest: '{{ jetty_path }}/start.ini' }
-   - { src: "files/java/jetty.xml", dest: '{{ jetty_path }}/etc/jetty.xml' }
+   # - { src: "files/java/jetty.xml", dest: '{{ jetty_path }}/etc/jetty.xml' }
   tags: jetty
 
 - name: "Installing additional JARS"
@@ -93,7 +93,8 @@
    owner: "jetty"
    group: "jetty"
   with_items:
-   - { src: "files/java/javax.json-api-1.0.jar" , dest: '{{ jetty_path }}/lib/ext/javax.json-api-1.0.jar' }
+   - { src: "files/java/javax.json-api-1.1.4.jar" , dest: '{{ jetty_path }}/lib/ext/javax.json-api-1.1.4.jar' }
+   - { src: "files/java/javax.json-1.1.4.jar" , dest: '{{ jetty_path }}/lib/ext/javax.json-1.1.4.jar' }
   tags: jetty
 
 - name: Enable jetty libs
@@ -105,7 +106,6 @@
    - { src: '/usr/share/java/mariadb-java-client.jar' , dest: '{{ jetty_path }}/lib/ext/mariadb-java-client.jar' }
    - { src: '/usr/share/java/commons-pool.jar' , dest: '{{ jetty_path }}/lib/ext/commons-pool.jar' }
    - { src: '/usr/share/java/commons-dbcp.jar' , dest: '{{ jetty_path }}/lib/ext/commons-dbcp.jar' }
-   - { src: '/usr/share/java/javax.json-1.0.4.jar' , dest: '{{ jetty_path }}/lib/ext/javax.json-1.0.4.jar' }
   tags: jetty
 
 - set_fact:
