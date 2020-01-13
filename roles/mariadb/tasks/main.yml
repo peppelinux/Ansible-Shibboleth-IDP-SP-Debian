@@ -47,3 +47,22 @@
   file:
     state: absent
     path: "{{ tmp_upload_dir }}/insert-ruoliorganizzativi.sql"
+
+- name: Check table user_orcid
+  shell: "echo 'SELECT * FROM user_orcid' | mariadb -u {{ idp_rdbms_user }} --password={{ idp_rdbms_pw }} {{ idp_rdbms_dbname }}"
+  register: ruoli_org
+
+- name: Copy temporary insert-userorcid.sql
+  copy:
+    src: roles/{{ role_name }}/files/insert-userorcid.sql
+    dest: "{{ tmp_upload_dir }}/insert-userorcid.sql"
+
+- name: Load table user_orcid
+  shell: "mariadb -u root {{ idp_rdbms_dbname }} < {{ tmp_upload_dir }}/insert-userorcid.sql"
+  # shell: "mariadb -u root --password={{ idp_rdbms_pw }} {{ idp_rdbms_dbname }} < {{ tmp_upload_dir }}/insert-userorcid.sql"
+  when: ruoli_org.stdout == ""
+
+- name: Clean temporary insert-userorcid.sql
+  file:
+    state: absent
+    path: "{{ tmp_upload_dir }}/insert-userorcid.sql"

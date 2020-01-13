@@ -160,6 +160,7 @@
 <!-- Attributi aggiunti per il corso IdP 2016-06-16  --> 
     <Attribute name="urn:oid:1.3.6.1.4.1.25178.1.2.9" id="schacHomeOrganization"/>
     <Attribute name="urn:oid:1.3.6.1.4.1.25178.1.2.10" id="schacHomeOrganizationType"/>
+    <Attribute name="urn:oid:1.3.6.1.4.1.5923.1.1.1.16" id="eduPersonOrcid"/>
     <Attribute name="miaOrganizzazione:adGroup" id="ActiveDir_group"/>
     <Attribute name="miaOrganizzazione:adMail" id="Additional_mail"/>
     <Attribute name="ORGANIZZAZIONE_servizioX_codice" id="codiceaccesso"/>

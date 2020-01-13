@@ -84,6 +84,12 @@
     dest: "{{ idp_path }}/conf/attribute-resolver-dynamic.xml"
     backup: yes
 
+- name: Copy configured attribute-resolver-dbsql.xml
+  copy:
+    src: "roles/shib3idp_configure/files/attribute-resolver-dbsql.xml"
+    dest: "{{ idp_path }}/conf/attribute-resolver-dbsql.xml"
+    backup: yes
+
 - name: Update services.xml
   blockinfile:
     path: "{{ idp_path }}/conf/services.xml"
@@ -92,6 +98,7 @@
     block: |8
               <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>
               <value>%{idp.home}/conf/attribute-resolver-dynamic.xml</value>
+              <value>%{idp.home}/conf/attribute-resolver-dbsql.xml</value>
     backup: yes
 
 # these replace will be overwritten by next task if idp_persistent_id_rdbms == true

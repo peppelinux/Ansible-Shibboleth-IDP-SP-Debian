@@ -40,3 +40,11 @@ uid VARCHAR(255) NOT NULL,
 ruolo VARCHAR(255) NOT NULL,
 PRIMARY KEY (id)
 );
+
+create table user_orcid (
+uid varchar(128) not null,
+orcid varchar(128) not null,
+start_date date,
+end_date  date,
+PRIMARY KEY (uid, orcid, start_date)
+);
