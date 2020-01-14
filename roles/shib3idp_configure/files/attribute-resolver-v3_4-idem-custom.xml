@@ -281,14 +281,16 @@
 
     <!-- Data Connector for eduPersonTargetedID -->
     <!-- In Version 3.4.x a Warning about deprecation will be issued. This can be ignored (the attribute is required by the schema). However this attribute will be removed in V4.x and the source attribute supplied using <InputAttributeDefinition> and <InputDataConnector> elements. -->
+    <!--
     <DataConnector id="myStoredId" xsi:type="StoredId"
         generatedAttributeID="persistentID"
         salt="%{idp.persistentId.salt}"
         sourceAttributeID="%{idp.persistentId.sourceAttribute}"
         queryTimeout="0">
         <InputAttributeDefinition ref="%{idp.persistentId.sourceAttribute}" />
-        <BeanManagedConnection>MyDataSource</BeanManagedConnection>
+        <BeanManagedConnection>MyRDBMs1</BeanManagedConnection>
     </DataConnector>
+    -->
 
     <!-- Data Connector for eduPersonTargetedID - Computed Mode -->
     <DataConnector id="myComputedId" xsi:type="ComputedId"

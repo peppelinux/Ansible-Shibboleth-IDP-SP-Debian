@@ -70,7 +70,7 @@ auto/configure --prefix=/usr \
 --with-http_degradation_module \
 --with-http_slice_module \
 --with-http_stub_status_module
-            
+
 # Compile Nginx
 make -j2
 make install
@@ -88,3 +88,7 @@ make -n install
 
 popd
 ````
+
+#### Resources
+- https://www.nginx.com/blog/compiling-dynamic-modules-nginx-plus/
+- https://medium.com/ucl-api/adventures-in-shibboleth-and-nginx-part-2-of-2-6455a7f1d026
