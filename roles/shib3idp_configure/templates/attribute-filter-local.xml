@@ -77,6 +77,10 @@
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
+        <AttributeRule attributeID="eduPersonOrcid">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
         <AttributeRule attributeID="email">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
