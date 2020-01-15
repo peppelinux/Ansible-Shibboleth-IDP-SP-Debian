@@ -65,7 +65,7 @@
 
     # Servlet configuration, choose your preferred between tomcat and jetty
     servlet_container: jetty
-    servlet_ram: 512m
+    servlet_ram: 2048m
     servlet_port: 8080
     servlet_host: 127.0.0.1
 
