@@ -12,7 +12,7 @@
 
     <!-- IDEM Test Federation -->
     <MetadataProvider
-       id="TEST-IDEM-Federation"
+       id="IDEM-Test-Federation"
        xsi:type="FileBackedHTTPMetadataProvider"
        backingFile="%{idp.home}/metadata/idem-test-metadata-sha256.xml"
        metadataURL="http://md.idem.garr.it/metadata/idem-test-metadata-sha256.xml">
@@ -24,8 +24,9 @@
        </MetadataFilter>
     </MetadataProvider>
 
-    <!-- IDEM Federation -->
-    <MetadataProvider id="EduGAIN2IDEM-Federation"
+    <!-- eduGAIN + IDEM Production Federation -->
+    <!--
+    <MetadataProvider id="edugain2idem-Federation"
                       xsi:type="FileBackedHTTPMetadataProvider"
                       metadataURL="http://md.idem.garr.it/metadata/edugain2idem-metadata-sha256.xml"
                       backingFile="%{idp.home}/metadata/edugain2idem-metadata-sha256.xml"
@@ -40,5 +41,5 @@
             <RetainedRole>md:SPSSODescriptor</RetainedRole>
         </MetadataFilter>
     </MetadataProvider>
-
+    -->
 </MetadataProvider>
