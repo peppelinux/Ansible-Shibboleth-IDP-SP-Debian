@@ -38,10 +38,10 @@
     dest:  "{{ idp_path }}/conf/attribute-filter-v3-RS-CoCo.xml"
 
 - name: "http://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
-  get_url: url="http://www.garr.it/idem-conf/attribute-filter-v3-required.xml" dest="{{ idp_path }}/conf"
+  get_url: url="https://www.garr.it/idem-conf/attribute-filter-v3-required.xml" dest="{{ idp_path }}/conf"
 
 - name: "http://www.garr.it/idem-conf/attribute-filter-v3-idem.xml"
-  get_url: url="http://www.garr.it/idem-conf/attribute-filter-v3-idem.xml" dest="{{ idp_path }}/conf"
+  get_url: url="https://www.garr.it/idem-conf/attribute-filter-v3-idem.xml" dest="{{ idp_path }}/conf"
 
 - name: Add IDEM Attribute filters in services.xml (FileBackedHTTPResource bean)
   blockinfile:
@@ -51,11 +51,11 @@
     block: |
         <bean id="IDEM-Default-Filter" class="net.shibboleth.ext.spring.resource.FileBackedHTTPResource"
               c:client-ref="shibboleth.FileCachingHttpClient"
-              c:url="http://www.garr.it/idem-conf/attribute-filter-v3-idem.xml"
+              c:url="https://www.garr.it/idem-conf/attribute-filter-v3-idem.xml"
               c:backingFile="%{idp.home}/conf/attribute-filter-v3-idem.xml"/>
         <bean id="IDEM-Production-Filter" class="net.shibboleth.ext.spring.resource.FileBackedHTTPResource"
            c:client-ref="shibboleth.FileCachingHttpClient"
-           c:url="http://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
+           c:url="https://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
            c:backingFile="%{idp.home}/conf/attribute-filter-v3-required.xml"/>
     # backup: yes
 
