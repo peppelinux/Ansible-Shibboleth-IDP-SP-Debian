@@ -138,6 +138,10 @@ Ricordati di leggere attentamente il contenuto di playbook.yml e di creare serve
 
 Il seguente esempio considera una esecuzione in locale del playbook:
 ````
+git clone https://github.com/ConsortiumGARR/Ansible-Shibboleth-IDP-SP-Debian
+cd Ansible-Shibboleth-IDP-SP-Debian
+
+# modifica a tuo piacimento le variabili in playbook.yml e crea server_ip.yml prima di eseguire il seguente:
 ansible-playbook -i "localhost," -c local playbook.yml [-vvv]
 
 # seleziona esclusivamente alcuni ruoli, esempio soltanto la parte web
