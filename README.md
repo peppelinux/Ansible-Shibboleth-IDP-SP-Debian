@@ -2,20 +2,20 @@
 
 Ansible playbook è una procedura automatizzata per predisporre sistemi complessi.
 Questo playbook è stato realizzato per automatizzare l'installazione e la configurazione
-di uno Shibboleth Identity Provider e uno di Shibboleth Service Provider, secondo quanto documentato nelle [guida ufficiale
+di uno Shibboleth Identity Provider e uno di Shibboleth Service Provider, secondo quanto documentato nella [guida ufficiale
 della Federazione IDEM](https://github.com/ConsortiumGARR/idem-tutorials).
 
 Questa procedura è rivolta a tutti coloro i quali:
-- vogliano imparare ad installare e configurare Shibboleth IdP ed SP
-- per coloro i quali già amministrano un servizio SAML2 ma necessitano di una procedura di prototipazione immediata e riproducibile
-- per coloro i quali debbano clonare configurazioni e avanzare di versione dei sistemi già in produzione.
+- desiderino imparare ad installare e configurare Shibboleth IdP ed SP
+- già amministrano un servizio SAML2 ma necessitano di una procedura di prototipazione immediata e riproducibile
+- desiderino clonare configurazioni e avanzare di versione dei sistemi già in produzione.
 
 Questa procedurà produrrà un Setup in locale di Shibboleth IdP v3.x e Shibboleth SP 3.0.3 con i seguenti applicativi:
 - Servlet Container per IDP (tomcat8 o jetty9, default: jetty)
 - Web server  (Apache o NginX come HTTPS frontend)
 - mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
-- Shibboleth (Identity provider)
-- mariaDB    (IDP persistent store)
+- Shibboleth (Identity provider e Service Provider di test)
+- mariaDB
 - Java (OpenJDK 11 oppure Amazon Corretto 8)
 
 
@@ -209,10 +209,10 @@ Shibboleth Troubleshooting
 ````
 net.shibboleth.utilities.java.support.component.ComponentInitializationException: Injected service was null or not an AttributeResolver
 ````
-In tomcat8/jetty logs: la connessione al datasource fallisce (ldap/mysql connection/authentication error) oppure un errore sintattico in attribute-resolver.xml (o quali abilitati in services.xml)
+la connessione al datasource fallisce (ldap/mysql connection/authentication error) oppure un errore sintattico in attribute-resolver.xml (o quali abilitati in services.xml)
 
 
-#### FatalProfileException
+#### FatalProfileException (SP)
 ````
 opensaml::FatalProfileException
 Error from identity provider:
@@ -227,8 +227,7 @@ lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo
 "Request failed: <urlopen error ('_ssl.c:565: The handshake operation timed out',)>"
 ````
 TASK [mod-shib2 : Add IdP Metadata to Shibboleth SP]
-libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su jessie 8.0 aggiornata a 8.7).
-Verificare la presenza di questi altrimenti ripopolare la directory
+libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su jessie 8.0 aggiornata a 8.7). Verificare la presenza di questi altrimenti ripopolare la directory
 
 
 #### Signature could not be verified
@@ -253,37 +252,12 @@ chown _shibd /etc/shibboleth/sp.aai-test.garr.it-*
 
 ````
 
-
-#### NoClassDefFoundError
-
-````
-java.lang.NoClassDefFoundError: org/apache/commons/pool/ObjectPool
-...
-Cannot resolve reference to bean 'MyDataSource' while setting bean property 'dataSource'
-...
-Failed to instantiate [org.apache.commons.dbcp.BasicDataSource]: No default constructor found
-````
-manca commons-pool.jar in /opt/jetty/lib/ext oppure al posto di commons-pool.jar hai installato commons-pool2.jar
-
-#### DefaultAuthenticationResultSerializer
-````
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authn/IPAddress' defined in file [/opt/shibboleth-idp/system/conf/../../conf/authn/general-authn.xml]:
-....
-Cannot resolve reference to bean 'shibboleth.DefaultAuthenticationResultSerializer' while setting bean property 'resultSerializer'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'shibboleth.DefaultAuthenticationResultSerializer' defined in file [/opt/shibboleth-idp/system/conf/general-authn-system.xml]:
-....
-Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [net.shibboleth.idp.authn.impl.DefaultAuthenticationResultSerializer]: Constructor threw exception; nested exception is javax.json.JsonException: Provider org.glassfish.json.JsonProviderImpl not found
-````
-manca javax.json-api-1.0.jar in /opt/jetty/lib/ext
-Test confgurazioni singoli servizi/demoni
-
-
 #### AttributeResolverGaugeSet
 ````
  Cannot resolve reference to bean 'shibboleth.metrics.AttributeResolverGaugeSet' while setting bean property 'arguments'
 ````
 L'eccezione emerge lungo il parse del file general-admin-system.xml, al bean id="shibboleth.metrics.AttributeResolverGaugeSet".
-Riferimento ML shibboleth-users: http://shibboleth.1660669.n2.nabble.com/Update-IdP3-3-0-error-td7629585.html
-Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'è un errore di connessione al server LDAP.
+Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'è un errore di connessione al server LDAP o di configurazione in attribute-resolver.xml.
 
 #### SAMLMetadataLookupHandler
 ````
@@ -314,7 +288,7 @@ Produzione
 
 /opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeFilterService -u http://localhost:8080/idp
 
-/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.MetadataResolverResources -u http://localhost:8080/idp
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.MetadataResolverService -u http://localhost:8080/idp
 ````
 
 
@@ -350,13 +324,11 @@ Todo
 ---------
 
 - [SP Attribute Checker](https://wiki.geant.org/display/eduGAIN/How+to+configure+Shibboleth+SP+attribute+checker)
-- Rimozione/disinstallazione: non più in un unico ruolo (roles/uninstall) ma contestualizzata nel ruolo di riferimento
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, interfacciamento a livello idp)
-- Implementare multiple sources per attributi da RDBMS differenti
-- Read [this](https://tuakiri.ac.nz/confluence/display/Tuakiri/Installing+a+Shibboleth+3.x+IdP#InstallingaShibboleth3.xIdP-ConfigureLDAPAuthentication)
 
 Ringraziamenti
 --------------
 
 - Comunità IDEM GARR
 - Marco Malavolti (garr.it) per la documentazione di base;
+- Maurizio Festi (unitrento) per la redazione di attribute-resolver-dbsql.xml
