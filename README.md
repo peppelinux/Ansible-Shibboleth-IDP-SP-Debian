@@ -10,7 +10,7 @@ Questa procedura è rivolta a tutti coloro i quali:
 - per coloro i quali già amministrano un servizio SAML2 ma necessitano di una procedura di prototipazione immediata e riproducibile
 - per coloro i quali debbano clonare configurazioni e avanzare di versione dei sistemi già in produzione.
 
-Questa procedurà produrrà un Setup in locale di ShibbolethIdP 3 e Shibboleth SP 3.0.3 con i seguenti applicativi:
+Questa procedurà produrrà un Setup in locale di Shibboleth IdP v3.x e Shibboleth SP 3.0.3 con i seguenti applicativi:
 - Servlet Container per IDP (tomcat8 o jetty9, default: jetty)
 - Web server  (Apache o NginX come HTTPS frontend)
 - mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
