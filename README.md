@@ -123,10 +123,10 @@ ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=aai-test,dc=garr,dc=it" -w s
 
 # testiamo che l'utente idp possa interrogare il server LDAP
 # dal server locale di LDAP
-ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idp,ou=idp,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'
+ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idpuser,ou=idp,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'
 
 # dal server IDP
-ldapsearch -H ldaps://ldap.aai-test.garr.it -D "uid=idp,ou=idp,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'
+ldapsearch -H ldaps://ldap.aai-test.garr.it -D "uid=idpuser,ou=idp,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'
 
 ````
 
@@ -185,7 +185,7 @@ E' sempre meglio testare la connessione ad LDAP prima del setup.
 Da verificare oltre ai certificati anche le ACL di slapd.
 
 ````
-ldapsearch  -H ldaps://ldap.aai-test.garr.it:636 -D "uid=idp,ou=idp,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=aai-test,dc=garr,dc=it' -d 220
+ldapsearch  -H ldaps://ldap.aai-test.garr.it:636 -D "uid=idpuser,ou=idp,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=aai-test,dc=garr,dc=it' -d 220
 ````
 Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.aai-test.garr.it).
 Soluzione: allineare i certificati e la corrispondenza commonName con l'hostname del server.
@@ -193,7 +193,7 @@ Soluzione: allineare i certificati e la corrispondenza commonName con l'hostname
 
 Esclusivamente per scopo di test è possibile eludere la validazione del certificato con il seguente comando, solo per test di connettività.
 ````
-LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.aai-test.garr.it:636 -D "uid=idp,ou=idp,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=aai-test,dc=garr,dc=it' -d 220
+LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.aai-test.garr.it:636 -D "uid=idpuser,ou=idp,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=aai-test,dc=garr,dc=it' -d 220
 ````
 
 OpenSSL check
