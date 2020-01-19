@@ -45,7 +45,7 @@
     ldap_binddn: "uid=idpuser,ou=idp,{{ ldap_basedc }}"
     ldap_pw: idpsecret
     ldap_basedn: "ou=people,{{ ldap_basedc }}"
-    # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
+    # remember to copy slapds' public cert in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
     # choose between: starttls, tls, plain
     ldap_auth: starttls
