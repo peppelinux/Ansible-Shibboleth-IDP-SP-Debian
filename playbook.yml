@@ -70,7 +70,7 @@
     servlet_host: 127.0.0.1
 
     # Jetty configuration
-    jetty_version: 9.4.25.v20191220
+    jetty_version: 9.4.26.v20200117
     jetty_distribution: "jetty-distribution-{{ jetty_version }}"
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_dl_path: /opt

@@ -211,8 +211,11 @@
   service: name="jetty" state=restarted enabled=True
   when: servlet_container == "jetty"
 
+# - name: restart ShibbolethIdP
+  # shell: "touch {{ jetty_path }}/webapps/idp.xml"
+
 - name: Restart Tomcat
-  service: name="{{ tomcat_version }}" state=restarted
+  service: name="{{ tomcat_version }}" state=restarted enabled=True
   when: servlet_container == "tomcat"
 
 - name: Update GIT repository with a branch of the configured Shib IdP
