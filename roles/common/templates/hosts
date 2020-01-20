@@ -1,8 +1,7 @@
-127.0.0.1	localhost
-{{ ldap_ip }}	{{ ldap_fqdn }}
-{{ idp_ip }}	{{ idp_fqdn }}
-{{ sp_ip }}	{{ sp_fqdn }}
-{{ ansible_default_ipv4['address'] }} {{ ansible_hostname }}.aai-test.garr.it {{ ansible_hostname }}
+127.0.0.1   localhost  {{ ansible_hostname }}.aai-test.garr.it {{ ansible_hostname }}
+{{ ldap_ip }}   {{ ldap_fqdn }}
+{{ idp_ip }}    {{ idp_fqdn }}
+{{ sp_ip }} {{ sp_fqdn }}
 
 # The following lines are desirable for IPv6 capable hosts
 ::1 ip6-localhost ip6-loopback
