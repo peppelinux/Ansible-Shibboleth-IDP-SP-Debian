@@ -37,11 +37,8 @@
     src: roles/{{ role_name }}/files/attribute-filter-v3-RS-CoCo.xml
     dest:  "{{ idp_path }}/conf/attribute-filter-v3-RS-CoCo.xml"
 
-- name: "http://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
-  get_url: url="https://raw.githubusercontent.com/ConsortiumGARR/idem-tutorials/bfb2ec64f6a1aa3533a2dbe5d0d1bb5071950ab9/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/utils/attribute-filter-v3-required.xml" dest="{{ idp_path }}/conf"
-
-- name: "http://www.garr.it/idem-conf/attribute-filter-v3-idem.xml"
-  get_url: url="https://raw.githubusercontent.com/ConsortiumGARR/idem-tutorials/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/utils/attribute-filter-v3-idem.xml" dest="{{ idp_path }}/conf"
+# - name: "http://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
+  # get_url: url="https://raw.github.com/ConsortiumGARR/idem-tutorials/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/utils/attribute-filter-v3-required.xml" dest="{{ idp_path }}/conf"
 
 - name: Add IDEM Attribute filters in services.xml (FileBackedHTTPResource bean)
   blockinfile:
@@ -49,13 +46,9 @@
     insertbefore: '<util:list id ="shibboleth.AttributeFilterResources">'
     marker: "<!-- {mark} IDEM FileBackedHTTPResource attrfilters-->\n"
     block: |
-        <bean id="IDEM-Default-Filter" class="net.shibboleth.ext.spring.resource.FileBackedHTTPResource"
-              c:client-ref="shibboleth.FileCachingHttpClient"
-              c:url="https://raw.githubusercontent.com/ConsortiumGARR/idem-tutorials/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/utils/attribute-filter-v3-idem.xml"
-              c:backingFile="%{idp.home}/conf/attribute-filter-v3-idem.xml"/>
         <bean id="IDEM-Production-Filter" class="net.shibboleth.ext.spring.resource.FileBackedHTTPResource"
            c:client-ref="shibboleth.FileCachingHttpClient"
-           c:url="https://raw.githubusercontent.com/ConsortiumGARR/idem-tutorials/bfb2ec64f6a1aa3533a2dbe5d0d1bb5071950ab9/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/utils/attribute-filter-v3-required.xml"
+           c:url="https://raw.github.com/ConsortiumGARR/idem-tutorials/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/utils/attribute-filter-v3-required.xml"
            c:backingFile="%{idp.home}/conf/attribute-filter-v3-required.xml"/>
     # backup: yes
 
@@ -66,7 +59,6 @@
     # marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
     # block: |8
             # <value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>
-            # <ref bean="IDEM-Default-Filter"/>
             # <ref bean="IDEM-Production-Filter"/>
     # backup: yes
 
@@ -76,6 +68,5 @@
     regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
     replace: '<value>%{idp.home}/conf/attribute-filter.xml</value>\n
               \t<value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>\n
-              \t<ref bean="IDEM-Default-Filter"/>\n
               \t<ref bean="IDEM-Production-Filter"/>'
     backup: yes
