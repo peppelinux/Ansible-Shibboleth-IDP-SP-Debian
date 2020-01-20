@@ -156,12 +156,6 @@
   import_tasks: disable_saml1.yml
   when: idp_disable_saml1 == true
 
-# additionals to add
-# - name: Add attribute-resolver.xml to services.xml
-  # copy:
-    # src: roles/shib3idp_configure/files/services.xml
-    # dest: "{{ idp_path }}/conf/services.xml"
-
 # - name: Add metadata providers
   # template:
     # src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
@@ -181,6 +175,7 @@
     replace: ''
     backup: no
 
+# remove SAML1.0
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://{{ idp_fqdn }}/idp/profile/Shibboleth/SSO"/>'
