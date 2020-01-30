@@ -1,5 +1,7 @@
 # Ansible Shibboleth IDPv3 e SP3 Debian 10 (buster)
 
+:warning: **Ansible Playbook NON ufficialmente supportato dal Servizio IDEM**
+
 Ansible playbook è una procedura automatizzata per predisporre sistemi complessi.
 Questo playbook è stato realizzato per automatizzare l'installazione e la configurazione
 di uno Shibboleth Identity Provider e uno di Shibboleth Service Provider, secondo quanto documentato nella [guida ufficiale
@@ -48,6 +50,7 @@ Indice dei contenuti
    * [Hints](#hints)
    * [Todo](#todo)
    * [Ringraziamenti](#ringraziamenti)
+   * [Autori](#autori)
 <!--te-->
 
 Requisiti
@@ -332,3 +335,8 @@ Ringraziamenti
 - Comunità IDEM GARR
 - Marco Malavolti (garr.it) per la documentazione di base;
 - Maurizio Festi (unitrento) per la redazione di attribute-resolver-dbsql.xml
+
+Autori
+------
+
+- Giuseppe De Marco (giuseppe.demarco@unical.it)
