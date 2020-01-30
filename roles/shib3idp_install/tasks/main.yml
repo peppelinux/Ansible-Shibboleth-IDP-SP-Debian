@@ -86,4 +86,4 @@
   when: shib_dir_dest.stat.exists == False
 
 - name: Create GIT repository with a fresh ShibIdP installation
-  shell: "cd {{ idp_path }} && git init . && git add -A && git commit -am 'Shibboleth IdP installed'"
+  shell: "cd {{ idp_path }} && git init . && touch logs/README.ms && git add -A && git commit -am 'Shibboleth IdP installed'"

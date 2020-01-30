@@ -1,6 +1,6 @@
 #!/bin/bash
 export CERT_PATH=`pwd`"/certs"
-export DOMAIN="aai-test.garr.it"
+export DOMAIN="testunical.it"
 export IDP_FQDN="idp.$DOMAIN"
 export SP_FQDN="sp.$DOMAIN"
 

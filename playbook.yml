@@ -12,13 +12,14 @@
     # - server_ip.yml
 
   vars:
-    org: garr
+    org: testunical
     domain3: aai-test
-    domain2: garr
+    domain2: testunical
     domain1: it
-    domain: "{{ domain3 }}.{{ domain2 }}.{{ domain1 }}"
+    #domain: "{{ domain3 }}.{{ domain2 }}.{{ domain1 }}"
+    domain: "{{ domain2 }}.{{ domain1 }}"
 
-    server_admin: "root@{{ domain }}"
+    server_admin: "tech@{{ domain }}"
 
     # If True it will uninstall and purge existing applications and configurations
     # DO NOT USE THIS IN PRODUCTION ENVIRONMENT, it will destroy everything!
@@ -40,15 +41,17 @@
     tmp_upload_dir: "/tmp/ansible-shibboleth-idp-sp-setup"
 
     # LDAP configuration
-    ldap_fqdn: "ldap.{{ domain }}"
-    ldap_basedc: "dc={{ domain3 }},dc={{ domain2 }},dc={{ domain1 }}"
+    ldap_fqdn: "ldap.ha.{{ domain }}"
+    ldap_url: "ldaps://{{ ldap_fqdn }}"
+    # ldap_basedc: "dc={{ domain3 }},dc={{ domain2 }},dc={{ domain1 }}"
+    ldap_basedc: "dc={{ domain2 }},dc={{ domain1 }}"
     ldap_binddn: "uid=idpuser,ou=idp,{{ ldap_basedc }}"
     ldap_pw: idpsecret
     ldap_basedn: "ou=people,{{ ldap_basedc }}"
-    # remember to copy slapds' public cert, as slapd-cert.pem, in roles/common/files/certs/
+    # remember to copy slapds' public cert in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
     # choose between: starttls, tls, plain
-    ldap_auth: starttls
+    ldap_auth: tls
     # webserver configuration, choose between apache and nginx
     httpd: apache
 
@@ -65,12 +68,12 @@
 
     # Servlet configuration, choose your preferred between tomcat and jetty
     servlet_container: jetty
-    servlet_ram: 384m
+    servlet_ram: 2048m
     servlet_port: 8080
     servlet_host: 127.0.0.1
 
     # Jetty configuration
-    jetty_version: 9.4.24.v20191120
+    jetty_version: 9.4.26.v20200117
     jetty_distribution: "jetty-distribution-{{ jetty_version }}"
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_dl_path: /opt
@@ -91,13 +94,13 @@
     shib_setup_folder: "{{ shib_dest_dir }}/shibboleth-identity-provider-{{ shib_idp_version }}"
     idp_dl_url: "https://shibboleth.net/downloads/identity-provider/{{ shib_idp_version }}/{{ shib_idp_package }}"
     idp_web_folder: /idp/shibboleth
-    idp_entity_id: "https://{{ idp_fqdn }}{{ idp_web_folder }}"
     idp_fqdn: "idp.{{ domain }}"
+    idp_entity_id: "https://{{ idp_fqdn }}{{ idp_web_folder }}"
     idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     idp_localized_message_url: "https://wiki.shibboleth.net/confluence/download/attachments/21660022/messages_it.properties?version=2&modificationDate=1541061867323&api=v2"
     # idp_attr_resolver: attribute-resolver-full.v332.saml2.light.xml # in roles/shib2_configure/files
-    idp_attr_resolver: attribute-resolver-v3_4-idem_TLS.xml
+    idp_attr_resolver: attribute-resolver-v3_4-idem-custom.xml
     idp_disable_saml1: true
 
     # persistent id on rdbms, it will install mariadb

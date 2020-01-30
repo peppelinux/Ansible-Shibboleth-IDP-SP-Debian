@@ -1,5 +1,4 @@
-INSERT INTO RuoliOrganizzativi (id, uid,ruolo) VALUES
-       (0, 'mario', 'Tecnico'),(1, 'pino', 'Amministrativo'),
-       (2, 'pina', 'Docente');
-
-
+INSERT INTO RuoliOrganizzativi (uid,ruolo) VALUES
+       ('mario', 'tecnico'),
+       ('pino', 'amministrativo'),
+       ('gino', 'docente');

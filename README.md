@@ -2,20 +2,20 @@
 
 Ansible playbook è una procedura automatizzata per predisporre sistemi complessi.
 Questo playbook è stato realizzato per automatizzare l'installazione e la configurazione
-di uno Shibboleth Identity Provider e uno di Shibboleth Service Provider, secondo quanto documentato nelle [guida ufficiale
+di uno Shibboleth Identity Provider e uno di Shibboleth Service Provider, secondo quanto documentato nella [guida ufficiale
 della Federazione IDEM](https://github.com/ConsortiumGARR/idem-tutorials).
 
 Questa procedura è rivolta a tutti coloro i quali:
-- vogliano imparare ad installare e configurare Shibboleth IdP ed SP
-- per coloro i quali già amministrano un servizio SAML2 ma necessitano di una procedura di prototipazione immediata e riproducibile
-- per coloro i quali debbano clonare configurazioni e avanzare di versione dei sistemi già in produzione.
+- desiderino imparare ad installare e configurare Shibboleth IdP ed SP
+- già amministrano un servizio SAML2 ma necessitano di una procedura di prototipazione immediata e riproducibile
+- desiderino clonare configurazioni e avanzare di versione dei sistemi già in produzione.
 
-Questa procedurà produrrà un Setup in locale di ShibbolethIdP 3 e Shibboleth SP 3.0.3 con i seguenti applicativi:
+Questa procedurà produrrà un Setup in locale di Shibboleth IdP v3.x e Shibboleth SP 3.0.3 con i seguenti applicativi:
 - Servlet Container per IDP (tomcat8 o jetty9, default: jetty)
 - Web server  (Apache o NginX come HTTPS frontend)
 - mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
-- Shibboleth (Identity provider)
-- mariaDB    (IDP persistent store)
+- Shibboleth (Identity provider e Service Provider di test)
+- mariaDB
 - Java (OpenJDK 11 oppure Amazon Corretto 8)
 
 
@@ -30,6 +30,7 @@ Indice dei contenuti
       * [Configurazione di LDAP](#configurazione-di-ldap)
       * [Installazione di Shibboleth IDPv3 e SPv3](#installazione-di-shibboleth-idpv3-e-spv3)
       * [Risultato](#risultato)
+      * [LXC image](#lxc)
    * #### Troubleshooting
        * [Systems checks](#systems-checks)
        * [LDAP Troubleshooting](#ldap-troubleshooting)
@@ -48,6 +49,7 @@ Indice dei contenuti
    * [Hints](#hints)
    * [Todo](#todo)
    * [Ringraziamenti](#ringraziamenti)
+   * [Autori](#autori)
 <!--te-->
 
 Requisiti
@@ -55,7 +57,7 @@ Requisiti
 
 - Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
 - Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldif). Si consiglia di testare una ricerca LDAP con le credenziali da utilizzare in `ldap.properties`.
-  Esempio: `ldapsearch -H ldap://ldap.aai-test.garr.it -D 'uid=idp,ou=idp,dc=aai-test,dc=garr,dc=it' -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'`
+  Esempio: `ldapsearch -H ldap://ldap.testunical.it -D 'uid=idp,ou=idp,dc=testunical,dc=it' -w idpsecret  -b 'ou=people,dc=testunical,dc=it'`
 - ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldif)
 - Installazione delle seguenti dipendenze
 
@@ -98,7 +100,7 @@ Installazione
 ## LDAP
 Se non hai una installazione funzionante di LDAP puoi crearne una utilizzando [questo playbook](https://github.com/peppelinux/ansible-slapd-eduperson2016):
 ````
-git clone https://github.com/peppelinux/ansible-slapd-eduperson2016
+git clone https://github.com/ConsortiumGARR/ansible-slapd-eduperson2016
 cd ansible-slapd-eduperson2016
 
 # modifica a tuo piacimento le variabili in playbook.yml prima di eseguire il seguente:
@@ -110,23 +112,23 @@ ansible-playbook -i "localhost," -c local playbook.yml
 # testare la connessione LDAP da un client remoto
 # accertati che l'hostname del server LDAP sia presente in /etc/hosts oppure che questo possa essere risolto dal tuo DNS.
 nano /etc/hosts
-# 10.87.7.104 ldap.aai-test.garr.it
+# 10.87.7.104 ldap.testunical.it
 
 # accertati che in /etc/ldap/ldap.conf sia stato configurato TLS_CACERT con il certificato del tuo CA, esempio:
-TLS_CACERT /etc/ssl/certs/aai-test.garr.it/slapd-cacert.pem
+TLS_CACERT /etc/ssl/certs/testunical.it/slapd-cacert.pem
 
 # aggiungi l'utente idp sul server LDAP
-ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=aai-test,dc=garr,dc=it" -w slapdsecret -f ldap/idp_user.ldif
+ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldif
 
 # aggiungi una ACL per consentire la connessione e la ricerca all'utente idp
-ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=aai-test,dc=garr,dc=it" -w slapdsecret -f ldap/idp_acl.ldif
+ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldif
 
 # testiamo che l'utente idp possa interrogare il server LDAP
 # dal server locale di LDAP
-ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idp,ou=applications,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'
+ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idpuser,ou=idp,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
 # dal server IDP
-ldapsearch -H ldaps://ldap.aai-test.garr.it -D "uid=idp,ou=applications,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'ou=people,dc=aai-test,dc=garr,dc=it'
+ldapsearch -H ldaps://ldap.testunical.it -D "uid=idpuser,ou=idp,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
 ````
 
@@ -138,6 +140,10 @@ Ricordati di leggere attentamente il contenuto di playbook.yml e di creare serve
 
 Il seguente esempio considera una esecuzione in locale del playbook:
 ````
+git clone https://github.com/ConsortiumGARR/Ansible-Shibboleth-IDP-SP-Debian
+cd Ansible-Shibboleth-IDP-SP-Debian
+
+# modifica a tuo piacimento le variabili in playbook.yml e crea server_ip.yml prima di eseguire il seguente:
 ansible-playbook -i "localhost," -c local playbook.yml [-vvv]
 
 # seleziona esclusivamente alcuni ruoli, esempio soltanto la parte web
@@ -153,8 +159,40 @@ Risultato
 ![Alt text](images/2.png)
 ![Alt text](images/3.png)
 
+LXC
+---
+
+````
+apt install lxc
+
+CONTAINER_NAME=shib
+
+lxc-create  -t download -n $CONTAINER_NAME -- -d debian -r buster -a amd64
+
+lxc-start -n shib
+lxc-attach $CONTAINER_NAME -- apt install python3-pip libffi-dev libssl-dev \
+                               libxml2-dev libxslt1-dev libjpeg-dev \
+                               zlib1g-dev apt-utils iputils-ping
+lxc-attach $CONTAINER_NAME -- pip3 install ansible
+lxc-attach $CONTAINER_NAME -- bash -c "cd /root/Ansible-Shibboleth-IDP-SP-Debian && \
+                              bash make_ca.production.sh && \
+                              ansible-playbook -i "localhost," -c local playbook.production.yml"
+````
+
+#### LXC Troubleshooting
+
+"ntp.service: Failed to set up mount namespacing: Permission denied"
+Enable nesting in `/var/lib/lxc/$CONTAINER_NAME/config` as follow:
+
+
+See Host Apparmor configuration.
+````
+lxc.include = /usr/share/lxc/config/nesting.conf
+lxc.aa_profile = unconfined
+````
+
 Systems checks
----------
+--------------
 ````
 # jetty status
 service jetty check
@@ -170,32 +208,32 @@ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 shibd -t
 
 # idp and sp https checks
-openssl s_client -connect sp.aai-test.garr.it:443
-openssl s_client -connect idp.aai-test.garr.it:443
+openssl s_client -connect sp.testunical.it:443
+openssl s_client -connect idp.testunical.it:443
 ````
 
 LDAP Troubleshooting
----------
+--------------------
 
 E' sempre meglio testare la connessione ad LDAP prima del setup.
 Da verificare oltre ai certificati anche le ACL di slapd.
 
 ````
-ldapsearch  -H ldaps://ldap.aai-test.garr.it:636 -D "uid=idp,ou=applications,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=aai-test,dc=garr,dc=it' -d 220
+ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idpuser,ou=idp,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
 ````
-Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.aai-test.garr.it).
+Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.testunical.it).
 Soluzione: allineare i certificati e la corrispondenza commonName con l'hostname del server.
 
 
 Esclusivamente per scopo di test è possibile eludere la validazione del certificato con il seguente comando, solo per test di connettività.
 ````
-LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.aai-test.garr.it:636 -D "uid=idp,ou=applications,dc=aai-test,dc=garr,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=aai-test,dc=garr,dc=it' -d 220
+LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idpuser,ou=idp,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
 ````
 
 OpenSSL check
 ````
-openssl x509  -text -noout -in /etc/ssl/certs/aai-test.garr.it/slapd-cacert.pem
-openssl verify -verbose -CAfile /etc/ssl/certs/aai-test.garr.it/slapd-cacert.pem /etc/ssl/certs/aai-test.garr.it/slapd-cert.pem
+openssl x509  -text -noout -in /etc/ssl/certs/testunical.it/slapd-cacert.pem
+openssl verify -verbose -CAfile /etc/ssl/certs/testunical.it/slapd-cacert.pem /etc/ssl/certs/testunical.it/slapd-cert.pem
 ````
 
 Shibboleth Troubleshooting
@@ -205,10 +243,10 @@ Shibboleth Troubleshooting
 ````
 net.shibboleth.utilities.java.support.component.ComponentInitializationException: Injected service was null or not an AttributeResolver
 ````
-In tomcat8/jetty logs: la connessione al datasource fallisce (ldap/mysql connection/authentication error) oppure un errore sintattico in attribute-resolver.xml (o quali abilitati in services.xml)
+la connessione al datasource fallisce (ldap/mysql connection/authentication error) oppure un errore sintattico in attribute-resolver.xml (o quali abilitati in services.xml)
 
 
-#### FatalProfileException
+#### FatalProfileException (SP)
 ````
 opensaml::FatalProfileException
 Error from identity provider:
@@ -223,8 +261,7 @@ lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo
 "Request failed: <urlopen error ('_ssl.c:565: The handshake operation timed out',)>"
 ````
 TASK [mod-shib2 : Add IdP Metadata to Shibboleth SP]
-libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su jessie 8.0 aggiornata a 8.7).
-Verificare la presenza di questi altrimenti ripopolare la directory
+libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (stranezza apparsa su jessie 8.0 aggiornata a 8.7). Verificare la presenza di questi altrimenti ripopolare la directory
 
 
 #### Signature could not be verified
@@ -236,56 +273,31 @@ L'SP ha i metadati dell'IDP errati/disallineati. Soluzione:
 
 ````
 cd /etc/shibboleth/metadata
-wget --no-check-certificate https://idp.aai-test.garr.it/idp/shibboleth
+wget --no-check-certificate https://idp.testunical.it/idp/shibboleth
 
 # verificare che siano effettivamente differenti !
-diff shibboleth idp.aai-test.garr.it-metadata.xml
-rm idp.aai-test.garr.it-metadata.xml
-mv shibboleth idp.aai-test.garr.it-metadata.xml
+diff shibboleth idp.testunical.it-metadata.xml
+rm idp.testunical.it-metadata.xml
+mv shibboleth idp.testunical.it-metadata.xml
 # nessun riavvio è richiesto
 
 # controllare inoltre che i certificati del sp siano leggibili da _shibd
-chown _shibd /etc/shibboleth/sp.aai-test.garr.it-*
+chown _shibd /etc/shibboleth/sp.testunical.it-*
 
 ````
-
-
-#### NoClassDefFoundError
-
-````
-java.lang.NoClassDefFoundError: org/apache/commons/pool/ObjectPool
-...
-Cannot resolve reference to bean 'MyDataSource' while setting bean property 'dataSource'
-...
-Failed to instantiate [org.apache.commons.dbcp.BasicDataSource]: No default constructor found
-````
-manca commons-pool.jar in /opt/jetty/lib/ext oppure al posto di commons-pool.jar hai installato commons-pool2.jar
-
-#### DefaultAuthenticationResultSerializer
-````
-Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'authn/IPAddress' defined in file [/opt/shibboleth-idp/system/conf/../../conf/authn/general-authn.xml]:
-....
-Cannot resolve reference to bean 'shibboleth.DefaultAuthenticationResultSerializer' while setting bean property 'resultSerializer'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'shibboleth.DefaultAuthenticationResultSerializer' defined in file [/opt/shibboleth-idp/system/conf/general-authn-system.xml]:
-....
-Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [net.shibboleth.idp.authn.impl.DefaultAuthenticationResultSerializer]: Constructor threw exception; nested exception is javax.json.JsonException: Provider org.glassfish.json.JsonProviderImpl not found
-````
-manca javax.json-api-1.0.jar in /opt/jetty/lib/ext
-Test confgurazioni singoli servizi/demoni
-
 
 #### AttributeResolverGaugeSet
 ````
  Cannot resolve reference to bean 'shibboleth.metrics.AttributeResolverGaugeSet' while setting bean property 'arguments'
 ````
 L'eccezione emerge lungo il parse del file general-admin-system.xml, al bean id="shibboleth.metrics.AttributeResolverGaugeSet".
-Riferimento ML shibboleth-users: http://shibboleth.1660669.n2.nabble.com/Update-IdP3-3-0-error-td7629585.html
-Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'è un errore di connessione al server LDAP.
+Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'è un errore di connessione al server LDAP o di configurazione in attribute-resolver.xml.
 
 #### SAMLMetadataLookupHandler
 ````
-2018-03-05 13:38:13,259 - INFO [org.opensaml.saml.common.binding.impl.SAMLMetadataLookupHandler:128] - Message Handler:  No metadata returned for https://sp.aai-test.garr.it/shibboleth in role {urn:oasis:names:tc:SAML:2.0:metadata}SPSSODescriptor with protocol urn:oasis:names:tc:SAML:2.0:protocol
+2018-03-05 13:38:13,259 - INFO [org.opensaml.saml.common.binding.impl.SAMLMetadataLookupHandler:128] - Message Handler:  No metadata returned for https://sp.testunical.it/shibboleth in role {urn:oasis:names:tc:SAML:2.0:metadata}SPSSODescriptor with protocol urn:oasis:names:tc:SAML:2.0:protocol
 ````
-Copiare i metadati dell'SP (wget --no-check-certificate https://sp.aai-test.garr.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
+Copiare i metadati dell'SP (wget --no-check-certificate https://sp.testunical.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
 
 
 #### PrescopedAttributeDefinition
@@ -306,22 +318,36 @@ Produzione
 # ricaricare servizi singoli (eviti di riavviare il servlet container)
 # questi sono definiti in conf/services.xml
 
-/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeResolverService
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeResolverService -u http://localhost:8080/idp
 
-/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeFilterService
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeFilterService -u http://localhost:8080/idp
 
-/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.MetadataResolverResources
+/opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.MetadataResolverService -u http://localhost:8080/idp
 ````
+
 
 Hints
 -----
 
 #### idp global logout
 
-- https://sp.aai-test.garr.it/Shibboleth.sso/Logout
+- https://sp.testunical.it/Shibboleth.sso/Logout
 
 #### shibboleth log path
 - /opt/shibboleth-idp/logs/
+
+
+#### test Attribute release
+
+````
+/opt/shibboleth-idp/bin/aacli.sh -n luigi -r https://sp.testunical.it/shibboleth --saml2 -u http://localhost:8080/idp
+````
+
+#### Attribute filters
+- https://www.garr.it/idem-conf/attribute-filter.xml
+- https://www.garr.it/idem-conf/attribute-filter-v3-required.xml
+- https://www.garr.it/idem-conf/attribute-filter-v3-rs.xml
+- https://www.garr.it/idem-conf/attribute-filter-v3-coco.xml
 
 Personalizzazione
 -----------------
@@ -338,13 +364,16 @@ Todo
 ---------
 
 - [SP Attribute Checker](https://wiki.geant.org/display/eduGAIN/How+to+configure+Shibboleth+SP+attribute+checker)
-- Rimozione/disinstallazione: non più in un unico ruolo (roles/uninstall) ma contestualizzata nel ruolo di riferimento
 - Integrazione slapd overlay PPolicy con Shibboleth (gestione dei lock, interfacciamento a livello idp)
-- Implementare multiple sources per attributi da RDBMS differenti
-- Read [this](https://tuakiri.ac.nz/confluence/display/Tuakiri/Installing+a+Shibboleth+3.x+IdP#InstallingaShibboleth3.xIdP-ConfigureLDAPAuthentication)
 
 Ringraziamenti
 --------------
 
 - Comunità IDEM GARR
 - Marco Malavolti (garr.it) per la documentazione di base;
+- Maurizio Festi (unitrento) per la redazione di attribute-resolver-dbsql.xml in sede del corso Shibboleth 22-23 Gen 2020.
+
+Autori
+------
+
+- Giuseppe De Marco (giuseppe.demarco@unical.it)

@@ -1,8 +1,3 @@
-- name: Add attribute-filter-v3-RS-CoCo
-  copy:
-    src: roles/{{ role_name }}/files/attribute-filter-v3-RS-CoCo.xml
-    dest:  "{{ idp_path }}/conf/attribute-filter-v3-RS-CoCo.xml"
-
 - name: "https://md.idem.garr.it/certs/idem-signer-20220121.pem"
   get_url: url="https://md.idem.garr.it/certs/idem-signer-20220121.pem" dest="{{ idp_path }}/metadata"
 
@@ -29,25 +24,54 @@
     backup: yes
 
 #  add filters and md providers in services
-- replace:
+- name: Add federation metadata provilders
+  replace:
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/metadata-providers.xml</value>'
-    replace: '<value>%{idp.home}/conf/metadata-providers-eduGAIN.xml</value>
-              <value>%{idp.home}/conf/metadata-providers.xml</value>'
+    replace: '<value>%{idp.home}/conf/metadata-providers-eduGAIN.xml</value>\n
+              \t<value>%{idp.home}/conf/metadata-providers.xml</value>'
     backup: yes
 
-- name: "http://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
-  get_url: url="http://www.garr.it/idem-conf/attribute-filter-v3-required.xml" dest="{{ idp_path }}/conf"
+- name: Add attribute-filter-v3-RS-CoCo
+  copy:
+    src: roles/{{ role_name }}/files/attribute-filter-v3-RS-CoCo.xml
+    dest:  "{{ idp_path }}/conf/attribute-filter-v3-RS-CoCo.xml"
 
-- name: "http://www.garr.it/idem-conf/attribute-filter-v3-idem.xml"
-  get_url: url="http://www.garr.it/idem-conf/attribute-filter-v3-idem.xml" dest="{{ idp_path }}/conf"
+# - name: "http://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
+  # get_url: url="https://raw.github.com/ConsortiumGARR/idem-tutorials/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/utils/attribute-filter-v3-required.xml" dest="{{ idp_path }}/conf"
 
+- name: Add IDEM Attribute filters in services.xml (FileBackedHTTPResource bean)
+  blockinfile:
+    path: "{{ idp_path }}/conf/services.xml"
+    insertbefore: '<util:list id ="shibboleth.AttributeFilterResources">'
+    marker: "<!-- {mark} IDEM FileBackedHTTPResource attrfilters-->\n"
+    block: |
+        <bean id="IDEM-Production-Filter" class="net.shibboleth.ext.spring.resource.FileBackedHTTPResource"
+           c:client-ref="shibboleth.FileCachingHttpClient"
+           c:url="https://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
+           c:backingFile="%{idp.home}/conf/attribute-filter-v3-required.xml"/>
+        <bean id="IDEM-Production-Filter-Anyone" class="net.shibboleth.ext.spring.resource.FileBackedHTTPResource"
+           c:client-ref="shibboleth.FileCachingHttpClient"
+           c:url="https://www.garr.it/idem-conf/attribute-filter.xml"
+           c:backingFile="%{idp.home}/conf/attribute-filter-anyone.xml"/>
+    # backup: yes
 
-- replace:
+# - name: Add Attribute-filters in services.xml
+  # blockinfile:
+    # path: "{{ idp_path }}/conf/services.xml"
+    # insertafter: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
+    # marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    # block: |8
+            # <value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>
+            # <ref bean="IDEM-Production-Filter"/>
+    # backup: yes
+
+- name: Add Attribute-filters in services.xml
+  replace:
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
-    replace: '<value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>
-              <value>%{idp.home}/conf/attribute-filter-v3-idem.xml</value>
-              <value>%{idp.home}/conf/attribute-filter-v3-required.xml</value>
-              <value>%{idp.home}/conf/attribute-filter.xml</value>'
+    replace: '<value>%{idp.home}/conf/attribute-filter.xml</value>\n
+              \t<value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>\n
+              \t<ref bean="IDEM-Production-Filter"/>\n
+              \t<ref bean="IDEM-Production-Filter-Anyone"/>'
     backup: yes

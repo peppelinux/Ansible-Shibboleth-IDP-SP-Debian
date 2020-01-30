@@ -1,9 +1,15 @@
-# Remove the comment to the bean called "c14n/SAML2Persistent"
-- name: Configure subject-c14n.xml (persistentId)
-  copy:
-    src: roles/{{ role_name }}/files/subject-c14n.xml
-    dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
+- name: Configure global.xml (dataStore and persistentId)
+  template:
+    src: roles/{{ role_name }}/templates/global.xml
+    dest:  "{{ idp_path }}/conf/global.xml"
     backup: yes
+
+# Remove the comment to the bean called "c14n/SAML2Persistent"
+# - name: Configure subject-c14n.xml (persistentId)
+  # copy:
+    # src: roles/{{ role_name }}/files/subject-c14n.xml
+    # dest:  "{{ idp_path }}/conf/c14n/subject-c14n.xml"
+    # backup: yes
 
 - replace:
     path: "{{ idp_path }}/conf/saml-nameid.properties"

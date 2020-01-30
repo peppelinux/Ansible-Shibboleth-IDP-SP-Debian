@@ -7,6 +7,19 @@
     search_regex: "RemoteUserAuthServlet will process REMOTE_USER"
   when: servlet_container == "tomcat"
 
+- name: Configure IdP attribute-filter-local.xml
+  template:
+    src: roles/shib3idp_configure/templates/attribute-filter-local.xml
+    dest: "{{ idp_path }}/conf/attribute-filter-local.xml"
+    # backup: yes
+
+- replace:
+    path: "{{ idp_path }}/conf/services.xml"
+    regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
+    replace: '<value>%{idp.home}/conf/attribute-filter.xml</value>\n
+              \t<value>%{idp.home}/conf/attribute-filter-local.xml</value>'
+    backup: yes
+
 # the old one
 # - name: sleep for 10 seconds to let servlet reboot and make its bootstrap assessments
   # wait_for: timeout=10

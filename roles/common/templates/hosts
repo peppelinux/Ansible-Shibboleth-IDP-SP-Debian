@@ -1,4 +1,12 @@
-127.0.0.1	localhost
-{{ ldap_ip }}	{{ ldap_fqdn }}
-{{ idp_ip }}	{{ idp_fqdn }}
-{{ sp_ip }}	{{ sp_fqdn }}
+127.0.0.1   localhost  {{ ansible_hostname }}.aai-test.garr.it {{ ansible_hostname }}
+{{ ldap_ip }}   {{ ldap_fqdn }}
+{{ idp_ip }}    {{ idp_fqdn }}
+{{ sp_ip }} {{ sp_fqdn }}
+
+# The following lines are desirable for IPv6 capable hosts
+::1 ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts

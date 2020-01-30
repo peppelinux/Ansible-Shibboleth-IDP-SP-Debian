@@ -1,14 +1,18 @@
 - name: Test if idpuser can query LDAP server
-  shell: "ldapsearch -H ldap://{{ ldap_fqdn }} -D '{{ ldap_binddn }}' -w {{ idp_secret }}  -b '{{ ldap_basedn }}'"
+  shell: "ldapsearch -H {{ ldap_url }} -D '{{ ldap_binddn }}' -w {{ idp_secret }}  -b '{{ ldap_basedn }}'"
 
 - name: Generate salt for persistentId generator
   shell: openssl rand -base64 36
   register: persId_salt
   when: persId_salt is not defined
 
+- name: "Ensures {{ idp_path }}/tmp dir exists"
+  file: path="{{ idp_path }}/tmp" state=directory
+
 - name: jetty user for idp dirs
   file: name="{{ item }}" owner="jetty" recurse=yes
   with_items:
+    - "{{ idp_path }}/tmp"
     - "{{ idp_path }}/conf"
     - "{{ idp_path }}/logs"
     - "{{ idp_path }}/metadata"
@@ -18,11 +22,22 @@
 - name: tomcat user for idp dirs
   file: name="{{ item }}" owner="{{ tomcat_version }}" recurse=yes
   with_items:
+    - "{{ idp_path }}/tmp"
     - "{{ idp_path }}/conf"
     - "{{ idp_path }}/logs"
     - "{{ idp_path }}/metadata"
     - "{{ idp_path }}/credentials"
   when: servlet_container == "tomcat"
+
+- name: Copy certs
+  copy:
+    src: "{{ item }}"
+    dest: "{{ idp_path}}/credentials/"
+    owner: root
+    group: root
+    mode: 644
+  with_fileglob:
+    - /etc/ssl/certs/{{ domain }}/{{ ldap_cert }}
 
 - name: Install the IdP WAR
   template:
@@ -36,16 +51,6 @@
     dest: "/etc/{{ tomcat_version }}/Catalina/localhost/idp.xml"
   when: servlet_container == "tomcat"
 
-- name: Copy certs
-  copy:
-    src: "{{ item }}"
-    dest: "{{ idp_path}}/credentials/"
-    owner: root
-    group: ssl-cert
-    mode: 644
-  with_fileglob:
-    - /etc/ssl/certs/{{ domain }}/{{ ldap_cert }}
-
 - name: Configure LDAP Auth
   template:
     src: roles/shib3idp_configure/templates/ldap.properties
@@ -58,25 +63,43 @@
     # dest: "{{ idp_path }}/conf/logback.xml"
     # backup: yes
 
-- name: Configure IdP attribute-filter.xml
-  template:
-    src: roles/shib3idp_configure/templates/attribute-filter.xml
-    dest: "{{ idp_path }}/conf/attribute-filter.xml"
-    backup: yes
-
-# - name: Configure IdP attribute-filter.xml
-  # copy:
-    # src: roles/shib3idp_configure/files/attribute-filter.xml
-    # dest: "{{ idp_path }}/conf/attribute-filter.xml"
-    # backup: yes
+- name: Add Enhanched logging on users Authentication
+  blockinfile:
+    path: "{{ idp_path }}/conf/logback.xml"
+    insertbefore: '<!-- Logs LDAP related messages -->'
+    marker: "<!-- Logs on LDAP user authentication - ADDED -->"
+    block: |8
+            <logger name="org.ldaptive.auth.Authenticator" level="INFO" />
 
 # wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
-- name: Copy configured {{ idp_attr_resolver }} in attribute-resolver.xml
+- name: Copy configured {{ idp_attr_resolver }} in attribute-resolver-v3-idem.xml
   copy:
     src: "roles/shib3idp_configure/files/{{ idp_attr_resolver }}"
-    dest: "{{ idp_path }}/conf/attribute-resolver.xml"
+    dest: "{{ idp_path }}/conf/{{ idp_attr_resolver }}"
     backup: yes
 
+- name: Copy configured attribute-resolver-dynamic.xml
+  copy:
+    src: "roles/shib3idp_configure/files/attribute-resolver-dynamic.xml"
+    dest: "{{ idp_path }}/conf/attribute-resolver-dynamic.xml"
+    backup: yes
+
+- name: Copy configured attribute-resolver-dbsql.xml
+  copy:
+    src: "roles/shib3idp_configure/files/attribute-resolver-dbsql.xml"
+    dest: "{{ idp_path }}/conf/attribute-resolver-dbsql.xml"
+    backup: yes
+
+- name: Update services.xml
+  blockinfile:
+    path: "{{ idp_path }}/conf/services.xml"
+    insertafter: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
+    marker: "<!-- Attribute resolvers -->"
+    block: |8
+              <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>
+              <value>%{idp.home}/conf/attribute-resolver-dynamic.xml</value>
+              <!-- <value>%{idp.home}/conf/attribute-resolver-dbsql.xml</value>-->
+    backup: yes
 
 # these replace will be overwritten by next task if idp_persistent_id_rdbms == true
 - replace:
@@ -95,34 +118,28 @@
 - name: "Run MariaDB role"
   include_role:
     name: "mariadb"
+  when: idp_persistent_id_rdbms == True
 
 # DataStore
 # the sourceAttribute MUST BE an attribute, or a list of comma-separated attributes, that uniquely identify the subject of the generated persistent-id. It MUST BE: Stable, Permanent and Not-reassignable
-- name: Configure saml-nameid.properties (dataStore and persistentId)
-  template:
-    src: roles/{{ role_name }}/templates/saml-nameid.properties
-    dest: "{{ idp_path }}/conf/saml-nameid.properties"
-    backup: yes
+# - name: Configure saml-nameid.properties (dataStore and persistentId)
+  # template:
+    # src: roles/{{ role_name }}/templates/saml-nameid.properties
+    # dest: "{{ idp_path }}/conf/saml-nameid.properties"
+    # backup: yes
 
-- name: Configure saml-nameid.xml (persistentId)
-  copy:
-    src: roles/{{ role_name }}/files/saml-nameid.xml
-    dest:  "{{ idp_path }}/conf/saml-nameid.xml"
-    backup: yes
+# - name: Configure saml-nameid.xml (persistentId)
+  # copy:
+    # src: roles/{{ role_name }}/files/saml-nameid.xml
+    # dest:  "{{ idp_path }}/conf/saml-nameid.xml"
+    # backup: yes
 
+# - name: Configure relying-party.xml (persistentId)
+  # template:
+    # src: roles/{{ role_name }}/templates/relying-party.xml
+    # dest:  "{{ idp_path }}/conf/relying-party.xml"
+    # backup: yes
 
-- name: Configure relying-party.xml (persistentId)
-  template:
-    src: roles/{{ role_name }}/templates/relying-party.xml
-    dest:  "{{ idp_path }}/conf/relying-party.xml"
-    backup: yes
-
-
-- name: Configure global.xml (dataStore and persistentId)
-  template:
-    src: roles/{{ role_name }}/templates/global.xml
-    dest:  "{{ idp_path }}/conf/global.xml"
-    backup: yes
 # DataStore
 
 
@@ -134,24 +151,11 @@
   import_tasks: disable_saml1.yml
   when: idp_disable_saml1 == true
 
-# additionals to add
-# - name: Add attribute-resolver.xml to services.xml
-  # copy:
-    # src: roles/shib3idp_configure/files/services.xml
-    # dest: "{{ idp_path }}/conf/services.xml"
-
-# TODO: Error creating bean with name 'shibboleth.AccessControlPolicies': Cannot create inner bean 'shibboleth.IPRangeAccessControl$child#4f0c1409'
-# - name: Configure access-control.xml for /status page
+# - name: Add metadata providers
   # template:
-    # src: roles/shib3idp_configure/templates/access-control.xml
-    # dest: "{{ idp_path }}/conf/access-control.xml"
-
-- name: Add metadata providers
-  template:
-    src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
-    dest: "{{ idp_path }}/conf/metadata-providers.xml"
-    backup: yes
-
+    # src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
+    # dest: "{{ idp_path }}/conf/metadata-providers.xml"
+    # backup: yes
 
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
@@ -166,6 +170,7 @@
     replace: ''
     backup: no
 
+# remove SAML1.0
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://{{ idp_fqdn }}/idp/profile/Shibboleth/SSO"/>'
@@ -173,6 +178,19 @@
               <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>"
     backup: no
 # fine modifiche 3.4.2
+
+# diff conf malavolti
+# - replace:
+    # path: "{{ idp_path }}/conf/c14n/subject-c14n.xml"
+    # regexp: '<!-- <ref bean="c14n/SAML2Persistent" /> -->'
+    # replace: '<ref bean="c14n/SAML2Persistent" />'
+
+- replace:
+    path: "{{ idp_path }}/conf/saml-nameid.xml"
+    regexp: '<!--[\n\t\s]*<ref bean="shibboleth.SAML2PersistentGenerator" />[\n\t\s]*-->'
+    replace: '<ref bean="shibboleth.SAML2PersistentGenerator" />'
+
+# end diff corso shibidp
 
 - name: "Configure idp.properties"
   import_tasks: properties.yml
@@ -188,8 +206,11 @@
   service: name="jetty" state=restarted enabled=True
   when: servlet_container == "jetty"
 
+# - name: restart ShibbolethIdP
+  # shell: "touch {{ jetty_path }}/webapps/idp.xml"
+
 - name: Restart Tomcat
-  service: name="{{ tomcat_version }}" state=restarted
+  service: name="{{ tomcat_version }}" state=restarted enabled=True
   when: servlet_container == "tomcat"
 
 - name: Update GIT repository with a branch of the configured Shib IdP

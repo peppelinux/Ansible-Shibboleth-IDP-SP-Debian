@@ -7,11 +7,11 @@
   file: path="{{ cert_path }}" state=directory
 
 - name: Copy certs
-  copy: 
+  copy:
     src: "{{ item }}"
     dest: "{{ cert_path }}/"
     owner: root
-    group: ssl-cert
+    group: root
     # mode: 640
   with_fileglob:
     - "{{ src_cert_path }}/*"
@@ -23,7 +23,7 @@
 - name: "Check {{ cert_path }}/{{ ldap_cert }}"
   fail: msg="{{ cert_path }}/{{ ldap_cert }} doesn't exists!"
   when: not ldap_cert_ok.stat.exists
-  
+
 - name: Update apt cache
   # apt: update_cache=yes
   apt: update_cache=yes cache_valid_time=86400
@@ -36,7 +36,6 @@
         - ntp
         - emacs24-nox
         - vim
-        - ntp
         - ca-certificates
         - ldap-utils
       state: present
@@ -50,14 +49,17 @@
 - name: Include server_ip.yml definitions
   include_vars:
     file: ./server_ip.yml
-  when: hosts_file.stat.exists == True 
-  
+  when: hosts_file.stat.exists == True
+
 - name: Configure /etc/hosts
-  template: 
-    src: roles/common/templates/hosts 
+  template:
+    src: roles/common/templates/hosts
     dest: /etc/hosts
-  when: hosts_file.stat.exists == True 
+  when: hosts_file.stat.exists == True
 # END: /etc/hosts optional definitions
+
+- name: Test if idpuser can query LDAP server
+  shell: "ldapsearch -H {{ ldap_url }} -D '{{ ldap_binddn }}' -w {{ idp_secret }}  -b '{{ ldap_basedn }}'"
 
 - name: "Ensures {{ tmp_upload_dir }} dir exists"
   file: path="{{ tmp_upload_dir }}" state=directory

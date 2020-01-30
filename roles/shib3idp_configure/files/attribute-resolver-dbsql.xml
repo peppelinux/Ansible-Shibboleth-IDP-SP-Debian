@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This file is an EXAMPLE configuration file. While the configuration
+    presented in this example file is semi-functional, it isn't very
+    interesting. It is here only as a starting point for your deployment
+    process.
+
+    Very few attribute definitions and data connectors are demonstrated,
+    and the data is derived statically from the logged-in username and a
+    static example connector.
+
+    Attribute-resolver-full.xml contains more examples of attributes,
+    encoders, and data connectors. Deployers should refer to the Shibboleth
+    documentation for a complete list of components and their options.
+-->
+<AttributeResolver
+        xmlns="urn:mace:shibboleth:2.0:resolver"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:resolver http://shibboleth.net/schema/idp/shibboleth-attribute-resolver.xsd">
+
+
+    <!-- ========================================== -->
+    <!--      Attribute Definitions                 -->
+    <!-- ========================================== -->
+
+
+    <AttributeDefinition xsi:type="Simple" id="eduPersonOrcid">
+        <InputDataConnector ref="mySqlOrcidConnector" attributeNames="orcidDbsql"/>
+        <DisplayName xml:lang="en">ORCID</DisplayName>
+        <DisplayName xml:lang="it">ORCID</DisplayName>
+        <DisplayDescription xml:lang="en">ORCID user identifier released and managed by orcid.org</DisplayDescription>
+        <DisplayDescription xml:lang="it">Identificativi ricercatore ORCID dell’utente assegnati e gestiti da orcid.org</DisplayDescription>
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.3.6.1.4.1.5923.1.1.1.16" friendlyName="eduPersonOrcid" encodeType="false"/>
+    </AttributeDefinition>
+
+
+    <!-- ========================================== -->
+    <!--      Data Connectors                       -->
+    <!-- ========================================== -->
+
+
+    <!-- mySql UCPPool -->
+    <!-- https://wiki.shibboleth.net/confluence/display/IDP30/BeanManagedConnection -->
+    <!-- https://wiki.shibboleth.net/confluence/display/IDP30/RelationalDatabaseConnector -->
+    <DataConnector id="mySqlOrcidConnector" xsi:type="RelationalDatabase" >
+
+        <InputAttributeDefinition ref="uid" />
+
+        <BeanManagedConnection>MyRDBMs1</BeanManagedConnection>
+        <QueryTemplate>
+        <![CDATA[
+         select orcid from user_orcid where lcase(trim(uid)) = lcase(trim('$uid[0]')) and curdate() between start_date and end_date
+        ]]>
+        </QueryTemplate>
+        <Column columnName="orcid" attributeID="orcidDbsql" />
+    </DataConnector>
+
+</AttributeResolver>

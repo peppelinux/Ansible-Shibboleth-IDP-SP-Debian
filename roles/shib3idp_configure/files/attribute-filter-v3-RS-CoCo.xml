@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This file is an EXAMPLE policy file -->
-<AttributeFilterPolicyGroup id="ShibbolethFilterPolicy"
+<AttributeFilterPolicyGroup id="ShibbolethFilterPolicyRsCoco"
         xmlns="urn:mace:shibboleth:2.0:afp"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd">
 
       <AttributeFilterPolicy id="releaseDynamicSubsetRandSAttributeBundle">
+          <PolicyRequirementRule xsi:type="EntityAttributeExactMatch"
+              attributeName="http://macedir.org/entity-category"
+              attributeValue="http://refeds.org/category/research-and-scholarship"/>
 
-      <PolicyRequirementRule xsi:type="EntityAttributeExactMatch"
-          attributeName="http://macedir.org/entity-category"
-          attributeValue="http://refeds.org/category/research-and-scholarship"/>
-
-      <!-- REFEDS Research and Scholarship Entity Category -->
-      <AttributeRule attributeID="eduPersonPrincipalName">
-          <PermitValueRule xsi:type="ANY"/>
-      </AttributeRule>
-      <AttributeRule attributeID="eduPersonTargetedID">
-          <PermitValueRule xsi:type="ANY" />
-      </AttributeRule>
-      <AttributeRule attributeID="email">
-          <PermitValueRule xsi:type="ANY"/>
-      </AttributeRule>
-      <AttributeRule attributeID="displayName">
-          <PermitValueRule xsi:type="ANY" />
-      </AttributeRule>
-      <AttributeRule attributeID="givenName">
-          <PermitValueRule xsi:type="ANY" />
-      </AttributeRule>
-      <AttributeRule attributeID="surname">
-          <PermitValueRule xsi:type="ANY" />
-      </AttributeRule>
+          <!-- REFEDS Research and Scholarship Entity Category -->
+          <AttributeRule attributeID="eduPersonPrincipalName">
+              <PermitValueRule xsi:type="ANY"/>
+          </AttributeRule>
+          <AttributeRule attributeID="eduPersonTargetedID">
+              <PermitValueRule xsi:type="ANY" />
+          </AttributeRule>
+          <AttributeRule attributeID="email">
+              <PermitValueRule xsi:type="ANY"/>
+          </AttributeRule>
+          <AttributeRule attributeID="displayName">
+              <PermitValueRule xsi:type="ANY" />
+          </AttributeRule>
+          <AttributeRule attributeID="givenName">
+              <PermitValueRule xsi:type="ANY" />
+          </AttributeRule>
+          <AttributeRule attributeID="surname">
+              <PermitValueRule xsi:type="ANY" />
+          </AttributeRule>
     </AttributeFilterPolicy>
 
     <!-- GEANT Data protection Code of Conduct -->

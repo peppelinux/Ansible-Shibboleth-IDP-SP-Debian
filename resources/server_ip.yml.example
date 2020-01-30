@@ -1,0 +1,3 @@
+ldap_ip:  "127.0.0.1"
+idp_ip:   "127.0.0.1"
+sp_ip:    "127.0.0.1"  # everything on the same vm

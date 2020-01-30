@@ -34,11 +34,11 @@
             -->
         </ISAPI>
     </InProcess>
-    
+
     <!-- Only one listener can be defined, to connect in-process modules to shibd. -->
     <UnixListener address="shibd.sock"/>
     <!-- <TCPListener address="127.0.0.1" port="1600" acl="127.0.0.1"/> -->
-    
+
     <!-- This set of components stores sessions and other persistent data in daemon memory. -->
     <StorageService type="Memory" id="mem" cleanupInterval="900"/>
     <SessionCache type="StorageService" StorageService="mem" cacheAssertions="false"
@@ -128,7 +128,7 @@
             the new syntax following these examples but it is NOT advisable to use this
             approach wholesale.
             -->
-          
+
             <!--
             SessionInitiators handle session requests and relay them to a Discovery page,
             or to an IdP if possible. Automatic/active session  rules will use the default
@@ -138,19 +138,19 @@
             <!-- Default directs to a specific IdP. -->
             <SessionInitiator type="Chaining" Location="/Login" isDefault="true" id="Login"
                               entityID="https://{{ idp_fqdn }}/idp/shibboleth">
-              
+
                 <SessionInitiator type="SAML2" template="bindingTemplate.html"/>
                 <SessionInitiator type="Shib1"/>
-              
+
                 <!--
                 To allow for >1 IdP, remove entityID property from Chaining element and add
                 *either* of the SAMLDS or WAYF handlers below:
-                
+
                 <SessionInitiator type="SAMLDS" URL="https://ds.example.org/DS/WAYF"/>
                 <SessionInitiator type="WAYF" URL="https://wayf.example.org/WAYF"/>
                 -->
             </SessionInitiator>
-            
+
             <!--
             md:AssertionConsumerService locations handle specific SSO protocol bindings,
             such as SAML 2.0 POST or SAML 1.1 Artifact. The isDefault and index attributes
@@ -233,7 +233,7 @@
         <Errors supportContact="root@{{ domain }}"
             helpLocation="/about.html"
             styleSheet="/shibboleth-sp/main.css"/>
-        
+
         <!--
         Uncomment and modify to tweak settings for specific IdPs or groups. Settings here
         generally match those allowed by the <ApplicationDefaults> element.
@@ -250,11 +250,11 @@
         <!-- Example of remotely supplied batch of signed metadata. -->
         <!--
         <MetadataProvider type="XML" validate="true"
-	            url="http://federation.org/federation-metadata.xml"
+                url="http://federation.org/federation-metadata.xml"
               backingFilePath="federation-metadata.xml" maxRefreshDelay="7200">
             <MetadataFilter type="RequireValidUntil" maxValidityInterval="2419200"/>
             <MetadataFilter type="Signature" certificate="fedsigner.pem" verifyBackup="false"/>
-            <DiscoveryFilter type="Blacklist" matcher="EntityAttributes" trimTags="true" 
+            <DiscoveryFilter type="Blacklist" matcher="EntityAttributes" trimTags="true"
               attributeName="http://macedir.org/entity-category"
               attributeNameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
               attributeValue="http://refeds.org/category/hide-from-discovery" />
@@ -264,7 +264,7 @@
         <!-- Example of remotely supplied "on-demand" signed metadata. -->
         <!--
         <MetadataProvider type="MDQ" validate="true" cacheDirectory="mdq"
-	            baseUrl="http://mdq.federation.org" ignoreTransport="true">
+                baseUrl="http://mdq.federation.org" ignoreTransport="true">
             <MetadataFilter type="RequireValidUntil" maxValidityInterval="2419200"/>
             <MetadataFilter type="Signature" certificate="mdqsigner.pem" />
         </MetadataProvider>
@@ -272,7 +272,7 @@
         <MetadataProvider type="XML"
          validate="true"
          path="/etc/shibboleth/metadata/{{ idp_fqdn }}-metadata.xml"/>
-        
+
         <!-- TrustEngines run in order to evaluate peer keys and certificates. -->
         <TrustEngine type="ExplicitKey"/>
         <!-- <TrustEngine type="PKIX"/> -->
@@ -287,14 +287,14 @@
         <AttributeResolver type="Query" subjectMatch="true"/>
         <!-- examples of a custom attribute extracted from a default value from IDP -->
         <AttributeResolver type="Transform" source="schacPersonalUniqueID">
-		<Regex match="^urn:schac:personalUniqueID:IT:CF:(.+)$" dest="codice_fiscale">$1</Regex>
+        <Regex match="^urn:schac:personalUniqueID:IT:CF:(.+)$" dest="codice_fiscale">$1</Regex>
         </AttributeResolver>
 
          <AttributeResolver type="Transform" source="schacPersonalUniqueCode">
-            <Regex match="^urn:schac:personalUniqueCode:IT:unical.it:studente:(.+)$" dest="matricola_studente">$1</Regex>
+            <Regex match="^urn:schac:personalUniqueCode:IT:{{ domain }}:studente:(.+)$" dest="matricola_studente">$1</Regex>
         </AttributeResolver>
          <AttributeResolver type="Transform" source="schacPersonalUniqueCode">
-            <Regex match="^urn:schac:personalUniqueCode:IT:unical.it:dipendente:(.+)$" dest="matricola_dipendente">$1</Regex>
+            <Regex match="^urn:schac:personalUniqueCode:IT:{{ domain }}:dipendente:(.+)$" dest="matricola_dipendente">$1</Regex>
         </AttributeResolver>
 
 
@@ -310,16 +310,16 @@
         -->
         <CredentialResolver type="File" key="sp-key.pem" certificate="sp-cert.pem"/>
 
-        
+
         <!--
         The default settings can be overridden by creating ApplicationOverride elements.
         Resource requests are mapped by web server commands, or the RequestMapper, to an
         applicationId setting.
-        
+
         This "canonical" use case of overriding the SP's entityID alone is now obsolete;
         you can apply selfEntityID as a content setting based on host or path to control
         the SP's own identity.
-        
+
         Avoid overrides: ask on the list or refer to the wiki for examples of how to do
         whatever you want to do without them.
         -->
@@ -327,7 +327,7 @@
         <ApplicationOverride id="admin" entityID="https://admin.example.org/shibboleth"/>
         -->
     </ApplicationDefaults>
-    
+
     <!-- Policies that determine how to process and authenticate runtime messages. -->
     <SecurityPolicyProvider type="XML" validate="true" path="security-policy.xml"/>
 
