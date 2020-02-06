@@ -170,6 +170,10 @@ CONTAINER_NAME=shib
 lxc-create  -t download -n $CONTAINER_NAME -- -d debian -r buster -a amd64
 
 lxc-start -n shib
+
+# cp your modified playbook
+cp -R Ansible-Shibboleth-IDP-SP-Debian /var/lib/lxc/$CONTAINER_NAME/rootfs/root/
+
 lxc-attach $CONTAINER_NAME -- apt install python3-pip libffi-dev libssl-dev \
                                libxml2-dev libxslt1-dev libjpeg-dev \
                                zlib1g-dev apt-utils iputils-ping
