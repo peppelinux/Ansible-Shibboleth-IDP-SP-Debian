@@ -16,6 +16,7 @@ upstream shib_balancer {
         server 10.0.3.102:8080 backup;
 }
 
+# match is not available in all releases
 #match server_ok {
     # status 200;
     # body !~ "maintenance";
@@ -59,8 +60,6 @@ server {
         # $scheme in questo caso è https.
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;
-        # wrong one
-        #proxy_set_header X-Forwarded-Host $host:$server_port;
         
         # HSTS
         add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; ";
