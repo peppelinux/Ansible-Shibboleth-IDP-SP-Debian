@@ -5,7 +5,7 @@ An example with HAproxy should also published here.
 
 
 ### NginX community edition
-| WARNING: Mind That if the Shibboleth servers/containers don't have any JSESSIONID shared storage (Memcached) the users must login again on each takeover.|
+| WARNING: Mind That if the Shibboleth servers/containers doesn't have any JSESSIONID shared storage (Memcached) the users must login again on each takeover.|
 | --- |
 
 Example
