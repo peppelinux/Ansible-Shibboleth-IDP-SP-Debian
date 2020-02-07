@@ -319,6 +319,8 @@ Produzione
 ----------
 
 ````
+JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto/jre
+
 # ricaricare servizi singoli (eviti di riavviare il servlet container)
 # questi sono definiti in conf/services.xml
 
