@@ -181,6 +181,10 @@ lxc-attach $CONTAINER_NAME -- pip3 install ansible
 lxc-attach $CONTAINER_NAME -- bash -c "cd /root/Ansible-Shibboleth-IDP-SP-Debian && \
                               bash make_ca.production.sh && \
                               ansible-playbook -i "localhost," -c local playbook.production.yml"
+
+# give optionally a static ip to the container or set a static lease into your dnsmasq local instance
+echo "lxc.network.ipv4 = 10.0.3.201/24 10.0.3.255" >> /var/lib/lxc/$CONTAINER_NAME/config
+echo "lxc.network.ipv4.gateway = 10.0.3.1" >> /var/lib/lxc/$CONTAINER_NAME/config
 ````
 
 #### LXC Troubleshooting
