@@ -319,7 +319,7 @@ Produzione
 ----------
 
 ````
-JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto/jre
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto/jre
 
 # ricaricare servizi singoli (eviti di riavviare il servlet container)
 # questi sono definiti in conf/services.xml
@@ -346,6 +346,7 @@ Hints
 #### test Attribute release
 
 ````
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto/jre
 /opt/shibboleth-idp/bin/aacli.sh -n luigi -r https://sp.testunical.it/shibboleth --saml2 -u http://localhost:8080/idp
 ````
 
