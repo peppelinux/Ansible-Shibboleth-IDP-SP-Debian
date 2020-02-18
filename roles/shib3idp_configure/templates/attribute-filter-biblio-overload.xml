@@ -6,12 +6,11 @@
 
     <!-- Release some attributes to an SP. -->
     <AttributeFilterPolicy id="biblio_overloads">
-
-        <PolicyRequirementRule xsi:type="Requester" value="https://that-special-rs.example.org/shibboleth" />
-
-        <AttributeRule attributeID="eduPersonPrincipalName">
-            <PermitValueRule xsi:type="ANY" />
-        </AttributeRule>
+        <PolicyRequirementRule xsi:type="OR">
+            <Rule xsi:type="Requester" value="https://secure.nature.com/shibboleth" />
+            <Rule xsi:type="Requester" value="https://sp.tshhosting.com/shibboleth" />
+            <Rule xsi:type="Requester" value="https://fsso.springer.com" />
+        </PolicyRequirementRule>
 
 <!--
         <AttributeRule attributeID="uid">
@@ -35,6 +34,10 @@
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
+        <AttributeRule attributeID="displayName">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
         <AttributeRule attributeID="givenName">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
@@ -43,23 +46,23 @@
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
-        <AttributeRule attributeID="eduPersonEntitlement">
+        <AttributeRule attributeID="eduPersonScopedAffiliation">
             <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+
+        <AttributeRule attributeID="eduPersonEntitlement">
+            <PermitValueRule xsi:type="Value" value="urn:mace:dir:entitlement:common-lib-terms" ignoreCase="true" />
         </AttributeRule>
 
         <AttributeRule attributeID="eduPersonPrincipalName">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
-        <AttributeRule attributeID="eduPersonScopedAffiliation">
+        <AttributeRule attributeID="schacHomeOrganization">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
-        <AttributeRule attributeID="shacHomeOrganization">
-            <PermitValueRule xsi:type="ANY" />
-        </AttributeRule>
-
-        <AttributeRule attributeID="shacHomeOrganizationType">
+        <AttributeRule attributeID="schacHomeOrganizationType">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
@@ -85,6 +88,28 @@
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
+    <!--
+    Nel caso in cui alcuni attributi presenti su un DB rdmbs debbano comporre i ns attributi
+
+        <AttributeRule attributeID="VEDI id ATTRIBUTO DEFINITO in attribute-resolver-myRdbms.xml">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+    -->
+
     </AttributeFilterPolicy>
+
+    <!-- Release eduPersonAffiliation to two specific SPs. -->
+<!--
+    <AttributeFilterPolicy id="example2">
+        <PolicyRequirementRule xsi:type="OR">
+            <Rule xsi:type="Requester" value="https://sp.example.org" />
+            <Rule xsi:type="Requester" value="https://another.example.org/shibboleth" />
+        </PolicyRequirementRule>
+
+        <AttributeRule attributeID="eduPersonScopedAffiliation">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+    </AttributeFilterPolicy>
+-->
 
 </AttributeFilterPolicyGroup>
