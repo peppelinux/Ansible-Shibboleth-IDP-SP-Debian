@@ -131,6 +131,10 @@
 
     # httpd
     - { role: httpd, tags: ["httpd"] }
+    
+    # only sp
+    #- { role: apache2_common, tags: ["httpd_sp"] }
+    #- { role: apache2_shib_sp, tags: ["httpd_sp"] }
 
     # federation
     - { role: sp_federation, tags: ["sp_fed"] }
