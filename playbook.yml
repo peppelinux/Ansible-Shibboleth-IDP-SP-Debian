@@ -133,4 +133,4 @@
     - { role: httpd, tags: ["httpd"] }
 
     # federation
-    - { role: sp_federation, tags: ["sp"] }
+    - { role: sp_federation, tags: ["sp_fed"] }
