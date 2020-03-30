@@ -36,7 +36,7 @@ CERT_DIR=/etc/ssl/certs/testunical.it
 mkdir -p $CERT_DIR 
 bash make_ca.production.sh
 cp certs/* $CERT_DIR
-chmod -R 777 $CERT_DIR
+chgrp -R apache $CERT_DIR
 
 ansible-playbook -i "localhost," -c local playbook.production.yml -v --tag uninstall,sp,httpd_sp
 ````
