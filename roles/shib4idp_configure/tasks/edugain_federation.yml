@@ -32,13 +32,19 @@
               \t<value>%{idp.home}/conf/metadata-providers.xml</value>'
     backup: yes
 
-- name: Add attribute-filter-v3-RS-CoCo
+- name: "Add Attribute Filter: {{ idp_attr_filter }}"
   copy:
-    src: roles/{{ role_name }}/files/attribute-filter-v3-RS-CoCo.xml
-    dest:  "{{ idp_path }}/conf/attribute-filter-v3-RS-CoCo.xml"
+    src: roles/{{ role_name }}/files/{{ idp_attr_filter }}
+    dest:  "{{ idp_path }}/conf/{{ idp_attr_filter }}"
 
 # - name: "http://www.garr.it/idem-conf/attribute-filter-v3-required.xml"
   # get_url: url="https://raw.github.com/ConsortiumGARR/idem-tutorials/master/idem-fedops/HOWTO-Shibboleth/Identity%20Provider/utils/attribute-filter-v3-required.xml" dest="{{ idp_path }}/conf"
+
+- name: "Attr registry: {{ idp_attr_reg_shac_url }}"
+  get_url: url="{{ idp_attr_reg_shac_url }}" dest="{{ idp_path }}/conf/attributes/schac.xml"
+
+- name: "Attr registry: {{ idp_attr_reg_ep_tid_url }}"
+  get_url: url="{{ idp_attr_reg_ep_tid_url }}" dest="{{ idp_path }}/conf/attributes/custom/eduPersonTargetedID.properties"
 
 - name: Add IDEM Attribute filters in services.xml (FileBackedHTTPResource bean)
   blockinfile:
@@ -71,7 +77,7 @@
     path: "{{ idp_path }}/conf/services.xml"
     regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
     replace: '<value>%{idp.home}/conf/attribute-filter.xml</value>\n
-              \t<value>%{idp.home}/conf/attribute-filter-v3-RS-CoCo.xml</value>\n
+              \t<value>%{idp.home}/conf/{{ idp_attr_filter }}</value>\n
               \t<ref bean="IDEM-Production-Filter"/>\n
               \t<ref bean="IDEM-Production-Filter-Anyone"/>'
     backup: yes

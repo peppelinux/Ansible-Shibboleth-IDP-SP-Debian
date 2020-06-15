@@ -9,7 +9,7 @@
 
 - name: Configure IdP attribute-filter-local.xml
   template:
-    src: roles/shib3idp_configure/templates/attribute-filter-local.xml
+    src: roles/shib4idp_configure/templates/attribute-filter-local.xml
     dest: "{{ idp_path }}/conf/attribute-filter-local.xml"
     # backup: yes
 

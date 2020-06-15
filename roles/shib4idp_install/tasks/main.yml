@@ -8,31 +8,34 @@
   apt: name={{ item }} state=present
   with_items:
     - java-common
-  when: java_jdk == "amazon_8"
+  when: java_jdk == "amazon"
 
 - name: "Stat Java packages Amazon Corretto in {{ shib_dest_dir }}"
   stat: path="{{ shib_dest_dir }}/{{ java_amazon_package }}"
   register: "java_amazon_deb"
 
 - name: "Download Amazon Corretto {{ java_amazon_package }}"
-  get_url: url={{ java_amazon_dl }} dest="{{ shib_dest_dir }}"
+  get_url: url={{ java_amazon_dl }} dest="{{ shib_dest_dir }}/{{ java_amazon_package }}"
   when: java_amazon_deb.stat.exists == False
 
 - name: "Install Java Amazon Corretto {{ java_amazon_package }}"
   shell: "dpkg -i {{ shib_dest_dir }}/{{ java_amazon_package }}"
-  when: java_jdk == "amazon_8"
+  when: java_jdk == "amazon"
 
 - name: Install Shibboleth apt packages
   apt:
     pkg:
-        - expat                 # jetty req
+        # - expat                 # jetty req
         - libservlet3.1-java    # servlet common requirements
         - libcommons-dbcp-java  # jetty requirement
         - libcommons-pool2-java # jetty req
         - libmariadb-java         # servlet req contains: /usr/share/java/mariadb-java-client.jar
         - libjsonp-java         # servlet req contains: javax.json-1.0.4.jar
-        - html2text
-        - emacs24-nox
+        # - html2text
+        # - emacs24-nox
+        - liblogback-java
+        - gnupg
+        - openssl
     state: present
 
 - name: get JAVA_HOME
@@ -63,11 +66,6 @@
   unarchive: src="{{ shib_dest_dir }}/{{ shib_idp_package }}" dest="{{ shib_dest_dir }}" copy=no
   # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived
 
-- name: Prepare properties for Shibboleth IdP install
-  template:
-    src: roles/{{ role_name }}/templates/shib-install.properties
-    dest: "{{ tmp_upload_dir }}/shib-install.properties"
-
 - name: "Stat Shibboleth IdP dest dir in {{ shib_dest_dir }}"
   stat: path="{{ idp_path }}/metadata"
   register: shib_dir_dest
@@ -75,14 +73,16 @@
 - name: Install Shibboleth Idp
   environment:
     JAVA_HOME: "{{ java_home.stdout }}"
-  command: "{{ shib_setup_folder }}/bin/install.sh \
-            -Didp.sealer.password={{ idp_secret }} \
-            -Didp.keystore.password={{ idp_secret }} \
-            -Didp.scope={{ domain }} \
-            -Didp.src.dir={{ shib_setup_folder }} \
-            -Didp.host.name={{ idp_fqdn }} \
-            -Didp.target.dir={{ idp_path }} \
-            -Didp.merge.properties={{ tmp_upload_dir }}/shib-install.properties"
+  command: '{{ shib_setup_folder }}/bin/install.sh \
+            -Didp.sealer.password="{{ idp_secret }}" \
+            -Didp.keystore.password="{{ idp_secret }}" \
+            -Didp.scope="{{ domain }}" \
+            -Didp.src.dir="{{ shib_setup_folder }}" \
+            -Didp.host.name="{{ idp_fqdn }}" \
+            -Didp.target.dir="{{ idp_path }}" \
+            -Didp.entityID="{{ idp_entity_id }}" \
+            -Didp.sealer.storePassword="{{ idp_secret }}" \
+            -Didp.sealer.keyPassword="{{ idp_secret }}"'
   when: shib_dir_dest.stat.exists == False
 
 - name: Create GIT repository with a fresh ShibIdP installation

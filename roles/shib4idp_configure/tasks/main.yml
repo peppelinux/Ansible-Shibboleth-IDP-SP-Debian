@@ -41,25 +41,25 @@
 
 - name: Install the IdP WAR
   template:
-    src: roles/shib3idp_configure/templates/idp-jetty.xml
+    src: roles/shib4idp_configure/templates/idp-jetty.xml
     dest: "{{ jetty_path }}/webapps/idp.xml"
   when: servlet_container == "jetty"
 
 - name: Install the IdP WAR
   template:
-    src: roles/shib3idp_configure/templates/idp-tomcat.xml
+    src: roles/{{ role_name }}/templates/idp-tomcat.xml
     dest: "/etc/{{ tomcat_version }}/Catalina/localhost/idp.xml"
   when: servlet_container == "tomcat"
 
 - name: Configure LDAP Auth
   template:
-    src: roles/shib3idp_configure/templates/ldap.properties
+    src: roles/{{ role_name }}/templates/ldap.properties
     dest: "{{ idp_path }}/conf/ldap.properties"
     backup: yes
 
 # - name: Configure Enhanced Logging
   # copy:
-    # src: roles/shib3idp_configure/files/logback.xml
+    # src: roles/{{ role_name }}/files/logback.xml
     # dest: "{{ idp_path }}/conf/logback.xml"
     # backup: yes
 
@@ -74,19 +74,19 @@
 # wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
 - name: Copy configured {{ idp_attr_resolver }} in attribute-resolver-v3-idem.xml
   copy:
-    src: "roles/shib3idp_configure/files/{{ idp_attr_resolver }}"
+    src: "roles/{{ role_name }}/files/{{ idp_attr_resolver }}"
     dest: "{{ idp_path }}/conf/{{ idp_attr_resolver }}"
     backup: yes
 
 - name: Copy configured attribute-resolver-dynamic.xml
   copy:
-    src: "roles/shib3idp_configure/files/attribute-resolver-dynamic.xml"
+    src: "roles/{{ role_name }}/files/attribute-resolver-dynamic.xml"
     dest: "{{ idp_path }}/conf/attribute-resolver-dynamic.xml"
     backup: yes
 
 - name: Copy configured attribute-resolver-dbsql.xml
   copy:
-    src: "roles/shib3idp_configure/files/attribute-resolver-dbsql.xml"
+    src: "roles/{{ role_name }}/files/attribute-resolver-dbsql.xml"
     dest: "{{ idp_path }}/conf/attribute-resolver-dbsql.xml"
     backup: yes
 
@@ -153,7 +153,7 @@
 
 # - name: Add metadata providers
   # template:
-    # src: roles/shib3idp_configure/templates/metadata-providers.xml-no_sp
+    # src: roles/{{ role_name }}/templates/metadata-providers.xml-no_sp
     # dest: "{{ idp_path }}/conf/metadata-providers.xml"
     # backup: yes
 

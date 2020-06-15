@@ -48,7 +48,6 @@
     ldap_binddn: "uid=idpuser,ou=idp,{{ ldap_basedc }}"
     ldap_pw: idpsecret
     ldap_basedn: "ou=people,{{ ldap_basedc }}"
-    # remember to copy slapds' public cert in roles/common/files/certs/
     ldap_cert: slapd-cert.pem
     # choose between: starttls, tls, plain
     ldap_auth: tls
@@ -61,10 +60,10 @@
     nginx_dl_url: http://nginx.org/download/{{ nginx_version }}.tar.gz
 
     # which java version to use (optional: openjdk-8-jre)
-    java_jdk: amazon_8
+    java_jdk: amazon
     #java_jdk: openjdk-8-jre
-    java_amazon_package: java-1.8.0-amazon-corretto-jdk_8.232.09-1_amd64.deb
-    java_amazon_dl: "https://d3pxv6yz143wms.cloudfront.net/8.232.09.1/{{ java_amazon_package }}"
+    java_amazon_package: amazon-corretto-11-x64-linux-jdk.deb
+    java_amazon_dl: "https://corretto.aws/downloads/latest/{{ java_amazon_package }}"
 
     # Servlet configuration, choose your preferred between tomcat and jetty
     servlet_container: jetty
@@ -73,7 +72,7 @@
     servlet_host: 127.0.0.1
 
     # Jetty configuration
-    jetty_version: 9.4.26.v20200117
+    jetty_version: 9.4.30.v20200611
     jetty_distribution: "jetty-distribution-{{ jetty_version }}"
     jetty_pkg: "{{ jetty_distribution }}.tar.gz"
     jetty_dl_path: /opt
@@ -87,7 +86,7 @@
     # tomcat_manager_pw: tomcatsecret
 
     # Shibboleth IDP
-    shib_idp_version: "3.4.6"
+    shib_idp_version: "4.0.1"
     shib_idp_package: "shibboleth-identity-provider-{{ shib_idp_version }}.tar.gz"
     shib_dest_dir: "/opt"
     idp_path: "{{ shib_dest_dir }}/shibboleth-idp"
@@ -99,8 +98,10 @@
     idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     idp_localized_message_url: "https://wiki.shibboleth.net/confluence/download/attachments/21660022/messages_it.properties?version=2&modificationDate=1541061867323&api=v2"
-    # idp_attr_resolver: attribute-resolver-full.v332.saml2.light.xml # in roles/shib2_configure/files
-    idp_attr_resolver: attribute-resolver-v3_4-idem-custom.xml
+    idp_attr_resolver: attribute-resolver-v4-idem-sample.xml
+    idp_attr_filter: attribute-filter-v4-idem.xml
+    idp_attr_reg_shac_url: https://registry.idem.garr.it/idem-conf/shibboleth/IDP4/attributes/schac.xml
+    idp_attr_reg_ep_tid_url: https://registry.idem.garr.it/idem-conf/shibboleth/IDP4/attributes/custom/eduPersonTargetedID.properties
     idp_disable_saml1: true
 
     # persistent id on rdbms, it will install mariadb
@@ -123,15 +124,15 @@
     - { role: common, tags: ["common"] }
 
     # idp
-    - { role: shib3idp_install, tags: ["idp_install"] }
-    - { role: shib3idp_configure, tags: ["idp_configure"] }
+    - { role: shib4idp_install, tags: ["idp_install"] }
+    - { role: shib4idp_configure, tags: ["idp_configure"] }
 
     # sp
     - { role: shib3sp, tags: ["sp"] }
 
     # httpd
     - { role: httpd, tags: ["httpd"] }
-    
+
     # only sp
     #- { role: apache2_common, tags: ["httpd_sp"] }
     #- { role: apache2_shib_sp, tags: ["httpd_sp"] }

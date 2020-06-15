@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ESEMPIO di Policy per il rilascio degli attributi predefiniti di IDEM. -->
+
+<AttributeFilterPolicyGroup id="ShibbolethFilterPolicyIDEM"
+        xmlns="urn:mace:shibboleth:2.0:afp"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd">
+
+    <!-- Rilascia ePTId e ePSA a chiunque in IDEM -->
+    <AttributeFilterPolicy id="attributesToAnyone">
+        <PolicyRequirementRule xsi:type="RegistrationAuthority" registrars="http://www.idem.garr.it/"/>
+        <AttributeRule attributeID="eduPersonTargetedID">
+            <PermitValueRule xsi:type="ANY"/>
+        </AttributeRule>
+        <AttributeRule attributeID="eduPersonScopedAffiliation">
+            <PermitValueRule xsi:type="OR">
+               <Rule xsi:type="Value" value="student" caseSensitive="true" />
+               <Rule xsi:type="Value" value="staff" caseSensitive="true" />
+               <Rule xsi:type="Value" value="alum" caseSensitive="true" />
+               <Rule xsi:type="Value" value="member" caseSensitive="true" />
+               <Rule xsi:type="Value" value="affiliate" caseSensitive="true" />
+               <Rule xsi:type="Value" value="library-walk-in" caseSensitive="true" />
+            </PermitValueRule>
+        </AttributeRule>
+    </AttributeFilterPolicy>
+
+    <!-- Rimuovi ePTID se l'SP supporta il NameID di tipo "persistent" e non viene richiesto -->
+    <AttributeFilterPolicy id="denyEptidIfNameIDpersistent">
+       <PolicyRequirementRule xsi:type="AND">
+          <Rule xsi:type="RegistrationAuthority" registrars="http://www.idem.garr.it/"/>
+          <Rule xsi:type="NameIDFormatExactMatch" nameIdFormat="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"/>
+          <Rule xsi:type="NOT">
+             <Rule xsi:type="AttributeInMetadata" attributeID="eduPersonTargetedID" onlyIfRequired="false"/>
+          </Rule>
+       </PolicyRequirementRule>
+       <AttributeRule attributeID="eduPersonTargetedID">
+          <DenyValueRule xsi:type="ANY"/>
+       </AttributeRule>
+    </AttributeFilterPolicy>
+
+    <!-- IDEM TEST SPs -->
+    <AttributeFilterPolicy id="idemTESTsps">
+       <PolicyRequirementRule xsi:type="AND">
+          <Rule xsi:type="RegistrationAuthority" registrars="http://www.idem.garr.it/" />
+          <Rule xsi:type="OR">
+             <Rule xsi:type="Requester" value="https://sp24-test.garr.it/shibboleth" />
+             <Rule xsi:type="Requester" value="https://sp-test.garr.it/shibboleth" />
+             <Rule xsi:type="Requester" value="https://sp2-test.garr.it/shibboleth" />
+             <Rule xsi:type="Requester" value="https://sp-demo.aai-test.garr.it/shibboleth" />
+          </Rule>
+       </PolicyRequirementRule>
+
+       <AttributeRule attributeID="mail">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="eduPersonPrincipalName">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="displayName">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="eduPersonOrcid">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="sn">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="givenName">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="eduPersonEntitlement">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="cn">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="eduPersonOrgDN">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="title">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="telephoneNumber">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="eduPersonOrgUnitDN">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="schacPersonalTitle">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="schacPersonalUniqueID">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="schacHomeOrganization">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="schacHomeOrganizationType">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="schacUserPresenceID">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="mobile">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="schacMotherTongue">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+       <AttributeRule attributeID="preferredLanguage">
+          <PermitValueRule xsi:type="ANY" />
+       </AttributeRule>
+
+    </AttributeFilterPolicy>
+
+    <!-- IDEM Entity Registry -->
+    <AttributeFilterPolicy id="IDEMRegistry">
+        <PolicyRequirementRule xsi:type="Requester" value="https://registry.idem.garr.it/shibboleth" />
+        
+        <AttributeRule attributeID="eduPersonPrincipalName">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+        <AttributeRule attributeID="mail">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+        <AttributeRule attributeID="givenName">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+        <AttributeRule attributeID="sn">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+    </AttributeFilterPolicy>
+
+</AttributeFilterPolicyGroup>
