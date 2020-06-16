@@ -98,13 +98,14 @@
     idp_secret: idpsecret
     idp_admin_email: "root@{{ idp_fqdn }}"
     idp_localized_message_url: "https://wiki.shibboleth.net/confluence/download/attachments/21660022/messages_it.properties?version=2&modificationDate=1541061867323&api=v2"
-    idp_attr_resolver: attribute-resolver-v4-idem-sample.xml
+    idp_attr_resolver: attribute-resolver-v4-idem-custom.xml
     idp_attr_filter: attribute-filter-v4-idem.xml
     idp_attr_reg_shac_url: https://registry.idem.garr.it/idem-conf/shibboleth/IDP4/attributes/schac.xml
     idp_attr_reg_ep_tid_url: https://registry.idem.garr.it/idem-conf/shibboleth/IDP4/attributes/custom/eduPersonTargetedID.properties
     idp_disable_saml1: true
 
     # persistent id on rdbms, it will install mariadb
+    # NOT tested with ShibIdP 4 - configuration may lacks of compatibility!
     idp_persistent_id_rdbms: false
 
     # Shibboleth IDP RDBMS per persistentID
@@ -116,7 +117,8 @@
     sp_fqdn: "sp.{{ domain }}"
 
     # enable edugain attr filter and md providers
-    edugain_federation: true
+    edugain_federation: false
+
 
   roles:
     # apt dependencies and certificates

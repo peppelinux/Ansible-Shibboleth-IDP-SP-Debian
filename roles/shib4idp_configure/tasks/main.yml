@@ -51,57 +51,7 @@
     dest: "/etc/{{ tomcat_version }}/Catalina/localhost/idp.xml"
   when: servlet_container == "tomcat"
 
-- name: Configure LDAP Auth
-  template:
-    src: roles/{{ role_name }}/templates/ldap.properties
-    dest: "{{ idp_path }}/conf/ldap.properties"
-    backup: yes
-
-# - name: Configure Enhanced Logging
-  # copy:
-    # src: roles/{{ role_name }}/files/logback.xml
-    # dest: "{{ idp_path }}/conf/logback.xml"
-    # backup: yes
-
-- name: Add Enhanched logging on users Authentication
-  blockinfile:
-    path: "{{ idp_path }}/conf/logback.xml"
-    insertbefore: '<!-- Logs LDAP related messages -->'
-    marker: "<!-- Logs on LDAP user authentication - ADDED -->"
-    block: |8
-            <logger name="org.ldaptive.auth.Authenticator" level="INFO" />
-
-# wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
-- name: Copy configured {{ idp_attr_resolver }} in attribute-resolver-v3-idem.xml
-  copy:
-    src: "roles/{{ role_name }}/files/{{ idp_attr_resolver }}"
-    dest: "{{ idp_path }}/conf/{{ idp_attr_resolver }}"
-    backup: yes
-
-- name: Copy configured attribute-resolver-dynamic.xml
-  copy:
-    src: "roles/{{ role_name }}/files/attribute-resolver-dynamic.xml"
-    dest: "{{ idp_path }}/conf/attribute-resolver-dynamic.xml"
-    backup: yes
-
-- name: Copy configured attribute-resolver-dbsql.xml
-  copy:
-    src: "roles/{{ role_name }}/files/attribute-resolver-dbsql.xml"
-    dest: "{{ idp_path }}/conf/attribute-resolver-dbsql.xml"
-    backup: yes
-
-- name: Update services.xml
-  blockinfile:
-    path: "{{ idp_path }}/conf/services.xml"
-    insertafter: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
-    marker: "<!-- Attribute resolvers -->"
-    block: |8
-              <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>
-              <value>%{idp.home}/conf/attribute-resolver-dynamic.xml</value>
-              <!-- <value>%{idp.home}/conf/attribute-resolver-dbsql.xml</value>-->
-    backup: yes
-
-# these replace will be overwritten by next task if idp_persistent_id_rdbms == true
+# these replace will be overwritten if idp_persistent_id_rdbms == true
 - replace:
     path: "{{ idp_path }}/conf/saml-nameid.properties"
     regexp: '#idp.persistentId.sourceAttribute = changethistosomethingreal'
@@ -110,10 +60,33 @@
   when: idp_persistent_id_rdbms == false
 
 - replace:
-    path: "{{ idp_path }}/conf/saml-nameid.properties"
+    path: "{{ idp_path }}/credentials/secrets.properties"
     regexp: '#idp.persistentId.salt = changethistosomethingrandom'
     replace: 'idp.persistentId.salt = {{ persId_salt.stdout }}'
   when: idp_persistent_id_rdbms == false
+
+- replace:
+    path: "{{ idp_path }}/conf/saml-nameid.properties"
+    regexp: '#idp.persistentId.generator = shibboleth.ComputedPersistentIdGenerator'
+    replace: 'idp.persistentId.generator = shibboleth.ComputedPersistentIdGenerator'
+  when: idp_persistent_id_rdbms == false
+
+- replace:
+    path: "{{ idp_path }}/conf/saml-nameid.xml"
+    regexp: '<!--[\n\t\s]*<ref bean="shibboleth.SAML2PersistentGenerator" />[\n\t\s]*-->'
+    replace: '<ref bean="shibboleth.SAML2PersistentGenerator" />'
+
+# LDAP auth
+- replace:
+    path: "{{ idp_path }}/credentials/secrets.properties"
+    regexp: 'idp.authn.LDAP.bindDNCredential[\t\s]*= myServicePassword'
+    replace: 'idp.authn.LDAP.bindDNCredential = {{ ldap_pw }}'
+
+- name: Configure LDAP Auth
+  template:
+    src: roles/{{ role_name }}/templates/ldap.properties
+    dest: "{{ idp_path }}/conf/ldap.properties"
+    backup: yes
 
 - name: "Run MariaDB role"
   include_role:
@@ -142,11 +115,77 @@
 
 # DataStore
 
-
 - name: "Persistent ID Datastore (mariaDB)"
   import_tasks: persistent_id_datastore.yml
   when: idp_persistent_id_rdbms == true
 
+
+# - name: Configure Enhanced Logging
+  # copy:
+    # src: roles/{{ role_name }}/files/logback.xml
+    # dest: "{{ idp_path }}/conf/logback.xml"
+    # backup: yes
+
+- name: Add Enhanched logging on users Authentication
+  blockinfile:
+    path: "{{ idp_path }}/conf/logback.xml"
+    insertbefore: '<!-- Logs LDAP related messages -->'
+    marker: "<!-- Logs on LDAP user authentication - ADDED -->"
+    block: |8
+            <logger name="org.ldaptive.auth.Authenticator" level="INFO" />
+
+# wget http://www.garr.it/idem-conf/attribute-resolver-v3-idem.xml -O /opt/shibboleth-idp/conf/attribute-resolver-v3-idem.xml
+- name: Copy configured {{ idp_attr_resolver }}
+  copy:
+    src: "roles/{{ role_name }}/files/{{ idp_attr_resolver }}"
+    dest: "{{ idp_path }}/conf/{{ idp_attr_resolver }}"
+    backup: yes
+
+- name: Copy configured attribute-resolver-dynamic.xml
+  copy:
+    src: "roles/{{ role_name }}/files/attribute-resolver-dynamic.xml"
+    dest: "{{ idp_path }}/conf/attribute-resolver-dynamic.xml"
+    backup: yes
+
+- name: Copy configured attribute-resolver-dbsql.xml
+  copy:
+    src: "roles/{{ role_name }}/files/attribute-resolver-dbsql.xml"
+    dest: "{{ idp_path }}/conf/attribute-resolver-dbsql.xml"
+    backup: yes
+
+- name: Update services.xml
+  blockinfile:
+    path: "{{ idp_path }}/conf/services.xml"
+    insertafter: '<util:list id ="shibboleth.AttributeResolverResources">'
+    marker: "<!-- Attribute resolvers -->"
+    block: |8
+              <value>%{idp.home}/conf/{{ idp_attr_resolver }}</value>
+              <value>%{idp.home}/conf/attribute-resolver-dynamic.xml</value>
+              <!-- <value>%{idp.home}/conf/attribute-resolver-dbsql.xml</value>-->
+    backup: yes
+
+# Disable default/example attribute-resolver
+- replace:
+    path: "{{ idp_path }}/conf/services.xml"
+    regexp: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
+    replace: '<!--<value>%{idp.home}/conf/attribute-resolver.xml</value>-->'
+    backup: no
+
+- name: "getting {{ idp_attr_reg_shac_url }}"
+  get_url: url="{{ idp_attr_reg_shac_url }}" dest="{{ idp_path }}/conf/attributes/schac.xml"  mode=664
+
+- name: "Update {{  idp_path }}/conf/attributes/default-rules.xml"
+  blockinfile:
+    path: "{{ idp_path }}/conf/attributes/default-rules.xml"
+    insertafter: '<import resource="samlSubject.xml" />'
+    marker: "<!-- Attribute schac Rules -->"
+    block: |8
+            <import resource="schac.xml" />  
+    backup: yes
+
+- name: "getting {{ idp_attr_reg_ep_tid_url }}"
+  get_url: url="{{ idp_attr_reg_ep_tid_url }}" dest="{{ idp_path }}/conf/attributes/custom/eduPersonTargetedID.properties"  mode=664
+ 
 - name: "Disable SAML1"
   import_tasks: disable_saml1.yml
   when: idp_disable_saml1 == true
@@ -174,23 +213,53 @@
 - replace:
     path: "{{ idp_path }}/metadata/idp-metadata.xml"
     regexp: '<SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://{{ idp_fqdn }}/idp/profile/Shibboleth/SSO"/>'
-    replace: "<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
-              <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>"
+    replace: ""
     backup: no
 # fine modifiche 3.4.2
 
-# diff conf malavolti
-# - replace:
-    # path: "{{ idp_path }}/conf/c14n/subject-c14n.xml"
-    # regexp: '<!-- <ref bean="c14n/SAML2Persistent" /> -->'
-    # replace: '<ref bean="c14n/SAML2Persistent" />'
-
+# Decomment SLO
 - replace:
-    path: "{{ idp_path }}/conf/saml-nameid.xml"
-    regexp: '<!--[\n\t\s]*<ref bean="shibboleth.SAML2PersistentGenerator" />[\n\t\s]*-->'
-    replace: '<ref bean="shibboleth.SAML2PersistentGenerator" />'
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<!--[\n\t\s]*<SingleLogoutService'
+    replace: '<SingleLogoutService'
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: 'SLO"/>[\n\t\s]*-->'
+    replace: 'SLO"/>'
 
-# end diff corso shibidp
+# IDEM NameID
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '"/>\n\n[\t\s\n]*<SingleSignOnService'
+    replace: '"/>\n\n
+              \t<!-- R&S NameID Format -->\n
+              \t<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>\n
+              \t<NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</NameIDFormat>\n\n
+              <SingleSignOnService'
+    backup: no
+
+# remove SAML1
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://{{ idp_fqdn }}/idp/profile/Shibboleth/SSO"/>'
+    replace: ""
+    backup: no
+#
+
+# Remove Artifact Resolution Service and add NameID format
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}/idp/profile/SAML2/SOAP/ArtifactResolution" index="1"/>'
+    replace: ""
+    backup: no
+
+# TODO
+# Remove Attribute query service
+- replace:
+    path: "{{ idp_path }}/metadata/idp-metadata.xml"
+    regexp: '<!-- <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}:8443/idp/profile/SAML2/SOAP/AttributeQuery"/> -->'
+    replace: '<ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://{{ idp_fqdn }}/idp/profile/SAML2/SOAP/ArtifactResolution" index="1"/>'
+    backup: no
 
 - name: "Configure idp.properties"
   import_tasks: properties.yml

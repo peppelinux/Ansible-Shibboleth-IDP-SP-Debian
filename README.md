@@ -350,7 +350,7 @@ Hints
 #### test Attribute release
 
 ````
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto/jre
+export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto/
 /opt/shibboleth-idp/bin/aacli.sh -n luigi -r https://sp.testunical.it/shibboleth --saml2 -u http://localhost:8080/idp
 ````
 

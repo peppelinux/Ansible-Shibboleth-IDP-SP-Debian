@@ -65,10 +65,6 @@
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>
 
-        <AttributeRule attributeID="eduPersonPersonalUniqueId">
-            <PermitValueRule xsi:type="ANY" />
-        </AttributeRule>
-
         <AttributeRule attributeID="schacPersonalUniqueCode">
             <PermitValueRule xsi:type="ANY" />
         </AttributeRule>

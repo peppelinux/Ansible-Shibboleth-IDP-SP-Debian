@@ -287,14 +287,14 @@
         <AttributeResolver type="Query" subjectMatch="true"/>
         <!-- examples of a custom attribute extracted from a default value from IDP -->
         <AttributeResolver type="Transform" source="schacPersonalUniqueID">
-        <Regex match="^urn:schac:personalUniqueID:IT:CF:(.+)$" dest="codice_fiscale">$1</Regex>
+        <Regex match="^urn:schac:personalUniqueID:it:CF:(.+)$" dest="codice_fiscale">$1</Regex>
         </AttributeResolver>
 
          <AttributeResolver type="Transform" source="schacPersonalUniqueCode">
-            <Regex match="^urn:schac:personalUniqueCode:IT:{{ domain }}:studente:(.+)$" dest="matricola_studente">$1</Regex>
+            <Regex match="^urn:schac:personalUniqueCode:it:{{ domain }}:studente:(.+)$" dest="matricola_studente">$1</Regex>
         </AttributeResolver>
          <AttributeResolver type="Transform" source="schacPersonalUniqueCode">
-            <Regex match="^urn:schac:personalUniqueCode:IT:{{ domain }}:dipendente:(.+)$" dest="matricola_dipendente">$1</Regex>
+            <Regex match="^urn:schac:personalUniqueCode:it:{{ domain }}:dipendente:(.+)$" dest="matricola_dipendente">$1</Regex>
         </AttributeResolver>
 
 

@@ -1,7 +1,12 @@
 - replace:
     path: "{{ idp_path }}/conf/idp.properties"
-    regexp: '#idp.cookie.secure = false'
+    regexp: '#idp.cookie.secure = true'
     replace: 'idp.cookie.secure = true'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '#idp.frameoptions = DENY'
+    replace: 'idp.frameoptions = DENY'
 
 - replace:
     path: "{{ idp_path }}/conf/idp.properties"

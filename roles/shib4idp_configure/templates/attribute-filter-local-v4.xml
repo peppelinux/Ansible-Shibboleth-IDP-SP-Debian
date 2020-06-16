@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AttributeFilterPolicyGroup id="ShibbolethFilterPolicyLocal"
+        xmlns="urn:mace:shibboleth:2.0:afp"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd">
+
+    <!-- Release some attributes to an SP. -->
+    <AttributeFilterPolicy id="educational_standard">
+
+        <PolicyRequirementRule xsi:type="Requester" value="https://sp.testunical.it/shibboleth" />
+
+		<AttributeRule attributeID="uid" permitAny="true" />
+		<AttributeRule attributeID="cn" permitAny="true" />
+		<AttributeRule attributeID="sn" permitAny="true" />
+		<AttributeRule attributeID="commonName" permitAny="true" />
+		<AttributeRule attributeID="surname" permitAny="true" />
+		<AttributeRule attributeID="givenName" permitAny="true" />
+		<AttributeRule attributeID="displayName" permitAny="true" />
+		<AttributeRule attributeID="mail" permitAny="true" />
+		<AttributeRule attributeID="email" permitAny="true" />
+		<AttributeRule attributeID="eduPersonPrincipalName" permitAny="true" />
+		<AttributeRule attributeID="eduPersonEntitlement" permitAny="true" />
+		<AttributeRule attributeID="eduPersonAffiliation" permitAny="true" />
+		<AttributeRule attributeID="eduPersonScopedAffiliation" permitAny="true" />
+		<AttributeRule attributeID="schacHomeOrganization" permitAny="true" />
+		<AttributeRule attributeID="schacHomeOrganizationType" permitAny="true" />
+		<AttributeRule attributeID="schacExpiryDate" permitAny="true" />
+		<AttributeRule attributeID="schacPersonalUniqueID" permitAny="true" />
+		<AttributeRule attributeID="schacPersonalUniqueCode" permitAny="true" />
+		<AttributeRule attributeID="eduPersonOrcid" permitAny="true" />
+		<AttributeRule attributeID="telephoneNumber" permitAny="true" />
+		<AttributeRule attributeID="title" permitAny="true" />
+
+    <!--
+    Nel caso in cui alcuni attributi presenti su un DB rdmbs debbano comporre i ns attributi
+
+        <AttributeRule attributeID="VEDI id ATTRIBUTO DEFINITO in attribute-resolver-myRdbms.xml">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+    -->
+
+    </AttributeFilterPolicy>
+
+    <!-- Release eduPersonAffiliation to two specific SPs. -->
+<!--
+    <AttributeFilterPolicy id="example2">
+        <PolicyRequirementRule xsi:type="OR">
+            <Rule xsi:type="Requester" value="https://sp.example.org" />
+            <Rule xsi:type="Requester" value="https://another.example.org/shibboleth" />
+        </PolicyRequirementRule>
+
+        <AttributeRule attributeID="eduPersonScopedAffiliation">
+            <PermitValueRule xsi:type="ANY" />
+        </AttributeRule>
+    </AttributeFilterPolicy>
+-->
+
+</AttributeFilterPolicyGroup>
