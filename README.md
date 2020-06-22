@@ -1,4 +1,4 @@
-# Ansible Shibboleth IDPv3 e SP3 Debian 10 (buster)
+# Ansible Shibboleth IDPv4 e SP3 Debian 10 (buster)
 
 Ansible playbook è una procedura automatizzata per predisporre sistemi complessi.
 Questo playbook è stato realizzato per automatizzare l'installazione e la configurazione
@@ -10,13 +10,13 @@ Questa procedura è rivolta a tutti coloro i quali:
 - già amministrano un servizio SAML2 ma necessitano di una procedura di prototipazione immediata e riproducibile
 - desiderino clonare configurazioni e avanzare di versione dei sistemi già in produzione.
 
-Questa procedurà produrrà un Setup in locale di Shibboleth IdP v3.x e Shibboleth SP 3.0.3 con i seguenti applicativi:
+Questa procedurà produrrà un Setup in locale di Shibboleth IdP Shibboleth SP con i seguenti applicativi:
 - Servlet Container per IDP (tomcat8 o jetty9, default: jetty)
 - Web server  (Apache o NginX come HTTPS frontend)
 - mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
 - Shibboleth (Identity provider e Service Provider di test)
 - mariaDB
-- Java (OpenJDK 11 oppure Amazon Corretto 8)
+- Java (OpenJDK 11 oppure Amazon Corretto 11)
 
 
 Indice dei contenuti
@@ -92,7 +92,7 @@ Altri parametri utili possono essere:
 - idp_disable_saml1: disabilita il supporto a SAML versione 1;
 - servlet_ram: 384m. Quanta ram destinare al servlet container;
 - edugain_federation: true. Abilita metadati, resolvers e filtri tipici sugli attributi per un IdP di federazione IDEM EduGAIN;
-- java_jdk: amazon_8. La distribuzione Java JDK da utilizzare, supporta anche openjdk-8-jre.
+- java_jdk: amazon. La distribuzione Java JDK da utilizzare, supporta anche openjdk-8-jre.
 
 Installazione
 -------------
@@ -382,7 +382,8 @@ Ringraziamenti
 
 - Comunità IDEM GARR
 - Marco Malavolti (garr.it) per la documentazione di base;
-- Maurizio Festi (unitrento) per la redazione di attribute-resolver-dbsql.xml in sede del corso Shibboleth 22-23 Gen 2020.
+- Maurizio Festi (uniTrento) per la redazione di attribute-resolver-dbsql.xml in sede del corso Shibboleth 22-23 Gen 2020.
+- Nunzio Napolitano (uniParthenope)
 
 Autori
 ------
