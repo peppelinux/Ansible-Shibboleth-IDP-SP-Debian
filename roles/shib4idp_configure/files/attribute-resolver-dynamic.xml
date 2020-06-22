@@ -12,12 +12,12 @@
 
     <!-- TEMPLATE: Restituire un displayName personalizzato sulla base di nome e cognome -->
     <AttributeDefinition xsi:type="Template" id="displayName">
-        <InputDataConnector ref="myLDAP" attributeNames="surname"/>
+        <InputDataConnector ref="myLDAP" attributeNames="sn"/>
         <InputDataConnector ref="myLDAP" attributeNames="givenName"/>
         <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.16.840.1.113730.3.1.241" friendlyName="displayName" encodeType="false" />
         <Template>
             <![CDATA[
-                ${surname} ${givenName}
+                ${sn} ${givenName}
             ]]>
         </Template>
     </AttributeDefinition>
