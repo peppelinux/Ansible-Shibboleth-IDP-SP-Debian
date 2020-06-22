@@ -119,10 +119,18 @@
     # enable edugain attr filter and md providers
     edugain_federation: false
 
-	# IDP OIDC Extension
-    oidc_extension: true
-    oidc_extension_plugin_url: https://shibboleth.net/downloads/identity-provider/extensions/java-idp-oidc/2.0.0/idp-oidc-extension-distribution-2.0.0-bin.tar.gz
+    # IDP OIDC Extension
+    oidc_extension_plugin_version: "2.0.0"
+    oidc_extension_plugin_archive: "idp-oidc-extension-distribution-{{ oidc_extension_plugin_version }}-bin.tar.gz"
+    oidc_extension_plugin_url: https://shibboleth.net/downloads/identity-provider/extensions/java-idp-oidc/{{ oidc_extension_plugin_version }}/{{ oidc_extension_plugin_archive }}
 
+    json_web_key_generator_release: "0.7"
+    json_web_key_generator_archive: "json-web-key-generator-{{ json_web_key_generator_release }}.tar.gz"
+    json_web_key_generator_url: "https://github.com/mitreid-connect/json-web-key-generator/archive/{{ json_web_key_generator_archive }}"
+    
+    op_issuer: "{{ idp_fqdn }}"
+    # END OIDC Extension
+    
   roles:
     # apt dependencies and certificates
     - { role: uninstall, tags: ["uninstall"] }
@@ -144,3 +152,7 @@
 
     # federation
     - { role: sp_federation, tags: ["sp_fed"] }
+    
+    # oidc installation
+    - { role: oidc_provider_install, tags: ["op_install"] }
+    - { role: oidc_provider_configuration, tags: ["op_configure"] }

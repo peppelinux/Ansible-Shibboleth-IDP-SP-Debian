@@ -1,0 +1,139 @@
+# https://github.com/CSCfi/shibboleth-idp-oidc-extension/wiki/Installing-from-archive
+
+- replace:
+    path: "{{ idp_path }}/conf/global.xml"
+    regexp: '</beans>'
+    replace: '    <!-- OIDC extension global bean definitions -->\n
+                  <import resource="global-oidc.xml" />\n\n
+              </beans>'
+
+- replace:
+    path: "{{ idp_path }}/conf/credentials.xml"
+    regexp: '</beans>'
+    replace: '    <!-- OIDC extension default credential definitions -->\n
+                  <import resource="credentials-oidc.xml" />\n\n
+              </beans>'
+
+- replace:
+    path: "{{ idp_path }}/conf/services.xml"
+    regexp: '</beans>'
+    replace: '    <!-- OIDC extension services definitions -->\n
+                  <import resource="services-oidc.xml" />\n\n
+              </beans>'
+
+- replace:
+    path: "{{ idp_path }}/conf/oidc-relying-party.xml"
+    regexp: '</beans>'
+    replace: '    <!-- OIDC extension relying party definitions -->\n
+                  <import resource="oidc-relying-party.xml" />\n\n
+              </beans>'
+
+- replace:
+    path: "{{ idp_path }}/conf/idp.properties"
+    regexp: '/credentials/secrets.properties'
+    replace: '/credentials/secrets.properties, /conf/oidc-subject.properties, /conf/idp-oidc.properties\n
+              idp.service.attribute.registry.namingRegistry=OIDCExtendedNamingRegistry'
+
+- name: "Replace conf/authn/authn-comparison-oidc.xml"
+  copy:
+    src: "{{ idp_path }}/conf/authn/authn-comparison-oidc.xml"
+    dest: "{{ idp_path }}/conf/authn/authn-comparison.xml"
+    backup: yes
+
+- name: Install Maven
+  apt:
+    pkg:
+        - maven
+
+    state: present
+
+- name: "Stat json_web_key_generator"
+  stat: path="{{ shib_dest_dir }}/{{ json_web_key_generator_archive }}"
+  register: "json_web_key_generator_archive_path"
+
+- name: "Download {{ json_web_key_generator_archive }}"
+  get_url: url={{ json_web_key_generator_url }} dest="{{ shib_dest_dir }}/{{ json_web_key_generator_archive }}"
+  when: json_web_key_generator_archive_path.stat.exists == False
+
+- name: "Unarchive OIDC plugin {{ json_web_key_generator_archive }}"
+  shell: "cd {{ shib_dest_dir }} && \
+          mkdir -p {{ shib_dest_dir }}/json_web_key_generator && \
+          tar -xzf {{ shib_dest_dir }}/{{ json_web_key_generator_archive }}"
+
+- name: get JAVA_HOME
+  shell: readlink -f /usr/bin/java | sed "s:bin/java::"
+  register: java_home
+
+- set_fact:
+    jwt_generator_path: "{{ shib_dest_dir }}/json-web-key-generator-json-web-key-generator-{{ json_web_key_generator_release }}"
+- set_fact:
+    jwt_generator: "{{ jwt_generator_path }}/target/json-web-key-generator-{{ json_web_key_generator_release }}-jar-with-dependencies.jar"
+
+- name: "Compile {{ jwt_generator }}"
+  environment:
+    JAVA_HOME: "{{ java_home.stdout }}"
+  shell: 'cd {{ jwt_generator_path }} && mvn package'
+
+- name: "Generate OIDC OP JWKs"
+  environment:
+    JAVA_HOME: "{{ java_home.stdout }}"
+  shell: 'cd {{ jwt_generator_path }} && \
+          java -jar {{ jwt_generator }} -t RSA -s 2048 -u sig -i defaultRSASign -p > {{ idp_path }}/credentials/idp-signing-rs.jwk &&
+          java -jar {{ jwt_generator }} -t EC -c P-256 -u sig -i defaultECSign -p  > {{ idp_path }}/credentials/idp-signing-es.jwk &&
+          java -jar {{ jwt_generator }} -t RSA -s 2048 -u enc -i defaultRSAEnc -p  > {{ idp_path }}/credentials/idp-encryption-rsa.jwk'
+
+- name: "Clean up OIDC OP JWKs"
+  shell: |
+          python3 <<EOF
+          base_path = "{{ idp_path }}/credentials/"
+          for i in ["idp-signing-rs.jwk", "idp-signing-es.jwk", "idp-encryption-rsa.jwk"]: 
+              f = open(base_path+i, "r")
+              c = f.read().split('Public key:\n')[-1]
+              open(base_path+i, "w").write(c)
+              f.close()
+          EOF
+
+- replace:
+    path: "{{ idp_path }}/conf/idp-oidc.properties"
+    regexp: 'idp.oidc.issuer = https://your.issuer.example.com'
+    replace: 'idp.oidc.issuer = {{ op_issuer }}'
+
+- replace: 
+    path: '{{ idp_path }}/static/.well-known/openid-configuration'
+    regexp: '\{\{ service_name \}\}'
+    replace: '{{ op_issuer }}'
+
+#- name: "Configure static serve of .well-known/openid-coonfiguration"
+- replace:
+    path: '/etc/apache2/sites-enabled/{{ idp_fqdn }}.conf'
+    regexp: '</VirtualHost>'
+    replace: |-
+            Alias "/.well-known" "{{ idp_path }}/static/.well-known"
+            <Directory "{{ idp_path }}/static/.well-known/">
+                Options +Indexes
+                AllowOverride None
+                Require all granted
+            </Directory>
+            </VirtualHost>
+  when: httpd == 'apache'
+
+- name: Set 
+  shell: "chown www-data {{ idp_path }}/static/.well-known/openid-configuration"
+  when: httpd == 'apache'
+
+# TODO
+#- name: "NginX installation"
+  #include_role:
+    #name: "nginx_install"
+  #when: httpd == 'nginx'
+
+- name: Restart Jetty
+  service: name="jetty" state=restarted enabled=True
+  when: servlet_container == "jetty"
+
+- name: Restart Tomcat
+  service: name="{{ tomcat_version }}" state=restarted enabled=True
+  when: servlet_container == "tomcat"
+
+# TODO 
+# https://github.com/CSCfi/shibboleth-idp-oidc-extension/wiki/Installing-from-archive#prepare-for-first-relying-party
