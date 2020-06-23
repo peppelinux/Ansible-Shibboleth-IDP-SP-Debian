@@ -18,6 +18,7 @@ Questa procedurà produrrà un Setup in locale di Shibboleth IdP Shibboleth SP c
 - mariaDB
 - Java (OpenJDK 11 oppure Amazon Corretto 11)
 
+In aggiunta anche le OIDC extensions possono essere configurate, vedi i ruoli `oidc_provider_install` e `oidc_provider_configuration`.
 
 Indice dei contenuti
 -----------------
@@ -29,6 +30,7 @@ Indice dei contenuti
       * [LDAP](#ldap)
       * [Configurazione di LDAP](#configurazione-di-ldap)
       * [Installazione di Shibboleth IDPv3 e SPv3](#installazione-di-shibboleth-idpv3-e-spv3)
+      * [OIDC Provider](#oidc-provider)
       * [Risultato](#risultato)
       * [LXC image](#lxc)
    * #### Troubleshooting
@@ -152,6 +154,12 @@ ansible-playbook -i "localhost," -c local playbook.yml -v --tag httpd
 # soltanto disinstallare e rimuovere tutto
 ansible-playbook -i "localhost," -c local playbook.yml -v --tag uninstall
 ````
+
+OIDC Provider
+-------------
+
+Sezione qui.
+
 
 Risultato
 ---------
