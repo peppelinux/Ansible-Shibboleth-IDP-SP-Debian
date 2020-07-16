@@ -158,7 +158,14 @@ ansible-playbook -i "localhost," -c local playbook.yml -v --tag uninstall
 OIDC Provider
 -------------
 
-Sezione qui.
+Per abilitare un OIDC Provider basta decommentare in `playbook.yml` se seguenti voci di riferimento:
+
+````
+    - { role: oidc_provider_install, tags: ["op_install"] }
+    - { role: oidc_provider_configuration, tags: ["op_configure"] }
+````
+
+La configurazione è stata realizzata secondo quanto documentato nella [guida ufficiale di CSCfi](https://github.com/CSCfi/shibboleth-idp-oidc-extension/wiki/Installing-from-archive).
 
 
 Risultato

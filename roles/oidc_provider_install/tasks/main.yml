@@ -6,10 +6,6 @@
   get_url: url={{ oidc_extension_plugin_url }} dest="{{ shib_dest_dir }}/{{ oidc_extension_plugin_archive }}"
   when: oidc_extension_plugin_archive_path.stat.exists == False
 
-# - name: Unarchive Shibboleth IdP
-  # unarchive: src="{{ shib_dest_dir }}/{{ oidc_extension_plugin_archive }}" dest="{{ shib_dest_dir }}" copy=no
-  # without copy=no means that src= should be on a localpath. Then file will be uploadade and unarchived
-
 - name: "Unarchive OIDC plugin {{ oidc_extension_plugin_archive }}"
   shell: "cd {{ idp_path }} && tar -xf {{ shib_dest_dir }}/{{ oidc_extension_plugin_archive }} --strip-components=1"
 
