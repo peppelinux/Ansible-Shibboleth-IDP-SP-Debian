@@ -29,7 +29,7 @@ Indice dei contenuti
    * #### Installazione
       * [LDAP](#ldap)
       * [Configurazione di LDAP](#configurazione-di-ldap)
-      * [Installazione di Shibboleth IDPv3 e SPv3](#installazione-di-shibboleth-idpv3-e-spv3)
+      * [Installazione di Shibboleth IDP e SP](#installazione-di-shibboleth-idpv3-e-spv3)
       * [OIDC Provider](#oidc-provider)
       * [Risultato](#risultato)
       * [LXC image](#lxc)
@@ -134,7 +134,7 @@ ldapsearch -H ldaps://ldap.testunical.it -D "uid=idpuser,ou=idp,dc=testunical,dc
 
 ````
 
-## Installazione di Shibboleth IDPv3 e SPv3
+## Installazione di Shibboleth IDP e SP
 
 ### Certificati SSL di shibboleth IDP e SP
 

@@ -22,7 +22,7 @@
               </beans>'
 
 - replace:
-    path: "{{ idp_path }}/conf/oidc-relying-party.xml"
+    path: "{{ idp_path }}/conf/relying-party.xml"
     regexp: '</beans>'
     replace: '    <!-- OIDC extension relying party definitions -->\n
                   <import resource="oidc-relying-party.xml" />\n\n
@@ -32,7 +32,7 @@
     path: "{{ idp_path }}/conf/idp.properties"
     regexp: '/credentials/secrets.properties'
     replace: '/credentials/secrets.properties, /conf/oidc-subject.properties, /conf/idp-oidc.properties\n
-              idp.service.attribute.registry.namingRegistry=OIDCExtendedNamingRegistry'
+             idp.service.attribute.registry.namingRegistry=OIDCExtendedNamingRegistry'
 
 - name: "Replace conf/authn/authn-comparison-oidc.xml"
   copy:
@@ -121,10 +121,18 @@
   shell: "chown www-data {{ idp_path }}/static/.well-known/openid-configuration"
   when: httpd == 'apache'
 
+- name: Restart Apache2
+  service: name="apache2" state=restarted enabled=True
+  when: httpd == 'apache'
+
 # TODO
 #- name: "NginX installation"
   #include_role:
     #name: "nginx_install"
+  #when: httpd == 'nginx'
+
+#- name: Restart NginX
+  #service: name="nginx" state=restarted enabled=True
   #when: httpd == 'nginx'
 
 - name: Restart Jetty
