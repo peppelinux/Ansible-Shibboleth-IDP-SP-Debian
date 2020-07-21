@@ -160,6 +160,8 @@ Final result
 LXC
 ---
 
+This section illusrates how to build a Linux Container (LXC). This *is not mandatory* for the final result, we can even play this ansible playbook on a virtualbox or any other working server.
+
 ````
 apt install lxc
 
