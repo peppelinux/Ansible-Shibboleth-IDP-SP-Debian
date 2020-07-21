@@ -1,35 +1,35 @@
-# Ansible Shibboleth IDPv3 e SP3 Debian 10 (buster)
+# Ansible Shibboleth IdP and SP Debian 10 (buster)
 
-Ansible playbook è una procedura automatizzata per predisporre sistemi complessi.
-Questo playbook è stato realizzato per automatizzare l'installazione e la configurazione
-di uno Shibboleth Identity Provider e uno di Shibboleth Service Provider, secondo quanto documentato nella [guida ufficiale
-della Federazione IDEM](https://github.com/ConsortiumGARR/idem-tutorials).
+Ansible playbook is an automated procedure for setting up complex systems.
+This playbook has been designed to automate installation and configuration
+of a Shibboleth Identity Provider and one of the Shibboleth Service Provider, as documented in the [official guide
+of the IDEM Federation] (https://github.com/ConsortiumGARR/idem-tutorials).
 
-Questa procedura è rivolta a tutti coloro i quali:
-- desiderino imparare ad installare e configurare Shibboleth IdP ed SP
-- già amministrano un servizio SAML2 ma necessitano di una procedura di prototipazione immediata e riproducibile
-- desiderino clonare configurazioni e avanzare di versione dei sistemi già in produzione.
+This procedure is aimed at all those who:
+- wish to learn how to install and configure Shibboleth IdP and SP
+- already manage a SAML2 service but need an immediate and reproducible prototyping procedure
+- wish to clone configurations and advance versions of systems already in production.
 
-Questa procedurà produrrà un Setup in locale di Shibboleth IdP v3.x e Shibboleth SP 3.0.3 con i seguenti applicativi:
-- Servlet Container per IDP (tomcat8 o jetty9, default: jetty)
-- Web server  (Apache o NginX come HTTPS frontend)
-- mod_shib2/FastCGI  (Application module for shibboleth SP se Apache o NginX)
-- Shibboleth (Identity provider e Service Provider di test)
+This procedure will produce a local setup of Shibboleth IdP v3.x and Shibboleth SP 3.0.3 with the following applications:
+- Servlet Container for IDP (tomcat8 or jetty9, default: jetty)
+- Web server (Apache or NginX as HTTPS frontend)
+- mod_shib2 / FastCGI (Application module for shibboleth SP if Apache or NginX)
+- Shibboleth (Identity provider and Test Service Provider)
 - mariaDB
-- Java (OpenJDK 11 oppure Amazon Corretto 8)
+- Java (OpenJDK 11 or Amazon Correct 8)
 
 
-Indice dei contenuti
+Content index
 -----------------
 
 <!--ts-->
-   * [Requisiti](#requisiti)
-   * [Parametri utili](#parametri-utili)
-   * #### Installazione
+   * [Requirements](#requirements)
+   * [Useful parameters](#useful-paramenters)
+   * #### Installation
       * [LDAP](#ldap)
-      * [Configurazione di LDAP](#configurazione-di-ldap)
-      * [Installazione di Shibboleth IDPv3 e SPv3](#installazione-di-shibboleth-idpv3-e-spv3)
-      * [Risultato](#risultato)
+      * [LDAP configuration](#configurazione-di-ldap)
+      * [Installation](#installation)
+      * [Final Result](#final-result)
       * [LXC image](#lxc)
    * #### Troubleshooting
        * [Systems checks](#systems-checks)
@@ -45,115 +45,113 @@ Indice dei contenuti
            * [No metadata returned for](#samlmetadatalookuphandler)
            * [PrescopedAttributeDefinition](#prescopedattributedefinition)
    * [Produzione](#produzione)
-   * [Personalizzazione](#personalizzazione)
+   * [HTML Page](#html-page)
    * [Hints](#hints)
    * [Todo](#todo)
    * [Ringraziamenti](#ringraziamenti)
    * [Autori](#autori)
 <!--te-->
 
-Requisiti
+Requirements
 ---------
 
-- Installazione preesistente di OpenLDAP, come illustrato nella sezione "Guida all'uso"
-- Utente LDAP abilitato per le ricerche nella UO di interesse (esempio consultabile in ldap/idp_user.ldif). Si consiglia di testare una ricerca LDAP con le credenziali da utilizzare in `ldap.properties`.
-  Esempio: `ldapsearch -H ldap://ldap.testunical.it -D 'uid=idp,ou=idp,dc=testunical,dc=it' -w idpsecret  -b 'ou=people,dc=testunical,dc=it'`
-- ACL LDAP per le query dell'IDP (esempio consultabile in ldap/idp_acl.ldif)
-- Installazione delle seguenti dipendenze
+- Pre-existing installation of OpenLDAP, as illustrated in the "User guide" section
+- LDAP user enabled for searches in the UO of interest (example available in ldap / idp_user.ldif). It is recommended to test an LDAP search with the credentials to be used in `ldap.properties`.
+  Example: `ldapsearch -H ldap: //ldap.testunical.it -D 'uid=idp,ou=idp,dc=testunical,dc=it' -w idpsecret -b 'ou=people,dc=testunical,dc=it'`
+- LDAP ACL for IDP queries (example available in ldap / idp_acl.ldif)
+- Installation of the following dependencies
 
-Se non possiedi certificati autorevoli modifica le variabili di make_ca.sh ed eseguilo per costruire una CA privata di test.
+If you don't have authoritative certificates, edit the make_ca.sh variables and run it to build a private test CA.
 ````
 nano make_ca.sh
 bash make_ca.sh
 ````
 
-Installare le seguenti dipendenze:
+Install the following dependencies:
 ````
 apt install -y python3-pip python-dev libffi-dev libssl-dev libxml2-dev libxslt1-dev libjpeg-dev zlib1g-dev ldap-utils
 pip3 install ansible
 ````
 
-Parametri utili
+Useful parameters
 ---------------
 
-La configurazione della nostra installazione è contenuta all'interno del file `playbook.yml`.
-Parametri quali `domain1`, `domain2` e `domain` determinano in aggiunta l'entityID e i certificati da utilizzare.
-Questi ultimi possono risiedere nella directory `/certs` o in altra directory definibile con la variabile `src_cert_path`.
-I certificati dovranno avere dei nomi simili a questi:
+The configuration of our installation is contained within the `playbook.yml` file.
+Parameters such as `domain1`,` domain2` and `domain` additionally determine the entityID and the certificates to be used.
+The latter can reside in the `/ certs` directory or in another directory definable with the` src_cert_path` variable.
+Certificates should have names similar to these:
 
 - fqdn-cert.pem e fqdn-key.pem
 
-Altri parametri utili possono essere:
+Other useful parameters can be:
 
-- shib_idp_version: 3.x.y. Indica la versione di shibboleth idp che verrà installata;
-- idp_attr_resolver, il nome del file di attributi da copiare come attribute-resolver.xml dell' IDP;
-- idp_persistent_id_rdbms: false. Configura lo storage dei Persistent ID su MariaDB;
+- shib_idp_version: 3.x.y. Indicates the version of shibboleth idp that will be installed;
+- idp_attr_resolver, the name of the attribute file to be copied as IDP attribute-resolver.xml;
+- idp_persistent_id_rdbms: false. Configure the storage of Persistent IDs on MariaDB;
 - servlet_container: tomcat | jetty;
-- idp_disable_saml1: disabilita il supporto a SAML versione 1;
-- servlet_ram: 384m. Quanta ram destinare al servlet container;
-- edugain_federation: true. Abilita metadati, resolvers e filtri tipici sugli attributi per un IdP di federazione IDEM EduGAIN;
-- java_jdk: amazon_8. La distribuzione Java JDK da utilizzare, supporta anche openjdk-8-jre.
+- idp_disable_saml1: disables SAML version 1 support;
+- servlet_ram: 384m. How much ram to allocate to the servlet container;
+- edugain_federation: true. Enable metadata, resolvers and typical attribute filters for an IDEM of IDEM EduGAIN federation;
+- java_jdk: amazon_8. The Java JDK distribution to be used also supports openjdk-8-jre.
 
-Installazione
+Installation
 -------------
 
 ## LDAP
-Se non hai una installazione funzionante di LDAP puoi crearne una utilizzando [questo playbook](https://github.com/peppelinux/ansible-slapd-eduperson2016):
+If you don't have a working installation of LDAP you can create one using [this playbook] (https://github.com/peppelinux/ansible-slapd-eduperson2016):
 ````
 git clone https://github.com/ConsortiumGARR/ansible-slapd-eduperson2016
 cd ansible-slapd-eduperson2016
 
-# modifica a tuo piacimento le variabili in playbook.yml prima di eseguire il seguente:
+# change the variables in playbook.yml to your liking before running the following:
 ansible-playbook -i "localhost," -c local playbook.yml
 ````
 
-### Configurazione di LDAP
+### LDAP Configuration
 ````
-# testare la connessione LDAP da un client remoto
-# accertati che l'hostname del server LDAP sia presente in /etc/hosts oppure che questo possa essere risolto dal tuo DNS.
+# test the LDAP connection from a remote client
+# Make sure that the hostname of the LDAP server is present in / etc / hosts or that this can be resolved by your DNS.
 nano /etc/hosts
 # 10.87.7.104 ldap.testunical.it
 
-# accertati che in /etc/ldap/ldap.conf sia stato configurato TLS_CACERT con il certificato del tuo CA, esempio:
+# make sure that TLS_CACERT has been configured with your CA's certificate in /etc/ldap/ldap.conf, example:
 TLS_CACERT /etc/ssl/certs/testunical.it/slapd-cacert.pem
 
-# aggiungi l'utente idp sul server LDAP
+# add the idp user on the LDAP server
 ldapadd -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_user.ldif
 
 # aggiungi una ACL per consentire la connessione e la ricerca all'utente idp
 ldapmodify -Y EXTERNAL -H ldapi:/// -D "cn=admin,dc=testunical,dc=it" -w slapdsecret -f ldap/idp_acl.ldif
 
-# testiamo che l'utente idp possa interrogare il server LDAP
-# dal server locale di LDAP
+# we test that the idp user can query the LDAP server
 ldapsearch -H ldapi:// -Y EXTERNAL -D "uid=idpuser,ou=idp,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
-# dal server IDP
+# from the IdP Server
 ldapsearch -H ldaps://ldap.testunical.it -D "uid=idpuser,ou=idp,dc=testunical,dc=it" -w idpsecret  -b 'ou=people,dc=testunical,dc=it'
 
 ````
 
-## Installazione di Shibboleth IDPv3 e SPv3
+## Installation
 
-### Certificati SSL di shibboleth IDP e SP
+### SSL certificates of shibboleth IDP and SP
 
-Ricordati di leggere attentamente il contenuto di playbook.yml e di creare server_ip.yml secondo l'esempio contenuto in server_ip.yml.example. Questo serve per configurare le risoluzioni dei nomi con certificati self signed. Se usi certificati autorevoli su fqdn puoi omettere questo passaggio.
-
-Il seguente esempio considera una esecuzione in locale del playbook:
+Remember to carefully read the contents of playbook.yml and to create server_ip.yml according to the example contained in server_ip.yml.example. This is used to configure name resolutions with self signed certificates. If you use authoritative certificates on fqdn you can omit this step.
+The following example considers a local execution of the playbook:
 ````
 git clone https://github.com/ConsortiumGARR/Ansible-Shibboleth-IDP-SP-Debian
 cd Ansible-Shibboleth-IDP-SP-Debian
 
-# modifica a tuo piacimento le variabili in playbook.yml e crea server_ip.yml prima di eseguire il seguente:
+# change the variables in playbook.yml to your liking and create server_ip.yml before running the following:
 ansible-playbook -i "localhost," -c local playbook.yml [-vvv]
 
-# seleziona esclusivamente alcuni ruoli, esempio soltanto la parte web
+# select only some roles, for example only the web part
 ansible-playbook -i "localhost," -c local playbook.yml -v --tag httpd
 
-# soltanto disinstallare e rimuovere tutto
+# just uninstall and remove everything
 ansible-playbook -i "localhost," -c local playbook.yml -v --tag uninstall
 ````
 
-Risultato
+Final result
 ---------
 ![Alt text](images/1.png)
 ![Alt text](images/2.png)
@@ -223,17 +221,16 @@ openssl s_client -connect idp.testunical.it:443
 LDAP Troubleshooting
 --------------------
 
-E' sempre meglio testare la connessione ad LDAP prima del setup.
-Da verificare oltre ai certificati anche le ACL di slapd.
-
+It is always better to test the connection to LDAP before setup.
+In addition to the certificates, the ACLs of slapd must also be verified.
 ````
 ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idpuser,ou=idp,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
 ````
-Se torna errore: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.testunical.it).
-Soluzione: allineare i certificati e la corrispondenza commonName con l'hostname del server.
+If error returns: TLS: hostname (rt4-idp-sp.lan) does not match common name in certificate (ldap.testunical.it).
+Solution: align the certificates and the commonName match with the hostname of the server.
 
+For test purposes only, certificate validation can be circumvented with the following command, only for connectivity tests.
 
-Esclusivamente per scopo di test è possibile eludere la validazione del certificato con il seguente comando, solo per test di connettività.
 ````
 LDAPTLS_REQCERT=never ldapsearch  -H ldaps://ldap.testunical.it:636 -D "uid=idpuser,ou=idp,dc=testunical,dc=it" -w idpsecret  -b 'uid=mario,ou=people,dc=testunical,dc=it' -d 220
 ````
@@ -260,8 +257,8 @@ opensaml::FatalProfileException
 Error from identity provider:
 Status: urn:oasis:names:tc:SAML:2.0:status:Responder
 ````
-Probabilmente manca la chiave pubblica dell'SP presso l'IDP, oppure le chiavi presentano, localmente, permessi di
-lettura errati. L'IDP preleva il certificato dall'SP tramite MetaDati. Se questo errore si presenta e i certificati sono stati adeguatamente definiti in shibboleth2.xml... Hai ricordato di riavviare shibd? :)
+The public key of the SP at the IDP is probably missing, or the keys present, locally, permissions to
+incorrect reading. The IDP takes the certificate from the SP via MetaDati. If this error occurs and the certificates have been properly defined in shibboleth2.xml ... Did you remember to restart shibd? :)
 
 
 #### The handshake operation timed out
@@ -277,7 +274,7 @@ libapache2-mod-shib2 non contiene i file di configurazione in /etc/shibboleth (s
 opensaml::SecurityPolicyException
 Message was signed, but signature could not be verified.
 ````
-L'SP ha i metadati dell'IDP errati/disallineati. Soluzione:
+The SP has incorrect / misaligned IDP metadata. Solution:
 
 ````
 cd /etc/shibboleth/metadata
@@ -298,15 +295,14 @@ chown _shibd /etc/shibboleth/sp.testunical.it-*
 ````
  Cannot resolve reference to bean 'shibboleth.metrics.AttributeResolverGaugeSet' while setting bean property 'arguments'
 ````
-L'eccezione emerge lungo il parse del file general-admin-system.xml, al bean id="shibboleth.metrics.AttributeResolverGaugeSet".
-Controllare ldap.properties e attribute-resolver.xml, con molta probabilità c'è un errore di connessione al server LDAP o di configurazione in attribute-resolver.xml.
+The exception emerges along the parse of the general-admin-system.xml file, at the bean id = "shibboleth.metrics.AttributeResolverGaugeSet".
+Check ldap.properties and attribute-resolver.xml, there is most likely an error connecting to the LDAP server or configuration in attribute-resolver.xml.
 
 #### SAMLMetadataLookupHandler
 ````
 2018-03-05 13:38:13,259 - INFO [org.opensaml.saml.common.binding.impl.SAMLMetadataLookupHandler:128] - Message Handler:  No metadata returned for https://sp.testunical.it/shibboleth in role {urn:oasis:names:tc:SAML:2.0:metadata}SPSSODescriptor with protocol urn:oasis:names:tc:SAML:2.0:protocol
 ````
-Copiare i metadati dell'SP (wget --no-check-certificate https://sp.testunical.it/Shibboleth.sso/Metadata) in /opt/shibboleth-idp/metadata.
-
+Copy the metadata of the SP (wget --no-check-certificate https://sp.testunical.it/Shibboleth.sso/Metadata) in / opt / shibboleth-idp / metadata.
 
 #### PrescopedAttributeDefinition
 ````
@@ -316,8 +312,7 @@ net.shibboleth.idp.attribute.resolver.ResolutionException: Input attribute value
         at net.shibboleth.idp.attribute.resolver.ad.impl.PrescopedAttributeDefinition.buildScopedStringAttributeValue(PrescopedAttributeDefinition.java:136)
 2018-05-05 18:09:42,536 - WARN [net.shibboleth.idp.consent.flow.ar.impl.AbstractAttributeReleaseAction:155] - Profile Action PopulateAttributeReleaseContext: Unable to locate attribute context
 ````
-Un attributo configurato per essere diviso (split) non risulta essere divisibile. Nel caso specifico eduPersonPrincipalName si aspetta un valore scoped, nello specifico nomeutente@struttura. Queste specificazioni le troviamo nel documento: [Specifiche tecniche Attributi IDEM GARR](https://www.eventi.garr.it/en/documenti/conferenza-garr-2016/riunione-idem/42-callofcomments-specifichetecnicheattributi-v3-0-20161005-it-it)
-
+An attribute configured to be split is not divisible. In the specific case eduPersonPrincipalName expects a scoped value, in the specific username @ structure. We find these specifications in the document: [Technical specifications IDEM GARR attributes] (https://www.eventi.garr.it/en/documenti/conferencing-garr-2016/riunione-idem/42-callofcomments-specifichetecnicheattributi-v3-0-20161005-en-gb)
 
 Produzione
 ----------
@@ -325,8 +320,8 @@ Produzione
 ````
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-amazon-corretto/jre
 
-# ricaricare servizi singoli (eviti di riavviare il servlet container)
-# questi sono definiti in conf/services.xml
+# reload single services (avoid restarting the servlet container)
+# these are defined in conf/services.xml
 
 /opt/shibboleth-idp/bin/reload-service.sh -id shibboleth.AttributeResolverService -u http://localhost:8080/idp
 
@@ -360,16 +355,15 @@ export JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto/
 - https://www.garr.it/idem-conf/attribute-filter-v3-rs.xml
 - https://www.garr.it/idem-conf/attribute-filter-v3-coco.xml
 
-Personalizzazione
+HTML Page
 -----------------
 
-E' possibile personalizzare la pagina web di ShibbolethIDP modificando i seguenti files.
-Le modifiche non richiedono il riavvio del servizio.
+It is possible to customize the ShibbolethIDP web page by modifying the following files.
+The changes do not require restarting the service.
 
-- messages/, modifica labels e stringhe globali o per lingua (_it e ed eventuali altri);
-- views/, modifica la struttura HTML dei template (file con estensione .vm);
-- edit-webapp/, modifica CSS e immagini a cui puntano i template;
-
+- messages /, modify labels and strings global or by language (_it and any others);
+- views /, modify the HTML structure of the templates (files with the .vm extension);
+- edit-webapp /, edit CSS and images to which the templates point;
 
 Todo
 ---------
