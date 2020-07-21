@@ -100,7 +100,7 @@ Installation
 ## LDAP
 If you don't have a working installation of LDAP you can create one using [this playbook] (https://github.com/peppelinux/ansible-slapd-eduperson2016):
 ````
-git clone https://github.com/ConsortiumGARR/ansible-slapd-eduperson2016
+git clone https://github.com/peppelinux/Ansible-Shibboleth-IDP-SP-Debian
 cd ansible-slapd-eduperson2016
 
 # change the variables in playbook.yml to your liking before running the following:
@@ -138,7 +138,7 @@ ldapsearch -H ldaps://ldap.testunical.it -D "uid=idpuser,ou=idp,dc=testunical,dc
 Remember to carefully read the contents of playbook.yml and to create server_ip.yml according to the example contained in server_ip.yml.example. This is used to configure name resolutions with self signed certificates. If you use authoritative certificates on fqdn you can omit this step.
 The following example considers a local execution of the playbook:
 ````
-git clone https://github.com/ConsortiumGARR/Ansible-Shibboleth-IDP-SP-Debian
+git clone https://github.com/peppelinux/Ansible-Shibboleth-IDP-SP-Debian
 cd Ansible-Shibboleth-IDP-SP-Debian
 
 # change the variables in playbook.yml to your liking and create server_ip.yml before running the following:
