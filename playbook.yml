@@ -129,6 +129,7 @@
     json_web_key_generator_url: "https://github.com/mitreid-connect/json-web-key-generator/archive/{{ json_web_key_generator_archive }}"
     
     op_issuer: "{{ idp_fqdn }}"
+    rp_fqdn: "{{ sp_fqdn }}"
     # END OIDC Extension
     
   roles:
@@ -156,3 +157,4 @@
     # oidc installation
     - { role: oidc_provider_install, tags: ["op_install"] }
     - { role: oidc_provider_configuration, tags: ["op_configure"] }
+    # - { role: oidc_rp_federation, tags: ["op_rp"] }

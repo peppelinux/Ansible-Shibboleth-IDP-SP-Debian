@@ -125,6 +125,49 @@
   service: name="apache2" state=restarted enabled=True
   when: httpd == 'apache'
 
+- replace: 
+    path: '{{ idp_path }}/conf/relying-party.xml'
+    regexp: '<!-- <bean parent="SAML2.SSO" p:encryptAssertions="false" /> -->'
+    replace: |-
+                <!-- OIDC -->
+                <bean parent="OIDC.Keyset" />
+         
+
+- replace: 
+    path: '{{ idp_path }}/conf/relying-party.xml'
+    regexp: '<ref bean="Liberty.SSOS" />'
+    replace: |-
+                <ref bean="Liberty.SSOS" />
+                <bean parent="OIDC.SSO" p:postAuthenticationFlows="attribute-release" />
+                <bean parent="OIDC.UserInfo"/>
+                <bean parent="OAUTH2.Revocation"/>
+          
+
+- name: Copy OIDC attribute resolver and filter files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ idp_path}}/conf/"
+    owner: root
+    group: root
+    mode: 644
+  with_fileglob:
+    - "roles/{{ role_name }}/files/attribute-resolver-oidc.xml"
+    - "roles/{{ role_name }}/files/attribute-filter-oidc.xml"
+            
+- replace: 
+    path: '{{ idp_path }}/conf/services.xml'
+    regexp: '<util:list id ="shibboleth.AttributeFilterResources">'
+    replace: |-
+        <util:list id ="shibboleth.AttributeFilterResources">
+            <value>%{idp.home}/conf/attribute-filter-oidc.xml</value>
+
+- replace: 
+    path: '{{ idp_path }}/conf/services.xml'
+    regexp: '<util:list id ="shibboleth.AttributeResolverResources">'
+    replace: |-
+        <util:list id ="shibboleth.AttributeResolverResources">
+            <value>%{idp.home}/conf/attribute-resolver-oidc.xml</value>
+
 # TODO
 #- name: "NginX installation"
   #include_role:
@@ -135,6 +178,7 @@
   #service: name="nginx" state=restarted enabled=True
   #when: httpd == 'nginx'
 
+
 - name: Restart Jetty
   service: name="jetty" state=restarted enabled=True
   when: servlet_container == "jetty"
@@ -142,6 +186,3 @@
 - name: Restart Tomcat
   service: name="{{ tomcat_version }}" state=restarted enabled=True
   when: servlet_container == "tomcat"
-
-# TODO 
-# https://github.com/CSCfi/shibboleth-idp-oidc-extension/wiki/Installing-from-archive#prepare-for-first-relying-party

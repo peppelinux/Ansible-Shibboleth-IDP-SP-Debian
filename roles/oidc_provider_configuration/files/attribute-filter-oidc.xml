@@ -1,0 +1,11 @@
+<AttributeFilterPolicyGroup id="ShibbolethFilterPolicy" xmlns="urn:mace:shibboleth:2.0:afp"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:oidcext="org.geant.idpextension.oidc.attribute.filter"
+xsi:schemaLocation="urn:mace:shibboleth:2.0:afp http://shibboleth.net/schema/idp/shibboleth-afp.xsd org.geant.idpextension.oidc.attribute.filter classpath:/schema/idp-oidc-extension-afp.xsd">
+
+
+<AttributeFilterPolicy id="OPENID_SCOPE">
+    <PolicyRequirementRule xsi:type="oidcext:OIDCScope" value="openid" />
+    <AttributeRule attributeID="subject">
+        <PermitValueRule xsi:type="ANY" />
+    </AttributeRule>
+</AttributeFilterPolicy> 

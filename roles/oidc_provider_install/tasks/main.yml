@@ -19,5 +19,5 @@
   command: '{{ idp_path }}/bin/build.sh \
             -Didp.target.dir="{{ idp_path }}"'
 
-- name: Create GIT repository with a fresh ShibIdP installation
+- name: Git commits with 'Shibboleth IdP OIDC Extension installed'
   shell: "cd {{ idp_path }} && git add -A && git commit -am 'Shibboleth IdP OIDC Extension installed'"

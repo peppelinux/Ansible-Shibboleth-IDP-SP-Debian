@@ -1,0 +1,53 @@
+# TODO: move to oidc_rp_federation
+- replace: 
+    path: '{{ idp_path }}/conf/oidc-metadata-providers.xml'
+    regexp: '<!--[\n\s\t]*<ref bean="ExampleFileResolver" />[\n\s\t]*-->'
+    replace: |-
+        <ref bean="OidcRPTestFileResolver" />
+        <!-- <ref bean="ExampleFileResolver" /> -->
+
+- replace: 
+    path: '{{ idp_path }}/conf/oidc-metadata-providers.xml'
+    regexp: '<bean id="ExampleStorageClientInformationResolver"'
+    replace: |-
+        <bean id="OidcRPTestFileResolver"
+        class="org.geant.idpextension.oidc.metadata.impl.FilesystemClientInformationResolver" 
+        p:id="OidcRPTestFileResolver1"
+        p:remoteJwkSetCache-ref="shibboleth.oidc.RemoteJwkSetCache" c:metadata="{{ idp_path }}/metadata/test-oidc-rp.json" />
+            
+        <bean id="ExampleStorageClientInformationResolver"
+   
+
+- name: Copy test RP metadata provider
+  copy:
+    src: "{{ item }}"
+    dest: "{{ idp_path}}/metadata/"
+    owner: root
+    group: root
+    mode: 644
+  with_fileglob:
+    - "roles/{{ role_name }}/files/test-oidc-rp.json"
+
+
+- name: Git commits with 'Shibboleth IdP OIDC Test RP'
+  shell: "cd {{ idp_path }} && git add -A && git commit -am 'Shibboleth IdP OIDC Test RP'"
+
+
+# TODO
+#- name: "NginX installation"
+  #include_role:
+    #name: "nginx_install"
+  #when: httpd == 'nginx'
+
+#- name: Restart NginX
+  #service: name="nginx" state=restarted enabled=True
+  #when: httpd == 'nginx'
+
+- name: Restart Jetty
+  service: name="jetty" state=restarted enabled=True
+  when: servlet_container == "jetty"
+
+- name: Restart Tomcat
+  service: name="{{ tomcat_version }}" state=restarted enabled=True
+  when: servlet_container == "tomcat"
+

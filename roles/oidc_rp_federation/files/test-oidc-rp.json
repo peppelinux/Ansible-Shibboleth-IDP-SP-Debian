@@ -1,0 +1,10 @@
+[
+  {
+    "scope":"openid phone",
+    "redirect_uris":["https://{{ sp_fqdn }}:8099/redirect_uri"],
+    "client_id":"demo_rp",
+    "client_secret":"topsecret",
+    "response_types":["code"],
+    "grant_types":["authorization_code"]
+  }
+]
