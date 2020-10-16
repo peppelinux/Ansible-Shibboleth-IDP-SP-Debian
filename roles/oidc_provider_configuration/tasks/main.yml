@@ -89,7 +89,9 @@
           for i in ["idp-signing-rs.jwk", "idp-signing-es.jwk", "idp-encryption-rsa.jwk"]: 
               f = open(base_path+i, "r")
               c = f.read().split('Public key:\n')[-1]
-              open(base_path+i, "w").write(c)
+              f.close()
+              f = open(base_path+i, "w")
+              f.write(c)
               f.close()
           EOF
 
@@ -100,7 +102,7 @@
 
 - replace: 
     path: '{{ idp_path }}/static/.well-known/openid-configuration'
-    regexp: '\{\{ service_name \}\}'
+    regexp: 'https://\{\{ service_name \}\}'
     replace: '{{ op_issuer }}'
 
 #- name: "Configure static serve of .well-known/openid-coonfiguration"
@@ -125,13 +127,20 @@
   service: name="apache2" state=restarted enabled=True
   when: httpd == 'apache'
 
+
+- replace: 
+    path: '{{ idp_path }}/conf/relying-party.xml'
+    regexp: 'parent="RelyingParty"'
+    replace: 'p:responderIdLookupStrategy-ref="profileResponderIdLookupFunction" parent="RelyingParty"'
+
+
 - replace: 
     path: '{{ idp_path }}/conf/relying-party.xml'
     regexp: '<!-- <bean parent="SAML2.SSO" p:encryptAssertions="false" /> -->'
     replace: |-
                 <!-- OIDC -->
                 <bean parent="OIDC.Keyset" />
-         
+
 
 - replace: 
     path: '{{ idp_path }}/conf/relying-party.xml'
@@ -153,20 +162,21 @@
   with_fileglob:
     - "roles/{{ role_name }}/files/attribute-resolver-oidc.xml"
     - "roles/{{ role_name }}/files/attribute-filter-oidc.xml"
-            
-- replace: 
-    path: '{{ idp_path }}/conf/services.xml'
-    regexp: '<util:list id ="shibboleth.AttributeFilterResources">'
-    replace: |-
-        <util:list id ="shibboleth.AttributeFilterResources">
-            <value>%{idp.home}/conf/attribute-filter-oidc.xml</value>
 
-- replace: 
-    path: '{{ idp_path }}/conf/services.xml'
-    regexp: '<util:list id ="shibboleth.AttributeResolverResources">'
-    replace: |-
-        <util:list id ="shibboleth.AttributeResolverResources">
-            <value>%{idp.home}/conf/attribute-resolver-oidc.xml</value>
+# That's not something to do!
+#- replace: 
+    #path: '{{ idp_path }}/conf/services.xml'
+    #regexp: '<util:list id ="shibboleth.AttributeFilterResources">'
+    #replace: |-
+        #<util:list id ="shibboleth.AttributeFilterResources">
+            #<value>%{idp.home}/conf/attribute-filter-oidc.xml</value>
+
+#- replace: 
+    #path: '{{ idp_path }}/conf/services.xml'
+    #regexp: '<util:list id ="shibboleth.AttributeResolverResources">'
+    #replace: |-
+        #<util:list id ="shibboleth.AttributeResolverResources">
+            #<value>%{idp.home}/conf/attribute-resolver-oidc.xml</value>
 
 # TODO
 #- name: "NginX installation"
@@ -186,3 +196,6 @@
 - name: Restart Tomcat
   service: name="{{ tomcat_version }}" state=restarted enabled=True
   when: servlet_container == "tomcat"
+
+- name: Update GIT repository with a branch of the configured Shib IdP
+  shell: "cd {{ idp_path }} && git add -A && git commit -am 'OIDC Provider configured'"
