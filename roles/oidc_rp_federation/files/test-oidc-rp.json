@@ -1,9 +1,9 @@
 [
   {
-    "scope":"openid phone",
-    "redirect_uris":["https://{{ sp_fqdn }}:8099/redirect_uri"],
+    "scope":"openid email profile research_and_scholarship",
+    "redirect_uris":["{{ rp_url }}/authz_cb/shib_oidc_op"],
     "client_id":"demo_rp",
-    "client_secret":"topsecret",
+    "client_secret":"topsecret2020___",
     "response_types":["code"],
     "grant_types":["authorization_code"]
   }

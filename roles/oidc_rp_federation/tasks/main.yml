@@ -16,17 +16,11 @@
         p:remoteJwkSetCache-ref="shibboleth.oidc.RemoteJwkSetCache" c:metadata="{{ idp_path }}/metadata/test-oidc-rp.json" />
             
         <bean id="ExampleStorageClientInformationResolver"
-   
 
-- name: Copy test RP metadata provider
-  copy:
-    src: "{{ item }}"
-    dest: "{{ idp_path}}/metadata/"
-    owner: root
-    group: root
-    mode: 644
-  with_fileglob:
-    - "roles/{{ role_name }}/files/test-oidc-rp.json"
+- name: test RP metadata provider
+  template:
+    src: roles/{{ role_name }}/files/test-oidc-rp.json
+    dest: "{{ idp_path}}/metadata/test-oidc-rp.json"
 
 
 - name: Git commits with 'Shibboleth IdP OIDC Test RP'

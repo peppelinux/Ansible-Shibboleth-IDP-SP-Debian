@@ -163,20 +163,19 @@
     - "roles/{{ role_name }}/files/attribute-resolver-oidc.xml"
     - "roles/{{ role_name }}/files/attribute-filter-oidc.xml"
 
-# That's not something to do!
-#- replace: 
-    #path: '{{ idp_path }}/conf/services.xml'
-    #regexp: '<util:list id ="shibboleth.AttributeFilterResources">'
-    #replace: |-
-        #<util:list id ="shibboleth.AttributeFilterResources">
-            #<value>%{idp.home}/conf/attribute-filter-oidc.xml</value>
+- replace: 
+    path: '{{ idp_path }}/conf/services.xml'
+    regexp: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
+    replace: |-
+            <value>%{idp.home}/conf/attribute-resolver.xml</value>
+            <value>%{idp.home}/conf/attribute-resolver-oidc.xml</value>
 
-#- replace: 
-    #path: '{{ idp_path }}/conf/services.xml'
-    #regexp: '<util:list id ="shibboleth.AttributeResolverResources">'
-    #replace: |-
-        #<util:list id ="shibboleth.AttributeResolverResources">
-            #<value>%{idp.home}/conf/attribute-resolver-oidc.xml</value>
+- replace: 
+    path: '{{ idp_path }}/conf/services.xml'
+    regexp: '<value>%{idp.home}/conf/attribute-filter.xml</value>'
+    replace: |-
+            <value>%{idp.home}/conf/attribute-filter.xml</value>
+            <value>%{idp.home}/conf/attribute-filter-oidc.xml</value>
 
 # TODO
 #- name: "NginX installation"

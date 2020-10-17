@@ -130,6 +130,7 @@
     
     op_issuer: "https://{{ idp_fqdn }}"
     rp_fqdn: "{{ sp_fqdn }}"
+    rp_url: "https://127.0.0.1:8099"
     # END OIDC Extension
     
   roles:

@@ -153,6 +153,12 @@
     dest: "{{ idp_path }}/conf/attribute-resolver-dbsql.xml"
     backup: yes
 
+# remove faulty email example resolver
+- replace: 
+    path: '{{ idp_path }}/conf/attribute-resolver.xml'
+    regexp: '[\s\t]*<AttributeDefinition id="mail" xsi:type="Template">[\s\t\n\<\>\=\"\:\-\_0-9a-zA-Z\/$\@\$\[\]\{\}\!\.]*</AttributeDefinition>'
+    replace: ""
+
 - name: Update services.xml
   blockinfile:
     path: "{{ idp_path }}/conf/services.xml"
@@ -165,11 +171,11 @@
     backup: yes
 
 # Disable default/example attribute-resolver
-- replace:
-    path: "{{ idp_path }}/conf/services.xml"
-    regexp: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
-    replace: '<!--<value>%{idp.home}/conf/attribute-resolver.xml</value>-->'
-    backup: no
+#- replace:
+    #path: "{{ idp_path }}/conf/services.xml"
+    #regexp: '<value>%{idp.home}/conf/attribute-resolver.xml</value>'
+    #replace: '<!--<value>%{idp.home}/conf/attribute-resolver.xml</value>-->'
+    #backup: no
 
 - name: "getting {{ idp_attr_reg_shac_url }}"
   get_url: url="{{ idp_attr_reg_shac_url }}" dest="{{ idp_path }}/conf/attributes/schac.xml"  mode=664
