@@ -95,6 +95,55 @@
               f.close()
           EOF
 
+- name: "Reforge RSA jwks with cryptojwt [Patch]"
+  shell: |
+        apt install -y python3-pip && pip3 install cryptojwt
+        python3 <<EOF
+        import json
+        from cryptojwt.jwk.x509 import import_public_key_from_cert_file
+        from cryptojwt.jwk.rsa import import_private_rsa_key_from_file
+        from cryptojwt.jwk.ec import ECKey
+        from cryptojwt.jwk.rsa import RSAKey
+        
+        
+        IDP_HOME = "/opt/shibboleth-idp"
+        IDP_SIGNING_KEY = "idp-signing.key"
+        IDP_ENC_KEY = "idp-encryption.key"
+        
+        OP_JWK_SIGN_RS = f"{IDP_HOME}/credentials/idp-signing-rs.jwk"
+        OP_JWK_SIGN_ES = f"{IDP_HOME}/credentials/idp-signing-es.jwk"
+        OP_JWK_ENC = f"{IDP_HOME}/credentials/idp-encryption-rsa.jwk"
+        
+        
+        private_sign = import_private_rsa_key_from_file(f'{IDP_HOME}/credentials/{IDP_SIGNING_KEY}')
+        private_enc = import_private_rsa_key_from_file(f'{IDP_HOME}/credentials/{IDP_ENC_KEY}')
+        
+        # OP_JWK_SIGN_RS and OP_JWK_SIGN_ES
+        rsa_key = RSAKey(priv_key=private_sign)
+        # ec_key = ECKey(priv_key=private_sign)
+        
+        # ENC
+        rsa_enc_key = RSAKey(priv_key=private_enc)
+        
+        with open(OP_JWK_SIGN_RS, 'w') as jwk_rsa_file:
+            content = rsa_key.serialize()
+            content['use'] = "sig"
+            content['kid'] = "defaultRSASign"
+            jwk_rsa_file.write(json.dumps(content, indent=2))
+        
+        # with open(OP_JWK_SIGN_ES, 'w') as jwk_es_file:
+            # content = ec_key.serialize()
+            # content['use'] = "sig"
+            # content['kid'] = "defaultECSign"
+            # jwk_es_file.write(json.dumps(content, indent=2))
+        
+        with open(OP_JWK_ENC, 'w') as jwk_enc_file:
+            content = rsa_enc_key.serialize()
+            content['use'] = "enc"
+            content['kid'] = "defaultRSAEnc"
+            jwk_enc_file.write(json.dumps(content, indent=2))
+
+
 - replace:
     path: "{{ idp_path }}/conf/idp-oidc.properties"
     regexp: 'idp.oidc.issuer = https://your.issuer.example.com'
